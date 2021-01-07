@@ -1,9 +1,16 @@
-const apiRouter = require('express').Router();
+const apiRouter = require('express').Router()
 
-apiRouter.get("/", (req, res, next) => {
-  res.send({
-    message: "API is under construction!"
-  });
-});
+const { createProduct, getProductById, getAllProducts } = require('../db/index')
 
-module.exports = apiRouter;
+apiRouter.get('/', async (req, res, next) => {
+  console.log('hitting api')
+  try {
+    console.log('inside try getting all products')
+    const allProducts = await getAllProducts()
+    res.send(allProducts)
+  } catch (error) {
+    next(error)
+  }
+})
+
+module.exports = apiRouter
