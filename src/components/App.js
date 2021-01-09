@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { Switch, BrowserRouter as Router, Route } from 'react-router-dom';
 
 import {
   getSomething
 } from '../api';
+import Header from './Header';
 
 const App = () => {
   const [message, setMessage] = useState('');
@@ -18,10 +20,27 @@ const App = () => {
   });
 
   return (
-    <div className="App">
-      <h1>Hello, Team Banana!</h1>
-      <h2>{ message }</h2>
-    </div>
+    <Router>
+      <div className="App">
+        <Switch>
+          <Route path="/">
+            <Header />
+          </Route>
+          <Route patch="/houseplants">
+            <Header />
+          </Route>
+          <Route path="/floweringplants">
+            <Header />
+          </Route>
+          <Route path="/bonsaiplants">
+            <Header />
+          </Route>
+          <Route path="/login">
+            <Header />
+          </Route>
+        </Switch>
+      </div>
+    </Router>
   );
 }
 
