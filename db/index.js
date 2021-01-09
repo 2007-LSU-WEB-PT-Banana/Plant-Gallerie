@@ -49,7 +49,7 @@ const getProductById = async (id) => {
   try {
     const {
       rows: [product],
-    } = await client(
+    } = await client.query(
       `
     SELECT * 
     FROM products

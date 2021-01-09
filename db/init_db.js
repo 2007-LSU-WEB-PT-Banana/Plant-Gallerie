@@ -64,19 +64,19 @@ async function buildTables() {
 async function populateInitialData() {
   try {
     await createProduct({
-      name: 'fern',
-      description: 'lets plant lets make the earth green',
-      price: 12,
-      imageURL: '',
+      name: 'Juniper Bonsai',
+      description: 'Ever-beautiful and ready for creative shaping, this tiny tree has been cultivated for thousands of years to bring you calmness and serenity. But no pressure! Plant Perk: All about artful shaping and training, these trees are great for Zen relaxation.',
+      price: 60,
+      imageURL: 'https://www.plants.com/images/juniper_20200728-1595948327586.jpeg',
       inStock: true,
       category: 'House Plant',
     })
 
     await createProduct({
-      name: 'Money Tree',
-      description: 'lets plant lets make the earth green',
-      price: 16,
-      imageURL: '',
+      name: 'Money Tree Plant',
+      description: 'Known in certain cultures to bring good luck and fortune, the Money Tree offers a wealth of benefits - from dressing up the decor with its cool, braided trunk to bringing a fresh energy to any space.  Available with your choice of planter.',
+      price: 55,
+      imageURL: 'https://www.plants.com/images/157651-Money-Tree-Plant-M%20(1)_20201215-1608045628034.jpg',
       inStock: true,
       category: 'House Plant',
     })
