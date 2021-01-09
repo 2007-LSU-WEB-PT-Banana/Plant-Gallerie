@@ -7,6 +7,66 @@ const client = new Client(DB_URL)
 
 // database methods
 
+const createUser = async ({
+  firstName,
+  lastName,
+  email,
+  imageURL,
+  username,
+  password,
+  isAdmin,
+}) => {
+  try {
+    console.log('creating users')
+    const {
+      rows: [user],
+    } = await client.query(
+      `
+    INSERT INTO users ("firstName","lastName" ,email,"imageURL", username , password ,"isAdmin")
+    VALUES($1,$2,$3,$4,$5,$6,$7)
+    RETURNING *; 
+    `,
+      [firstName, lastName, email, imageURL, username, password, isAdmin],
+    )
+
+    return user
+  } catch (error) {
+    throw error
+  }
+}
+
+const getAllUsers = async () => {
+  console.log('users live here')
+  try {
+    const { rows: allUsers } = await client.query(`
+    SELECT * 
+    FROM users;
+ `)
+    console.log('these are users', allUsers)
+    return allUsers
+  } catch (error) {
+    throw error
+  }
+}
+
+const getUserById = async (id) => {
+  try {
+    const {
+      rows: [user],
+    } = await client.query(
+      `
+    SELECT *
+    FROM users
+    WHERE id=$1;
+    `,
+      [id],
+    )
+    return user
+  } catch (error) {
+    throw error
+  }
+}
+
 const createProduct = async ({
   name,
   description,
@@ -68,6 +128,9 @@ const getProductById = async (id) => {
 module.exports = {
   client,
   // db methods
+  createUser,
+  getAllUsers,
+  getUserById,
   createProduct,
   getProductById,
   getAllProducts,
