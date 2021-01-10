@@ -35,11 +35,16 @@ const createProduct = async ({
 
 const getAllProducts = async () => {
   try {
-    const { rows: allProducts } = await client.query(`
-    SELECT * 
+    const { rows: productIds } = await client.query(`
+    SELECT id 
     FROM products;
     `)
-    return allProducts
+    
+    const allProducts = await Promise.all(productIds.map(
+      product => getProductById(product.id)
+    ));
+
+    return allProducts;
   } catch (error) {
     throw error
   }
@@ -54,10 +59,14 @@ const getProductById = async (id) => {
     SELECT * 
     FROM products
     WHERE id=$1;
+    `, [id]);
 
-    `,
-      [id],
-    )
+    if(!product) {
+      throw {
+        message: "Could not find a product with that name/id"
+      }
+    }
+    
     return product
   } catch (error) {
     throw error

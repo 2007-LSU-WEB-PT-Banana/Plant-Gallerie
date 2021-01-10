@@ -1,7 +1,8 @@
+require('dotenv').config();
+
 // This is the Web Server
 const express = require('express')
 const server = express()
-
 
 // create logs for everything
 const morgan = require('morgan')

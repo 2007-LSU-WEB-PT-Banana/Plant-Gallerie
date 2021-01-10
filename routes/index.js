@@ -2,6 +2,11 @@ const apiRouter = require('express').Router()
 
 const { createProduct, getProductById, getAllProducts } = require('../db/index')
 
+apiRouter.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  next();
+})
+
 apiRouter.get('/', async (req, res, next) => {
   console.log('hitting api')
   try {
