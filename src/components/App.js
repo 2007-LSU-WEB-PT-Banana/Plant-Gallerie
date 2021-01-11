@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Switch, BrowserRouter as Router, Route } from 'react-router-dom';
-
-import {
-  getSomething
-} from '../api';
+import { getSomething} from '../api';
 import Header from './Header';
 
 const App = () => {
