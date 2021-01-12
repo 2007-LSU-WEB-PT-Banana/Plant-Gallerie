@@ -1,0 +1,116 @@
+* {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+#app {
+  height: 100%;
+  font-family: sans-serif;
+  width: 100vw;
+}
+
+.navLinks {
+  padding: 10px;
+  background: black;
+  color: white;
+  margin-right: 7px;
+  margin-bottom: 20px;
+}
+
+.allProducts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  grid-gap: 10px;
+  margin: 10px;
+}
+
+.productsHeader {
+  text-align: center;
+}
+.productCard {
+  padding: 10px;
+  margin: 5px 10px 10px 5px;
+  box-shadow: 3px 3px 5px black;
+  font-family: sans-serif;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmx(320px, 1fr));
+}
+
+.productCard img {
+  grid-column: 1;
+  grid-row: 1 / 3;
+}
+
+.productCard p {
+  grid-column: 2;
+  justify-self: end;
+}
+
+.productName {
+  align-self: end;
+  justify-self: end;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.cartOptions button {
+  padding: 10px;
+  margin-left: 15px;
+  box-shadow: 0 5px #999;
+  border-radius: 3px;
+}
+
+.quantity {
+  display: inline-block; }
+ 
+ .quantity .input-text.qty {
+  width: 35px;
+  height: 39px;
+  padding: 0 5px;
+  text-align: center;
+  background-color: transparent;
+  border: 1px solid #efefef;
+ }
+ 
+ .quantity.buttons_added {
+  text-align: left;
+  position: relative;
+  white-space: nowrap;
+  vertical-align: top; }
+ 
+ .quantity.buttons_added input {
+  display: inline-block;
+  margin: 0;
+  vertical-align: top;
+  box-shadow: none;
+ }
+ 
+ .quantity.buttons_added .minus,
+ .quantity.buttons_added .plus {
+  padding: 7px 10px 8px;
+  height: 41px;
+  background-color: #ffffff;
+  border: 1px solid #efefef;
+  cursor:pointer;}
+ 
+ .quantity.buttons_added .minus {
+  border-right: 0; }
+ 
+ .quantity.buttons_added .plus {
+  border-left: 0; }
+ 
+ .quantity.buttons_added .minus:hover,
+ .quantity.buttons_added .plus:hover {
+  background: #eeeeee; }
+ 
+ .quantity input::-webkit-outer-spin-button,
+ .quantity input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  margin: 0; }
+  
+  .quantity.buttons_added .minus:focus,
+ .quantity.buttons_added .plus:focus {
+  outline: none; }
