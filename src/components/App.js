@@ -1,17 +1,14 @@
 import React, { useState, useEffect } from 'react'
 import {
   Switch,
-  BrowserRouter as Router,
   Route,
   useHistory,
   Link,
 } from 'react-router-dom'
-import { getSomething } from '../api'
-import Header from './Header'
 import img from '../images/home-image.jpg'
 import Button from '@material-ui/core/Button'
 import { fetchAPI, BASE_URL } from '../api'
-import { AllProducts, SingleProduct } from './index'
+import { AllProducts, SingleProduct, Header } from './index'
 
 const App = () => {
   const history = useHistory()
@@ -54,9 +51,18 @@ const App = () => {
     marginBotton: '60px',
   }
 
-  const headingMain = {
+  const headingTitle = {
     display: 'block',
     fontSize: '50px',
+    fontWeight: '400',
+    letterSpacing: '20px',
+    paddingBottom: '1em',
+    textAlign: 'center',
+  }
+  
+  const headingMain = {
+    display: 'block',
+    fontSize: '40px',
     fontWeight: '400',
     letterSpacing: '20px',
   }
@@ -79,67 +85,67 @@ const App = () => {
     textDecoration: 'none',
     textTransform: 'uppercase',
     padding: '15px 40px',
+    color: 'black',
   }
 
   return (
-    <Router>
+    <>
+    <header>
+      <Header />
+    </header>
+    <main>
       <div className="App">
         <Switch>
-          <Route path="/">
-            <Header />
+          <Route exact path="/">
             <div className="main-page-image">
               <img src={img} style={imgStyle} />
             </div>
             <div className="text-box" style={textBox}>
               <h1 className="heading-primary" style={headingPrimary}>
-                <span className="heading-main" style={headingMain}>
-                  buy 2 plants for $200
+                <span className="heading-title" style={headingTitle}>
+                  Plant Gallerie
+                  </span><span className="heading-main" style={headingMain}>
+                  buy 3 plants for $200
                 </span>
-                <pan className="heading-main-sub" style={headingMainSub}>
+                <span className="heading-main-sub" style={headingMainSub}>
                   plus free shipping
-                </pan>
+                </span>
               </h1>
               <Button className="btn btn-white" style={btn}>
-                {' '}
-                Shop Now
+                <Link to="/products" className='allProdLink'>Shop Now
+                </Link>
               </Button>
             </div>
-            <Route exact path="/products/:productId">
-              <Header />
-              <SingleProduct
-                activeProduct={activeProduct}
-                setActiveProduct={setActiveProduct}
-                history={history}
-              />
             </Route>
+          <Route exact path="/products/:productId">
+            <SingleProduct
+              activeProduct={activeProduct}
+              setActiveProduct={setActiveProduct}
+              history={history}
+            />
+          </Route>
             <Route exact path="/products">
-              <Header />
-              <AllProducts
-                productList={productList}
-                history={history}
-                setActiveProduct={setActiveProduct}
-              />
-            </Route>
+            <AllProducts
+              productList={productList}
+              history={history}
+              setActiveProduct={setActiveProduct}
+            />
           </Route>
-          <Route patch="/houseplants">
-            <Header />
+          <Route exact path="/houseplants">
           </Route>
-          <Route path="/floweringplants">
-            <Header />
+          <Route exact path="/floweringplants">
           </Route>
-          <Route path="/bonsaiplants">
-            <Header />
+          <Route exact path="/bonsaiplants">
           </Route>
-          <Route path="/login">
-            <Header />
-            <Route path="/cart">
-              <Header />
-            </Route>
+          <Route exact path="/login">
+          </Route>
+          <Route exact path="/cart">
           </Route>
         </Switch>
       </div>
-    </Router>
+    </main>
+    </>
   )
 }
 
-export default App
+export default App;
