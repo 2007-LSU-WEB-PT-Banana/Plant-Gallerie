@@ -1,54 +1,50 @@
-import React, { useState, useEffect } from 'react';
-import { Switch, BrowserRouter as Router, Route, useHistory, Link } from 'react-router-dom';
-import { getSomething} from '../api';
-import Header from './Header';
-import img from "../images/home-image.jpg";
-import Button from "@material-ui/core/Button";
+import React, { useState, useEffect } from 'react'
 import {
-  fetchAPI, BASE_URL} from '../api';
+  Switch,
+  BrowserRouter as Router,
+  Route,
+  useHistory,
+  Link,
+} from 'react-router-dom'
+import { getSomething } from '../api'
+import Header from './Header'
+import img from '../images/home-image.jpg'
+import Button from '@material-ui/core/Button'
+import { fetchAPI, BASE_URL } from '../api'
 import { AllProducts, SingleProduct } from './index'
 
-
 const App = () => {
-  const [message, setMessage] = useState('');
-  const [productList, setProductList] = useState([]);
-  const [activeProduct, setActiveProduct] = useState("");
-  import { AllProducts, SingleProduct, Login } from './index'
-
-  useEffect(() => {
-    fetchAPI(BASE_URL + '/')
-      .then(response => {
-        console.log("the initial get response is", response)
-        setMessage(response.message);
-      })
-      .catch(error => {
-        setMessage(error.message);
-      });
-  });
-  
-    useEffect( () => {
-    fetchAPI(BASE_URL + '/products')
-      .then((data) => {
-        console.log("The product list is", data);
-        setProductList(data);
-      })
-      .catch(console.error);
-  }, []);
-
-
-
-
-const App = () => {
+  const history = useHistory()
   const [message, setMessage] = useState('')
   const [productList, setProductList] = useState([])
   const [activeProduct, setActiveProduct] = useState('')
 
-const imgStyle = {
-  height: "95vh",
-  width: "100%",
-  backgroundSize: "cover",
-  backgroundPosition: "top",
-  padding : "30px",
+  useEffect(() => {
+    fetchAPI(BASE_URL + '/')
+      .then((response) => {
+        console.log('the initial get response is', response)
+        setMessage(response.message)
+      })
+      .catch((error) => {
+        setMessage(error.message)
+      })
+  })
+
+  useEffect(() => {
+    fetchAPI(BASE_URL + '/products')
+      .then((data) => {
+        console.log('The product list is', data)
+        setProductList(data)
+      })
+      .catch(console.error)
+  }, [])
+
+  const imgStyle = {
+    height: '95vh',
+    width: '100%',
+    backgroundSize: 'cover',
+    backgroundPosition: 'top',
+    padding: '30px',
   }
 
   const headingPrimary = {
@@ -66,10 +62,10 @@ const imgStyle = {
   }
 
   const headingMainSub = {
-    display: "block",
-    fontSize: "20px",
-    fontWeight: "400",
-    letterSpacing: "15px",
+    display: 'block',
+    fontSize: '20px',
+    fontWeight: '400',
+    letterSpacing: '15px',
   }
 
   const textBox = {
@@ -83,7 +79,6 @@ const imgStyle = {
     textDecoration: 'none',
     textTransform: 'uppercase',
     padding: '15px 40px',
-
   }
 
   return (
@@ -104,16 +99,27 @@ const imgStyle = {
                   plus free shipping
                 </pan>
               </h1>
-              <Button className="btn btn-white" style={btn}> Shop Now</Button>
+              <Button className="btn btn-white" style={btn}>
+                {' '}
+                Shop Now
+              </Button>
             </div>
-          <Route exact path="/products/:productId">
-            <Header />
-            <SingleProduct activeProduct={activeProduct} setActiveProduct={setActiveProduct} history={history}/>
-          </Route>
-          <Route exact path="/products">
-             <Header />
-            <AllProducts productList={productList} history={history} setActiveProduct={setActiveProduct} /> 
-          </Route>
+            <Route exact path="/products/:productId">
+              <Header />
+              <SingleProduct
+                activeProduct={activeProduct}
+                setActiveProduct={setActiveProduct}
+                history={history}
+              />
+            </Route>
+            <Route exact path="/products">
+              <Header />
+              <AllProducts
+                productList={productList}
+                history={history}
+                setActiveProduct={setActiveProduct}
+              />
+            </Route>
           </Route>
           <Route patch="/houseplants">
             <Header />
@@ -133,7 +139,7 @@ const imgStyle = {
         </Switch>
       </div>
     </Router>
-  );
+  )
 }
 
 export default App
