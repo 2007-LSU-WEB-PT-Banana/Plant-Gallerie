@@ -1,9 +1,15 @@
-// Connect to DB
+// // Connect to DB
 const { Client } = require('pg')
-const DB_NAME = 'plant-gallery'
-const DB_URL =
-  process.env.DATABASE_URL || `postgres://localhost:5432/${DB_NAME}`
-const client = new Client(DB_URL)
+// const DB_NAME = 'plant-gallery'
+// const DB_URL =
+//   process.env.DATABASE_URL || `postgres://localhost:5432/${DB_NAME}`
+// const client = new Client(DB_URL, {username: "postgres"})
+
+const client = new Client({
+  connectionString: 'postgres://localhost:5432/plant-gallery',
+  user: 'postgres',
+  password: '',
+})
 
 // database methods
 
@@ -133,6 +139,41 @@ const getProductById = async (id) => {
   }
 }
 
+const getCartByUser = async ({id}) => {
+
+  try{
+      const {rows: [cartOrder] } = await client.query(`
+          SELECT * FROM orders 
+          WHERE "userId"=$1 AND status='created'
+      `,[id])
+
+    
+      return cartOrder
+
+
+  }catch(error){
+      console.log(error)
+  }
+
+}
+
+const createOrder = async ({status='created', userId})=>{
+  try {
+   
+      const {rows: [order]} = await client.query(`
+      INSERT INTO orders(status, "userId", "datePlaced") 
+      VALUES ($1, $2, $3)
+      RETURNING *
+      `, [status, userId, date])
+
+      return order
+   
+  } catch (error) {
+      console.error(error)
+  }
+}
+
+
 // export
 module.exports = {
   client,
@@ -143,4 +184,6 @@ module.exports = {
   createProduct,
   getProductById,
   getAllProducts,
+  getCartByUser,
+  createOrder,
 }

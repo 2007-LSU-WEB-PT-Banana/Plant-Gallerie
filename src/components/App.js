@@ -4,7 +4,7 @@ import { BrowserRouter as Route, Link, useHistory, Switch } from 'react-router-d
 import {
   fetchAPI, BASE_URL} from '../api';
 
-import { AllProducts, SingleProduct } from './index'
+import { AllProducts, SingleProduct, CartComponent} from './index'
 
 const App = () => {
   const [message, setMessage] = useState('');
@@ -53,7 +53,10 @@ const App = () => {
           <Route exact path="/products">
             <AllProducts productList={productList} history={history} setActiveProduct={setActiveProduct} /> 
           </Route>
-          <Route exact path="/">
+      
+          <Route exact path="/cart">
+          <CartComponent />
+
           </Route>
         </Switch>
       </main>
