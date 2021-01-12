@@ -13,6 +13,7 @@ const App = () => {
   const [message, setMessage] = useState('');
   const [productList, setProductList] = useState([]);
   const [activeProduct, setActiveProduct] = useState("");
+  import { AllProducts, SingleProduct, Login } from './index'
 
   useEffect(() => {
     fetchAPI(BASE_URL + '/')
@@ -34,9 +35,13 @@ const App = () => {
       .catch(console.error);
   }, []);
 
-  const history = useHistory();
 
-  console.log("The active product is", activeProduct)
+
+
+const App = () => {
+  const [message, setMessage] = useState('')
+  const [productList, setProductList] = useState([])
+  const [activeProduct, setActiveProduct] = useState('')
 
 const imgStyle = {
   height: "95vh",
@@ -131,4 +136,4 @@ const imgStyle = {
   );
 }
 
-export default App;
+export default App
