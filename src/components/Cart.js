@@ -1,4 +1,5 @@
 import React, {useEffect, useState} from 'react';
+import {Button, Card, CardContent, CardActions, Typography } from "@material-ui/core"
 
 
 
@@ -20,16 +21,25 @@ const CartComponent = (props) => {
     return <div>
 
     <div>
-    <h2> this is the cart</h2>
+    <h1 style={{"fontSize": "80px",
+    "display":"flex", "textAlign": "center", "justifyContent": "center" }}> Here is your cart</h1>
     {cartItems.map((currentCartItems) =>{
         const {price, productName, quantity} = currentCartItems;
 
-        return <div>
-        <h3>{cartItems.price}</h3>
-        <h4>{price }</h4>
-        <h4>{productName }</h4>
-        <h4>{quantity }</h4>
-        </div>
+        return <Card variant="outlined">
+            <CardContent>
+        {/* <Typography>{cartItems.price}</Typography> */}
+
+        <Typography>{price }</Typography>
+        <Typography>{productName }</Typography>
+        <Typography>{quantity }</Typography>
+        </CardContent>
+        <CardActions>
+        <Button size="small"> add</Button>
+        <Button size="small"> Delete</Button>
+
+        </CardActions>
+        </Card>
     })}
 
 
