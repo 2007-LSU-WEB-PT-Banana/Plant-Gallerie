@@ -194,4 +194,40 @@ apiRouter.post('/createproduct', async (req, res, next) => {
   }
 })
 
+apiRouter.get('/orders/cart', async (req,res,next) => {
+  //const id = req.body.id;
+  //need to confirm if this will be user id 
+try {
+  if(id) {
+    const user = await getUserById(id)
+  } if (user) {
+    const userOrders = await getCartByUser({id})
+    res.send( userOrders)
+  }else{
+    res.send({message: 'there are no orders here'})
+  }
+
+  }catch(error){
+    throw(error)
+  }
+
+});
+
+apiRouter.post('/orders', async (req,res,next) =>{
+
+  try{
+    if(id) {
+      const newOrder = await createOrder({userId: id})
+      res.send(newOrder)
+    } else {
+      res.send({message:'You must be logged in to create an order'})
+      }
+  }catch(error){
+    throw(error)
+  }
+
+})
+
+
+
 module.exports = apiRouter

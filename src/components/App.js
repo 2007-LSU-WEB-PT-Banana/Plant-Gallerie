@@ -9,6 +9,7 @@ import img from '../images/home-image.jpg'
 import Button from '@material-ui/core/Button'
 import { fetchAPI, BASE_URL } from '../api'
 import { AllProducts, SingleProduct, Header } from './index'
+import CartComponent from "./Cart"
 
 const App = () => {
   const history = useHistory()
@@ -141,6 +142,12 @@ const App = () => {
           </Route>
           <Route exact path="/cart">
           </Route>
+          <Route path="/cart">
+         
+              <CartComponent cartData={cartData}
+                setCartData={setCartData}
+              />
+            </Route>
         </Switch>
       </div>
     </main>
