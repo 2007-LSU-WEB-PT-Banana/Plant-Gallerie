@@ -14,6 +14,7 @@ const App = () => {
   const [message, setMessage] = useState('');
   const [productList, setProductList] = useState([]);
   const [activeProduct, setActiveProduct] = useState("");
+  const [cartData, setCartData] = useState([]);
 
   useEffect(() => {
     fetchAPI(BASE_URL + '/')
@@ -34,6 +35,8 @@ const App = () => {
       })
       .catch(console.error);
   }, []);
+
+
 
   const history = useHistory();
 
@@ -126,7 +129,9 @@ const imgStyle = {
           </Route>
           <Route path="/cart">
          
-              <CartComponent />
+              <CartComponent cartData={cartData}
+                setCartData={setCartData}
+              />
             </Route>
         </Switch>
       </div>

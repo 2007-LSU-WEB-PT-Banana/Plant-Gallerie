@@ -103,7 +103,7 @@ apiRouter.post('/createproduct', async (req, res, next) => {
   }
 })
 
-apiRouter.get('orders/cart', async (req,res,next) => {
+apiRouter.get('/orders/cart', async (req,res,next) => {
   //const id = req.body.id;
   //need to confirm if this will be user id 
 try {
