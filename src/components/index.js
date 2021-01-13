@@ -6,3 +6,4 @@ export { default as Header } from './Header'
 export { default as FloweringPlants } from './FloweringPlants'
 export { default as BonsaiPlants } from './BonsaiPlants'
 export { default as HousePlants } from './HousePlants'
+

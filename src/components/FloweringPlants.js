@@ -5,7 +5,7 @@ const FloweringPlants = (props) => {
 
 return (
   <>
-  <h1 className="productsHeader">Flowering Plants</h1>
+  <h1 className="productsHeader">Flowering</h1>
   <div className="allProducts">
     {productList.map((product, index) => {
       if(product.category == "Flowering") {
