@@ -7,11 +7,17 @@ const {
   createUser,
   getAllUsers,
   getUserById,
+  getUserByUsername,
+  requireUser,
+  requireActiveUser,
 } = require('../db/index')
 
+require('dotenv').config()
+const jwt = require('jsonwebtoken')
+
 apiRouter.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  next();
+  res.header('Access-Control-Allow-Origin', '*')
+  next()
 })
 
 apiRouter.get('/', async (req, res, next) => {
@@ -36,13 +42,98 @@ apiRouter.get('/users', async (req, res, next) => {
   }
 })
 
-apiRouter.post('/users', async (req, res, next) => {
-  console.log('hitting users api')
+apiRouter.post('/login', async (req, res, next) => {
+  const { username, password } = req.body
+
+  // request must have both
+  if (!username || !password) {
+    next({
+      name: 'MissingCredentialsError',
+      message: 'Please supply both a username and password',
+    })
+  }
+
   try {
-    console.log('hitting users api inside try')
-    const user = await createUser(req.body)
-    console.log('api try users', user)
-    res.send(user)
+    const user = await getUserByUsername(username)
+    console.log(user.id)
+
+    if (user && user.password == password) {
+      // create token & return to user
+      res.send({
+        message: "you're logged in!",
+        token:
+          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJhbGJlcnQiLCJpYXQiOjE2MDc2NTQzNTR9.p-RxeCLsZlUncNqNlKdProbc68gvNSTeucy9UwjO8CE',
+      })
+    } else {
+      next({
+        name: 'IncorrectCredentialsError',
+        message: 'Username or password is incorrect',
+      })
+    }
+  } catch (error) {
+    console.log(error)
+    next(error)
+  }
+})
+
+apiRouter.post('/register', async (req, res, next) => {
+  console.log('here in register')
+  const {
+    firstName,
+    lastName,
+    email,
+    imageURL,
+    username,
+    password,
+    isAdmin,
+  } = req.body
+
+  console.log('here in register 1')
+  console.log(req.body, 'this is body')
+
+  try {
+    console.log('here in register 6')
+    const _user = await getUserByUsername(username)
+    console.log(_user, 'this is user')
+
+    if (_user) {
+      console.log('inside user try')
+      next({
+        name: 'UserExistsError',
+        message: 'A user by that username already exists',
+      })
+    }
+    console.log('here in register 7')
+    const user = await createUser({
+      firstName,
+      lastName,
+      email,
+      imageURL,
+      username,
+      password,
+      isAdmin,
+    })
+
+    console.log('this is user', user)
+    console.log('this is user id', user.id)
+    console.log('this is username', user.username)
+
+    const token = jwt.sign(
+      {
+        id: user.id,
+        username: user.username,
+      },
+      `${process.env.JWT_SECRET}`,
+      {
+        expiresIn: '4w',
+      },
+    )
+    console.log('this is token ', token)
+    console.log('here in register 18')
+    res.send({
+      message: 'thank you for signing up',
+      token,
+    })
   } catch (error) {
     next(error)
   }

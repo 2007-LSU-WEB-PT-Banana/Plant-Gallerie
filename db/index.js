@@ -1,17 +1,11 @@
 // // Connect to DB
 const { Client } = require('pg')
+// const { delete } = require('../routes')
 const DB_NAME = 'plant-gallery'
 const DB_URL =
   process.env.DATABASE_URL || `postgres://localhost:5432/${DB_NAME}`
 const client = new Client(DB_URL, {username: "postgres"})
 
-// const client = new Client({
-//   connectionString: 'postgres://localhost:5432/plant-gallery',
-//   user: 'postgres',
-//   password: '',
-// })
-
-// database methods
 
 const createUser = async ({
   firstName,
@@ -24,19 +18,21 @@ const createUser = async ({
 }) => {
   try {
     console.log('creating users')
+
     const {
       rows: [user],
     } = await client.query(
       `
-    INSERT INTO users ("firstName","lastName" ,email,"imageURL", username , password ,"isAdmin")
+    INSERT INTO users("firstName","lastName" ,email,"imageURL", username , password ,"isAdmin")
     VALUES($1,$2,$3,$4,$5,$6,$7)
     RETURNING *; 
     `,
       [firstName, lastName, email, imageURL, username, password, isAdmin],
     )
-
+    console.log('user created', user)
     return user
   } catch (error) {
+    console.log('cant create user')
     throw error
   }
 }
@@ -49,6 +45,9 @@ const getAllUsers = async () => {
     FROM users;
  `)
     console.log('these are users', allUsers)
+    allUsers.map((user) => {
+      return delete user.password
+    })
     return allUsers
   } catch (error) {
     throw error
@@ -67,6 +66,29 @@ const getUserById = async (id) => {
     `,
       [id],
     )
+    delete user.password
+    return user
+  } catch (error) {
+    throw error
+  }
+}
+
+const getUserByUsername = async (username) => {
+  console.log('inside db')
+  try {
+    const {
+      rows: [user],
+    } = await client.query(
+      `
+    SELECT *
+    FROM users 
+    WHERE username=$1;
+    `,
+      [username],
+    )
+    console.log('required user is ', user)
+
+    console.log('existing user by user function')
     return user
   } catch (error) {
     throw error
@@ -105,12 +127,12 @@ const getAllProducts = async () => {
     SELECT id 
     FROM products;
     `)
-    
-    const allProducts = await Promise.all(productIds.map(
-      product => getProductById(product.id)
-    ));
 
-    return allProducts;
+    const allProducts = await Promise.all(
+      productIds.map((product) => getProductById(product.id)),
+    )
+
+    return allProducts
   } catch (error) {
     throw error
   }
@@ -125,14 +147,16 @@ const getProductById = async (id) => {
     SELECT * 
     FROM products
     WHERE id=$1;
-    `, [id]);
+    `,
+      [id],
+    )
 
-    if(!product) {
+    if (!product) {
       throw {
-        message: "Could not find a product with that name/id"
+        message: 'Could not find a product with that name/id',
       }
     }
-    
+
     return product
   } catch (error) {
     throw error
@@ -174,13 +198,37 @@ const createOrder = async ({status='created', userId})=>{
 }
 
 
+const requireUser = (req, res, next) => {
+  if (!req.user) {
+    next({
+      name: 'MissingUserError',
+      message: 'You must be logged in to perform this action',
+    })
+  }
+
+  next()
+}
+
+const requireActiveUser = (req, res, next) => {
+  if (!req.user.active) {
+    next({
+      name: 'UserNotActive',
+      message: 'You must be active to perform this action',
+    })
+  }
+  next()
+}
+
 // export
 module.exports = {
   client,
   // db methods
+  requireUser,
+  requireActiveUser,
   createUser,
   getAllUsers,
   getUserById,
+  getUserByUsername,
   createProduct,
   getProductById,
   getAllProducts,
