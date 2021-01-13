@@ -8,7 +8,7 @@ import {
 import img from '../images/home-image.jpg'
 import Button from '@material-ui/core/Button'
 import { fetchAPI, BASE_URL } from '../api'
-import { AllProducts, SingleProduct, Header } from './index'
+import { AllProducts, SingleProduct, Header, Login, FloweringPlants, BonsaiPlants, HousePlants } from './index'
 
 const App = () => {
   const history = useHistory()
@@ -132,12 +132,16 @@ const App = () => {
             />
           </Route>
           <Route exact path="/houseplants">
+            <HousePlants productList={productList} setActiveProduct={setActiveProduct} history={history} />
           </Route>
           <Route exact path="/floweringplants">
+            <FloweringPlants productList={productList} setActiveProduct={setActiveProduct} history={history} />
           </Route>
           <Route exact path="/bonsaiplants">
+            <BonsaiPlants productList={productList} setActiveProduct={setActiveProduct} history={history} />
           </Route>
           <Route exact path="/login">
+            <Login />
           </Route>
           <Route exact path="/cart">
           </Route>
