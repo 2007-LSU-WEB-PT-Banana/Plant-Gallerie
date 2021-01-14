@@ -1,12 +1,11 @@
-// Connect to DB
+// // Connect to DB
 const { Client } = require('pg')
 // const { delete } = require('../routes')
 const DB_NAME = 'plant-gallery'
 const DB_URL =
   process.env.DATABASE_URL || `postgres://localhost:5432/${DB_NAME}`
-const client = new Client(DB_URL)
+const client = new Client(DB_URL, {username: "postgres"})
 
-// database methods
 
 const createUser = async ({
   firstName,
@@ -164,6 +163,7 @@ const getProductById = async (id) => {
   }
 }
 
+
 const createOrder = async ({ status, orderId, datePlaced }) => {
   try {
     const {
@@ -181,6 +181,42 @@ const createOrder = async ({ status, orderId, datePlaced }) => {
     throw error
   }
 }
+
+//This is Evon's function.
+// const createOrder = async ({status='created', userId})=>{
+//   try {
+   
+//       const {rows: [order]} = await client.query(`
+//       INSERT INTO orders(status, "userId", "datePlaced") 
+//       VALUES ($1, $2, $3)
+//       RETURNING *
+//       `, [status, userId, date])
+
+//       return order
+   
+//   } catch (error) {
+//       console.error(error)
+//   }
+// }
+
+//This function needs to be tested.
+// const getCartByUser = async ({id}) => {
+
+//   try{
+//       const {rows: [cartOrder] } = await client.query(`
+//           SELECT * FROM orders 
+//           WHERE "userId"=$1 AND status='created'
+//       `,[id])
+
+    
+//       return cartOrder
+
+
+//   }catch(error){
+//       console.log(error)
+//   }
+
+// }
 
 const getAllOrders = async () => {
   try {
@@ -267,4 +303,6 @@ module.exports = {
   createProduct,
   getProductById,
   getAllProducts,
+  getCartByUser,
+  createOrder,
 }
