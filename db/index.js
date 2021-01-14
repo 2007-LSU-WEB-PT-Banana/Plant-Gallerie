@@ -163,6 +163,43 @@ const getProductById = async (id) => {
   }
 }
 
+
+const createOrder = async ({ status, orderId, datePlaced }) => {
+  try {
+    const {
+      rows: [order],
+    } = await client.query(
+      `
+    INSERT INTO orders(status, "orderId", "datePlaced")
+    VALUES($1,$2,$3)
+    RETURNING *;
+    `,
+      [status, orderId, datePlaced],
+    )
+    return order
+  } catch (error) {
+    throw error
+  }
+}
+
+//This is Evon's function.
+// const createOrder = async ({status='created', userId})=>{
+//   try {
+   
+//       const {rows: [order]} = await client.query(`
+//       INSERT INTO orders(status, "userId", "datePlaced") 
+//       VALUES ($1, $2, $3)
+//       RETURNING *
+//       `, [status, userId, date])
+
+//       return order
+   
+//   } catch (error) {
+//       console.error(error)
+//   }
+// }
+
+//This function needs to be tested.
 const getCartByUser = async ({id}) => {
 
   try{
@@ -181,22 +218,56 @@ const getCartByUser = async ({id}) => {
 
 }
 
-const createOrder = async ({status='created', userId})=>{
+const getAllOrders = async () => {
   try {
-   
-      const {rows: [order]} = await client.query(`
-      INSERT INTO orders(status, "userId", "datePlaced") 
-      VALUES ($1, $2, $3)
-      RETURNING *
-      `, [status, userId, date])
-
-      return order
-   
+    const { rows: allOrders } = await client.query(`
+    SELECT *
+    FROM orders;
+    `)
+    return allOrders
   } catch (error) {
-      console.error(error)
+    throw error
   }
 }
 
+const getOrderByUser = async (userId) => {
+  try {
+    const { rows: userId } = await client.query(
+      `
+    SELECT *
+    FROM orders
+    WHERE "userId"=$1;
+    `,
+      [userId],
+    )
+    const orders = await Promise.all(
+      userId.map((order) => getProductById(order.id)),
+    )
+    return orders
+  } catch (error) {
+    throw error
+  }
+}
+
+const getOrdersByProduct = async (id) => {
+  try {
+    const { rows: productIds } = await client.query(
+      `
+    SELECT * 
+    FROM order_products
+    where "productId"=$1;
+    `,
+      [id],
+    )
+
+    const products = productIds.map((product) => {
+      return getProductById(product.id)
+    })
+    return products
+  } catch (error) {
+    throw error
+  }
+}
 
 const requireUser = (req, res, next) => {
   if (!req.user) {
