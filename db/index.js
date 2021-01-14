@@ -200,23 +200,23 @@ const createOrder = async ({ status, orderId, datePlaced }) => {
 // }
 
 //This function needs to be tested.
-// const getCartByUser = async ({id}) => {
+const getCartByUser = async ({id}) => {
 
-//   try{
-//       const {rows: [cartOrder] } = await client.query(`
-//           SELECT * FROM orders 
-//           WHERE "userId"=$1 AND status='created'
-//       `,[id])
+  try{
+      const {rows: [cartOrder] } = await client.query(`
+          SELECT * FROM orders 
+          WHERE "userId"=$1 AND status='created'
+      `,[id])
 
     
-//       return cartOrder
+      return cartOrder
 
 
-//   }catch(error){
-//       console.log(error)
-//   }
+  }catch(error){
+      console.log(error)
+  }
 
-// }
+}
 
 const getAllOrders = async () => {
   try {
