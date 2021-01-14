@@ -38,6 +38,7 @@ const headerLink = {
   transition: 'all .3s', 
   textTransform: 'uppercase',
   fontFamily: 'Alegreya Sans SC, sans-serif',
+
 }
 
 
@@ -49,6 +50,7 @@ const Header = () => {
          </Link>
       <div className="header-nav" >
         <Link to="/products" className="header-link" style={headerLink}>All Plants</Link>
+
         <Link to="/houseplants" className="header-link" style={headerLink}>
           House Plants
         </Link>
@@ -64,20 +66,20 @@ const Header = () => {
       </div>
       <div className="log-in">
         <Link to="/login" className="header-link">
-        <div>
-          <PersonOutlineIcon />
-        </div>
+          <div>
+            <PersonOutlineIcon />
+          </div>
         </Link>
       </div>
       <div className="shopping-cart">
         <Link to="/cart" className="header-link">
           <div>
-        <ShoppingCartIcon />
-        </div>
+            <ShoppingCartIcon />
+          </div>
         </Link>
       </div>
     </nav>
-  );
-};
+  )
+}
 
-export default Header;
+export default Header

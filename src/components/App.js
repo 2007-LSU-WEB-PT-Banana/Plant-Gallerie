@@ -16,6 +16,8 @@ import {
   BonsaiPlants, 
   HousePlants 
 } from './index'
+import CartComponent from "./Cart"
+
 
 const App = () => {
   const history = useHistory()
@@ -41,6 +43,7 @@ const App = () => {
       })
       .catch(console.error)
   }, [])
+
 
   return (
     <>
@@ -77,6 +80,7 @@ const App = () => {
               history={history}/>
           </Route>
           <Route exact path="/products">
+
             <AllProducts
               productList={productList}
               history={history}
@@ -96,6 +100,12 @@ const App = () => {
           </Route>
           <Route exact path="/cart">
           </Route>
+          <Route path="/cart">
+         
+              <CartComponent cartData={cartData}
+                setCartData={setCartData}
+              />
+            </Route>
         </Switch>
       </div>
     </main>
@@ -103,4 +113,4 @@ const App = () => {
   )
 }
 
-export default App;
+export default App
