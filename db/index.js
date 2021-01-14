@@ -219,6 +219,23 @@ const requireActiveUser = (req, res, next) => {
   next()
 }
 
+const getOrderByProductId = async (id) =>{
+  try{
+const {rows: [orderProduct]} = await client.query(`
+SELECT * 
+FROM order_products
+WHERE id=$1;
+`, [id]);
+return orderProduct;
+
+  }catch(error){
+    throw(error)
+  }
+}
+
+const addProductToOrder = async () => {
+  
+}
 // export
 module.exports = {
   client,
@@ -234,4 +251,5 @@ module.exports = {
   getAllProducts,
   getCartByUser,
   createOrder,
+  getOrderByProductId,
 }
