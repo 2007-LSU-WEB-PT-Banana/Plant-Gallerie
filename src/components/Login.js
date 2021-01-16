@@ -1,40 +1,27 @@
 import React, { useState } from 'react'
 import './Login.css'
-import { useHistory } from 'react-router-dom'
-import { getToken, setToken, clearToken, auth } from '../api/index'
+import { Link, useHistory } from 'react-router-dom'
 
-function Login(props) {
-  const { setIsLoggedIn } = props
+function Login() {
   const history = useHistory()
-  const [username, setUserName] = useState('')
+  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
-  const login = async (event) => {
+  const login = (event) => {
     event.preventDefault()
-    console.log('logging in')
-    try {
-      console.log('hhhhh')
-      const result = await auth(username, password)
-      setIsLoggedIn(true)
-      history.push('/')
-    } catch (error) {
-      console.error(error)
-    }
   }
 
-  const register = (event) => {
-    history.push('/register')
-  }
+  const register = (event) => {}
   return (
     <div className="login">
       <div className="login-container">
         <h1>Sign In</h1>
         <form>
-          <h5>Username</h5>
+          <h5>Email</h5>
           <input
-            type="username"
-            value={username}
-            onChange={(event) => setUserName(event.target.value)}
+            type="email"
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
           />
           <h5>Password</h5>
           <input

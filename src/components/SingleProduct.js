@@ -17,8 +17,8 @@ const SingleProduct = (props) => {
          
     <div className="cartOptions">
       <div className="quantity buttons_added">
-        <input type="button" value="-" className="minus" />
-        <input type="number" step="1" min="1" max="" name="quantity" value="1" title="Qty" className="input-text qty text" size="4" pattern="" inputMode="" />
+        <input type="button" value="-" class="minus" />
+        <input type="number" step="1" min="1" max="" name="quantity" value="1" title="Qty" className="input-text qty text" size="4" pattern="" inputmode="" />
         <input type="button" value="+" className="plus" />
       </div>
       <button className="addToCart">Add to Cart</button>

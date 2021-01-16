@@ -1,5 +1,4 @@
 const apiRouter = require('express').Router()
-const bcrypt = require('bcrypt')
 
 const {
   createProduct,
@@ -9,34 +8,17 @@ const {
   getAllUsers,
   getUserById,
   getUserByUsername,
-  createOrder,
-  getOrdersByProduct,
-  getAllOrders,
+  requireUser,
+  requireActiveUser,
 } = require('../db/index')
 
 require('dotenv').config()
 const jwt = require('jsonwebtoken')
 
-const requireUser = (req, res, next) => {
-  if (!req.user) {
-    next({
-      name: 'MissingUserError',
-      message: 'You must be logged in to perform this action',
-    })
-  }
-
+apiRouter.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*')
   next()
-}
-
-const requireActiveUser = (req, res, next) => {
-  if (!req.user.active) {
-    next({
-      name: 'UserNotActive',
-      message: 'You must be active to perform this action',
-    })
-  }
-  next()
-}
+})
 
 apiRouter.get('/', async (req, res, next) => {
   console.log('hitting api')
@@ -49,7 +31,9 @@ apiRouter.get('/', async (req, res, next) => {
 })
 
 apiRouter.get('/users', async (req, res, next) => {
+  console.log('hitting users api')
   try {
+    console.log('hitting users api inside try')
     const allUsers = await getAllUsers()
     console.log('api try users', allUsers)
     res.send(allUsers)
@@ -60,25 +44,31 @@ apiRouter.get('/users', async (req, res, next) => {
 
 apiRouter.post('/login', async (req, res, next) => {
   const { username, password } = req.body
-  console.log('this is body', req.body)
 
+  // request must have both
   if (!username || !password) {
-    throw 'u need user name and password'
+    next({
+      name: 'MissingCredentialsError',
+      message: 'Please supply both a username and password',
+    })
   }
 
   try {
     const user = await getUserByUsername(username)
-    console.log('this is user', user)
+    console.log(user.id)
 
     if (user && user.password == password) {
-      await bcrypt.compare(password, user.password)
+      // create token & return to user
       res.send({
         message: "you're logged in!",
         token:
           'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJhbGJlcnQiLCJpYXQiOjE2MDc2NTQzNTR9.p-RxeCLsZlUncNqNlKdProbc68gvNSTeucy9UwjO8CE',
       })
     } else {
-      throw 'u need user name and password agaian'
+      next({
+        name: 'IncorrectCredentialsError',
+        message: 'Username or password is incorrect',
+      })
     }
   } catch (error) {
     console.log(error)
@@ -124,6 +114,10 @@ apiRouter.post('/register', async (req, res, next) => {
       isAdmin,
     })
 
+    console.log('this is user', user)
+    console.log('this is user id', user.id)
+    console.log('this is username', user.username)
+
     const token = jwt.sign(
       {
         id: user.id,
@@ -134,9 +128,10 @@ apiRouter.post('/register', async (req, res, next) => {
         expiresIn: '4w',
       },
     )
-
+    console.log('this is token ', token)
+    console.log('here in register 18')
     res.send({
-      message: 'welcome! you are signed Up!',
+      message: 'thank you for signing up',
       token,
     })
   } catch (error) {
@@ -161,6 +156,7 @@ apiRouter.get('/products', async (req, res, next) => {
     console.log('inside try for getting all products')
     const allProducts = await getAllProducts()
     res.send(allProducts)
+    next()
   } catch (error) {
     next(error)
   }
@@ -173,6 +169,7 @@ apiRouter.get('/products/:productId', async (req, res, next) => {
     console.log('inside the try for getting product by ID')
     const requestedProduct = await getProductById(id)
     res.send(requestedProduct)
+    next()
   } catch (error) {
     next(error)
   }
@@ -191,61 +188,7 @@ apiRouter.post('/createproduct', async (req, res, next) => {
       category,
     })
     res.send(newProduct)
-  } catch (error) {
-    throw error
-  }
-})
-
-apiRouter.get('/orders/cart', async (req, res, next) => {
-  try {
-    if (id) {
-      const user = await getUserById(id)
-    }
-    if (user) {
-      const userOrders = await getCartByUser({ id })
-      res.send(userOrders)
-    } else {
-      res.send({ message: 'there are no orders here' })
-    }
-  } catch (error) {
-    throw error
-  }
-})
-
-apiRouter.post('/orders', async (req, res, next) => {
-  console.log('hitting create order')
-  // const { userId = req.user.id } = req.body
-  // const orderData = {}
-  try {
-    // orderData.status = status
-    // orderData.userId = userId
-
-    const newOrder = await createOrder(req.body)
-    res.send(newOrder)
-  } catch (error) {
-    next(error)
-  }
-})
-
-apiRouter.get('/orders', async (req, res) => {
-  const id = req.params.id
-  console.log(id)
-  try {
-    const allOrders = await getAllOrders()
-    console.log(allOrders)
-    res.send(allOrders)
-  } catch (error) {
-    throw error
-  }
-})
-
-apiRouter.get('/users/:userId/orders', async (req, res) => {
-  console.log('inside getting products by id')
-  console.log('this is id', req.params.id)
-  try {
-    const orders = await getOrdersByProduct(req.params.id)
-    console.log(orders)
-    res.send(orders)
+    next()
   } catch (error) {
     throw error
   }
