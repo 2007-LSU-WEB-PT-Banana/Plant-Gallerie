@@ -1,12 +1,11 @@
-// Connect to DB
+// // Connect to DB
 const { Client } = require('pg')
-// const { delete } = require('../routes')
+const bcrypt = require('bcrypt')
+
 const DB_NAME = 'plant-gallery'
 const DB_URL =
   process.env.DATABASE_URL || `postgres://localhost:5432/${DB_NAME}`
-const client = new Client(DB_URL)
-
-// database methods
+const client = new Client(DB_URL, { username: 'postgres' })
 
 const createUser = async ({
   firstName,
@@ -30,7 +29,11 @@ const createUser = async ({
     `,
       [firstName, lastName, email, imageURL, username, password, isAdmin],
     )
-    console.log('user created', user)
+
+    const hashPassword = await bcrypt.hash(user.password, 5)
+
+    user.password = hashPassword
+
     return user
   } catch (error) {
     console.log('cant create user')
@@ -164,33 +167,162 @@ const getProductById = async (id) => {
   }
 }
 
-const requireUser = (req, res, next) => {
-  if (!req.user) {
-    next({
-      name: 'MissingUserError',
-      message: 'You must be logged in to perform this action',
-    })
-  }
+const createOrder = async (status, userId) => {
+  try {
+    console.log('creatimh oders')
+    const {
+      rows: [order],
+    } = await client.query(
+      `
+    INSERT INTO orders(status,"userId")
+    VALUES($1, $2)
+    RETURNING *;
+    `,
+      [status, userId],
+    )
+    console.log('making orders')
 
-  next()
+    order.datePlaced = new Date()
+    return order
+  } catch (error) {
+    throw error
+  }
 }
 
-const requireActiveUser = (req, res, next) => {
-  if (!req.user.active) {
-    next({
-      name: 'UserNotActive',
-      message: 'You must be active to perform this action',
-    })
+const getAllOrders = async () => {
+  try {
+    const { rows: allOrders } = await client.query(`
+    SELECT *
+    FROM orders;
+    `)
+    const orders = await Promise.all(
+      allOrders.map((order) => {
+        return getOrdersByProduct(order.id)
+      }),
+    )
+
+    return orders
+  } catch (error) {
+    throw error
   }
-  next()
+}
+
+const getOrdersByUser = async (userId) => {
+  try {
+    const { rows: OrderIds } = await client.query(`
+    SELECT id
+    FROM orders
+    WHERE "userId"=${userId};
+    `)
+    const orders = await Promise.all(
+      OrderIds.map((order) => getOrderById(order.id)),
+    )
+    return orders
+  } catch (error) {
+    throw error
+  }
+}
+
+const createProductsOnOrder = async (productId, orderId) => {
+  try {
+    const { rows: productOrders } = await client.query(
+      `
+    INSERT INTO order_products("productId","orderId")
+    VALUES($1,$2);
+    `,
+      [productId, orderId],
+    )
+  } catch (error) {
+    throw error
+  }
+}
+
+const getOrderById = async (orderId) => {
+  try {
+    const {
+      rows: [order],
+    } = await client.query(
+      `
+    SELECT *
+    FROM orders
+    WHERE id=$1; 
+    `,
+      [orderId],
+    )
+
+    const { rows: products } = await client.query(
+      `
+    SELECT products.*
+    FROM products
+    JOIN order_products ON products.id=order_products."productId"
+    WHERE order_products."orderId"=$1;
+    `,
+      [orderId],
+    )
+    const {
+      rows: [user],
+    } = await client.query(
+      `
+    SELECT id, username
+    FROM users
+    WHERE id=$1;
+    `,
+      [order.productId],
+    )
+    order.products = products
+    product.user = user
+    delete order.productId
+    return order
+  } catch (error) {
+    throw error
+  }
+}
+
+const getCartByUser = async (userId) => {
+  try {
+    const { rows: userCart } = await client.query(
+      `
+    SELECT *
+    FROM orders
+    WHERE "userId"=$1 AND status='created';
+    `,
+      [userId],
+    )
+    const orders = await Promise.all(
+      userCart.map((order) => getProductById(order.id)),
+    )
+    return orders
+  } catch (error) {
+    throw error
+  }
+}
+
+const getOrdersByProduct = async (id) => {
+  try {
+    console.log('hitting query for getting order with product')
+    const { rows: orderIds } = await client.query(
+      `
+    SELECT orders.id 
+    FROM orders
+    JOIN order_products ON orders.id=order_products."orderId"
+    JOIN products ON products.id=order_products."productId"
+    WHERE product.id=$1;
+    `,
+      [id],
+    )
+
+    const products = await Promise.all(
+      orderIds.map((order) => getOrderById(order.id)),
+    )
+    return products
+  } catch (error) {
+    throw error
+  }
 }
 
 // export
 module.exports = {
   client,
-  // db methods
-  requireUser,
-  requireActiveUser,
   createUser,
   getAllUsers,
   getUserById,
@@ -198,4 +330,8 @@ module.exports = {
   createProduct,
   getProductById,
   getAllProducts,
+  getCartByUser,
+  createOrder,
+  getOrdersByProduct,
+  getAllOrders,
 }
