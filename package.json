@@ -20,6 +20,7 @@
 		"@material-ui/icons": "^4.11.2",
 		"@mdi/font": "^5.8.55",
 		"axios": "^0.19.2",
+		"bcrypt": "^5.0.0",
 		"connect": "^3.7.0",
 		"cors": "^2.8.5",
 		"dotenv": "^8.2.0",
