@@ -167,7 +167,7 @@ const getProductById = async (id) => {
   }
 }
 
-const createOrder = async (status = 'created', userId) => {
+const createOrder = async (status, userId) => {
   try {
     console.log('creatimh oders')
     const {
@@ -175,7 +175,7 @@ const createOrder = async (status = 'created', userId) => {
     } = await client.query(
       `
     INSERT INTO orders(status,"userId")
-    VALUES($1)
+    VALUES($1, $2)
     RETURNING *;
     `,
       [status, userId],
@@ -319,8 +319,6 @@ const getOrdersByProduct = async (id) => {
     throw error
   }
 }
-
-
 
 // export
 module.exports = {

@@ -212,12 +212,18 @@ apiRouter.get('/orders/cart', async (req, res, next) => {
   }
 })
 
-apiRouter.post('/orders', requireUser, async (req, res, next) => {
+apiRouter.post('/orders', async (req, res, next) => {
+  console.log('hitting create order')
+  // const { userId = req.user.id } = req.body
+  // const orderData = {}
   try {
-    const newOrder = await createOrder()
+    // orderData.status = status
+    // orderData.userId = userId
+
+    const newOrder = await createOrder(req.body)
     res.send(newOrder)
   } catch (error) {
-    throw error
+    next(error)
   }
 })
 
