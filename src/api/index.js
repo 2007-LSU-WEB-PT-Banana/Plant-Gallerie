@@ -66,6 +66,10 @@ export const fetchAPI = async (url, method = 'GET', sendData = null) => {
   }
 
   if (sendData) {
+    if (sendData.price) {
+      let newPrice = sendData.price * 100;
+      sendData.price = newPrice;
+    }
     fetchOptions.body = JSON.stringify(sendData)
   }
 
@@ -74,6 +78,7 @@ export const fetchAPI = async (url, method = 'GET', sendData = null) => {
 
   const response = await fetch(url, fetchOptions)
   const data = await response.json()
+  console.log("The response we are receiving in the fetch is", data)
 
   return data
 }

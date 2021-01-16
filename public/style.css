@@ -15,6 +15,10 @@
   overflow: scroll;
 }
 
+body {
+  background-color: #f0f0f0;
+}
+
 main { 
   margin-top: 60px;
   background-color: #f0f0f0;
@@ -33,6 +37,7 @@ main {
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   grid-gap: 10px;
   margin: 10px;
+  background-color: #f0f0f0;
 }
 
 .productsHeader {
@@ -42,7 +47,7 @@ main {
 .productCard {
   padding: 10px;
   margin: 5px 10px 10px 5px;
-  box-shadow: 3px 3px 5px black;
+  box-shadow: 3px 3px 5px #607848;
   font-family: sans-serif;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmx(320px, 1fr));

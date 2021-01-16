@@ -8,7 +8,7 @@ return (
   <h1 className="productsHeader">Bonsai and Bamboo</h1>
   <div className="allProducts">
     {productList.map((product, index) => {
-      if(product.category == "Bonsai") {
+      if(product.category === "Bonsai") {
         return (
           <div 
           className="productCard" 
@@ -17,14 +17,15 @@ return (
           onClick={(event) => {
             event.preventDefault();
             setActiveProduct(product);
-            history.push("/products/:productId");
+            history.push(`/products/${product.id}`);
           }}>
-            <img src={product.imageURL} height="200" width="200"></img>
+            <img src={product.imageURL} alt="bonsai or bamboo plant" height="200" width="200"></img>
             <p className="productName">{product.name}</p>
             <p className="productPrice">${product.price}</p>
           </div>
         )
       }
+      return;
     })}
   </div>
   </>

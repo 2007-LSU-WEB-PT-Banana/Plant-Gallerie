@@ -10,7 +10,6 @@ return (
   <h1 className="productsHeader">All Plants</h1>
   <div className="allProducts">
     {productList.map((product, index) => {
-      
       return (
         <div 
         className="productCard" 
@@ -19,9 +18,9 @@ return (
         onClick={(event) => {
           event.preventDefault();
           setActiveProduct(product);
-          history.push("/products/:productId");
+          history.push(`/products/${product.id}`);
         }}>
-          <img src={product.imageURL} height="200" width="200"></img>
+          <img src={product.imageURL} alt="plant" height="200" width="200"></img>
           <p className="productName">{product.name}</p>
           <p className="productPrice">${product.price}</p>
         </div>

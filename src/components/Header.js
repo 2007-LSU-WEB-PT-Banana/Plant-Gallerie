@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import SearchIcon from "@material-ui/icons/Search";
 import PersonOutlineIcon from "@material-ui/icons/PersonOutline";
 import ShoppingCartIcon from "@material-ui/icons/ShoppingCart";
+import { CenterFocusStrong } from "@material-ui/icons";
+import './Header.css';
 
 const headerStyling = {
   display: "flex",
@@ -13,21 +15,19 @@ const headerStyling = {
   top: "0",
   width: "100%",
   zIndex: "100",
-  border: "2px solid rgb(208, 211, 214)",
-  boxShadow: "2px -1px 2px 0px rgb(108, 184, 108)",
   padding: "10px",
   fontFamily: 'Alegreya Sans SC, sans-serif',
+  borderBottom: "4px solid #607848",
   fontWeight: 'bold',
   fontSize: '20px',
   textDecoration: 'none',
   color: 'black',
+  marginBottom: '20px'
 };
 
 const headerLink = {
   marginRight: "35px",
   justifyContent: 'space-between',
-  // color: "black",
-  fontFamily: 'sans-serif',
   fontWeight: 'normal',
   backgroundColor: "#c0c0c0",
   padding: '6px',
@@ -38,7 +38,6 @@ const headerLink = {
   transition: 'all .3s', 
   textTransform: 'uppercase',
   fontFamily: 'Alegreya Sans SC, sans-serif',
-
 }
 
 
@@ -48,7 +47,7 @@ const Header = () => {
       <Link to="/" className='header-link' style={headerLink}>
           Plant Gallerie
          </Link>
-      <div className="header-nav" >
+      <div className="header-nav" id="header-center">
         <Link to="/products" className="header-link" style={headerLink}>All Plants</Link>
 
         <Link to="/houseplants" className="header-link" style={headerLink}>
@@ -61,7 +60,7 @@ const Header = () => {
           Bonsai Plants
         </Link>
       </div>
-      <div>
+      <div id="header-right">
         <SearchIcon className="header-searchIcon" />
       </div>
       <div className="log-in">

@@ -8,7 +8,7 @@ return (
   <h1 className="productsHeader">House Plants</h1>
   <div className="allProducts">
     {productList.map((product, index) => {
-      if(product.category == "HousePlant") {
+      if(product.category === "HousePlant") {
         return (
           <div 
           className="productCard" 
@@ -19,12 +19,13 @@ return (
             setActiveProduct(product);
             history.push("/products/:productId");
           }}>
-            <img src={product.imageURL} height="200" width="200"></img>
+            <img src={product.imageURL} alt="house plant" height="200" width="200"></img>
             <p className="productName">{product.name}</p>
             <p className="productPrice">${product.price}</p>
           </div>
         )
       }
+      return;
     })}
   </div>
   </>

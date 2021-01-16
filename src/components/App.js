@@ -2,10 +2,9 @@ import React, { useState, useEffect } from 'react'
 import {
   Switch,
   Route,
-  useHistory,
-  Link,
+  useHistory
 } from 'react-router-dom'
-import './App.css';
+import './Home.css';
 import { fetchAPI, BASE_URL } from '../api'
 import { 
   AllProducts, 
@@ -14,7 +13,8 @@ import {
   Login, 
   FloweringPlants, 
   BonsaiPlants, 
-  HousePlants 
+  HousePlants, 
+  Home
 } from './index'
 import CartComponent from "./Cart"
 
@@ -39,78 +39,53 @@ const App = () => {
   useEffect(() => {
     fetchAPI(BASE_URL + '/products')
       .then((data) => {
+        data.map((product) => {
+          let newPrice = product.price / 100;
+          product.price = newPrice;
+        })
         setProductList(data)
       })
       .catch(console.error)
   }, [])
-
 
   return (
     <>
     <header>
       <Header />
     </header>
-    <main>
-      <div className="App">
-        <Switch>
-          <Route exact path="/">
-            <div className="homepage">
-              <div className="main-page-image">
-              </div>
-              <div className="text-box">
-                <h1 className="heading-primary">
-                  <span className="heading-title">
-                    Plant Gallerie</span>
-                </h1>
-              </div>
-              <div className="main-page-subtext">
-                <span className="heading-main">buy 3 plants for $200</span>
-                <span className="heading-main-sub">plus free shipping</span>
-                <button className="main-image-button" id="shopButton">
-                  <Link to="/products" className='allProdLink'>Shop Now
-                  </Link>
-                </button>
-              </div>
-            </div>
-          </Route>
-          <Route exact path="/products/:productId">
-            <SingleProduct
-              activeProduct={activeProduct}
-              setActiveProduct={setActiveProduct}
-              history={history}/>
-          </Route>
-          <Route exact path="/products">
-
-            <AllProducts
-              productList={productList}
-              history={history}
-              setActiveProduct={setActiveProduct}/>
-          </Route>
-          <Route exact path="/houseplants">
-            <HousePlants productList={productList} setActiveProduct={setActiveProduct} history={history} />
-          </Route>
-          <Route exact path="/floweringplants">
-            <FloweringPlants productList={productList} setActiveProduct={setActiveProduct} history={history} />
-          </Route>
-          <Route exact path="/bonsaiplants">
-            <BonsaiPlants productList={productList} setActiveProduct={setActiveProduct} history={history} />
-          </Route>
-          <Route exact path="/login">
-            <Login />
-          </Route>
-          <Route exact path="/cart">
-          </Route>
-          <Route path="/cart">
-         
-              <CartComponent cartData={cartData}
-                setCartData={setCartData}
-              />
-            </Route>
-        </Switch>
-      </div>
+    <main class="wrapper">
+      <Switch>
+        <Route exact path="/" component={Home} />
+        <Route path={`/products/:productId`}>
+          <SingleProduct
+            activeProduct={activeProduct}
+            setActiveProduct={setActiveProduct}
+            history={history}/>
+        </Route>
+        <Route exact path="/products">
+          <AllProducts
+            productList={productList}
+            history={history}
+            setActiveProduct={setActiveProduct}/>
+        </Route>
+        <Route exact path="/houseplants">
+          <HousePlants productList={productList} setActiveProduct={setActiveProduct} history={history} />
+        </Route>
+        <Route exact path="/floweringplants">
+          <FloweringPlants productList={productList} setActiveProduct={setActiveProduct} history={history} />
+        </Route>
+        <Route exact path="/bonsaiplants">
+          <BonsaiPlants productList={productList} setActiveProduct={setActiveProduct} history={history} />
+        </Route>
+        <Route exact path="/login" component={Login} />
+        <Route path="/cart">
+          <CartComponent cartData={cartData}
+            setCartData={setCartData} />
+        </Route>
+      </Switch>
     </main>
-    </>
+  </>
   )
 }
 
-export default App
+export default App;

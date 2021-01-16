@@ -1,0 +1,186 @@
+/* .homepage {
+  overflow: hidden;
+} */
+
+h1 {
+  font-family: 'Alegreya Sans SC', sans-serif;
+}
+
+p {
+  font-family: sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+#shopButton {
+  background-color: #303018;
+  padding: 10px;
+  text-decoration: none;
+  color: white;
+  border-radius: .25rem;
+  text-align: center;
+  transition: all .3s; 
+  justify-content: center;
+  text-transform: uppercase;
+  margin-top: 15px;
+}
+
+#shopButton:hover {
+  background-color: #607848;
+}
+
+#shopButton:visited {
+  color: white;
+}
+
+.homepage {
+  background: url(../images/homePhotoWide.jpg) center;
+  height: 92vh;
+  width: 100vw;
+  background-size: 100vmin 80%;
+  background-position: center center; 
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  align-items: center;
+  grid-row: 1;
+  align-self: start;
+  justify-content: center;
+}
+
+.wrapper {
+  grid-template-columns: repeat(auto-fit, minmax(240, 1fr));
+  grid-template-rows: repeat(auto-fit, minmax(240, 1fr));
+}
+
+.homepage > * {
+  color: black;
+}
+
+.homepage > h1 {
+  font-size: 4rem;
+  padding-bottom: 2.5rem;
+  margin: auto;
+  text-align: center;
+}
+
+.homepage > article > p {
+  font-size: 1.5rem;
+  font-weight: bolder;
+  letter-spacing: 15px;
+  margin: auto;
+}
+
+.homepage > article {
+  margin: auto;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.homepage > button {
+  margin: auto;
+  color: white;
+}
+/* .main-page-image {
+  height: 90vh;
+  width: 100vw;
+  background-image: url(../images/homePhoto.jpg);
+  background-position: top;
+  background-repeat: no-repeat;
+  padding: 30px;
+  position: relative;
+} */
+/* 
+.heading-primary {
+  color: black;
+  text-transform: uppercase;
+  backface-visibility: hidden;
+
+} */
+/* 
+.heading-title {
+  display: block;
+  font-size: 50px;
+  font-weight: 400;
+  letter-spacing: 20px;
+  padding-bottom: 1em;
+  text-align: center;
+  font-family: 'Alegreya Sans SC', sans-serif;
+  font-weight: bolder;
+  background-color: none;
+}
+
+.heading-main {
+  display: block;
+  font-size: 30px;
+  font-weight: 400;
+  letter-spacing: 8px;
+  text-align: center;
+  font-weight: bolder;
+  text-transform: uppercase;
+}
+
+.heading-main-sub {
+  display: block;
+  font-size: 20px;
+  font-weight: 400;
+  letter-spacing: 15px;
+  text-align: center;
+  font-weight: bolder;
+  text-transform: uppercase;
+}
+
+.text-box {
+  position: absolute;
+  top: 8%;
+  left: 20%;
+  text-align: center;
+  margin: auto;
+  width: 60%;
+}
+
+.main-page-subtext {
+  position: absolute;
+  top: 50%;
+  left: 60%;
+  text-align: center;
+  margin: auto;
+  width: 17%;
+}
+
+.button-wrapper {
+  margin: auto;
+  width: 50%;
+}
+
+#shopButton {
+  background-color: black;
+  padding: 10px;
+  text-decoration: none;
+  color: white;
+  border-radius: .25rem;
+  text-align: center;
+  display: inline-block;
+  transition: all .3s; 
+  justify-content: center;
+  text-transform: uppercase;
+  margin-top: 15px;
+}
+
+#shopButton:hover {
+  background-color: darkgray;
+}
+*/
+.allProdLink {
+  color: white;
+  margin: auto;
+} 
+
+@media only screen and (max-width: 500px) {
+  body {
+    /* The file size of this background image is 93% smaller
+       to improve page load speed on mobile internet connections */
+    background-image: url(/src/images/homePhoto.jpg);
+  }
+}

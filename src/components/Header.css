@@ -1,0 +1,43 @@
+/* @import url('https://fonts.googleapis.com/css2?family=Alegreya+Sans+SC:wght@100;300&display=swap');
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #c0c0c0;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 100;
+  border: 2px solid rgb(208, 211, 214);
+  box-shadow: 2px -1px 2px 0px rgb(108, 184, 108);
+  padding: 10px;
+  font-family: 'Alegreya Sans SC, sans-serif';
+  font-weight: bold;
+  font-size: 20px;
+  text-decoration: none;
+  color: black;
+};
+
+.headerLink {
+  margin-right: 35px;
+  justify-content: space-between;
+  font-weight: normal;
+  background-color: #c0c0c0;
+  padding: 6px;
+  text-decoration: none;
+  color: black;
+  border-radius: .25rem;
+  text-align: center;
+  transition: all .3s; 
+  text-transform: uppercase;
+  font-family: 'Alegreya Sans SC, sans-serif',
+} */
+
+@media screen and (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    float: left;
+  }
+}

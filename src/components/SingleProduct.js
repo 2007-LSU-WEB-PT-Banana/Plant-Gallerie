@@ -4,15 +4,20 @@ import React from 'react';
 const SingleProduct = (props) => {
   const { activeProduct, setActiveProduct, history } = props;
 
+  function cancelOption(event) {
+    event.preventDefault(); 
+    setActiveProduct(""); 
+    history.goBack();
+  }
+
   return (
     <>
     <div className="singleProduct">
-      <img src={activeProduct.imageURL} height="400" width="400"></img>
+      <img src={activeProduct.imageURL} alt="plant" height="400" width="400"></img>
       <p>{activeProduct.name}</p>
       <p>{activeProduct.description}</p>
       <p>${activeProduct.price}</p>
       {activeProduct.inStock ? <p>Currently in stock!</p> : <p>Currently on backorder</p>}
-      <p>Category: {activeProduct.category}</p>
     </div>
          
     <div className="cartOptions">
@@ -23,11 +28,8 @@ const SingleProduct = (props) => {
       </div>
       <button className="addToCart">Add to Cart</button>
       <button className="cancel"
-        onClick={(event) => {event.preventDefault(); setActiveProduct(""); history.push("/products");}}>Cancel</button>
-    </div>
-      
-      
-      
+        onClick={cancelOption}>Cancel</button>
+    </div>   
     </>
 )}
 
