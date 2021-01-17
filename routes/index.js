@@ -12,6 +12,7 @@ const {
   createOrder,
   getOrdersByProduct,
   getAllOrders,
+  getOrderById,
 } = require('../db/index')
 
 require('dotenv').config()
@@ -60,7 +61,6 @@ apiRouter.get('/users', async (req, res, next) => {
 
 apiRouter.post('/login', async (req, res, next) => {
   const { username, password } = req.body
-  console.log('this is body', req.body)
 
   if (!username || !password) {
     throw 'u need user name and password'
@@ -73,9 +73,7 @@ apiRouter.post('/login', async (req, res, next) => {
     if (user && user.password == password) {
       await bcrypt.compare(password, user.password)
       res.send({
-        message: "you're logged in!",
-        token:
-          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJhbGJlcnQiLCJpYXQiOjE2MDc2NTQzNTR9.p-RxeCLsZlUncNqNlKdProbc68gvNSTeucy9UwjO8CE',
+        message: 'you are logged in',
       })
     } else {
       throw 'u need user name and password agaian'
@@ -88,15 +86,7 @@ apiRouter.post('/login', async (req, res, next) => {
 
 apiRouter.post('/register', async (req, res, next) => {
   console.log('here in register')
-  const {
-    firstName,
-    lastName,
-    email,
-    imageURL,
-    username,
-    password,
-    isAdmin,
-  } = req.body
+  const { firstName, lastName, email, imageURL, username, password } = req.body
 
   console.log('here in register 1')
   console.log(req.body, 'this is body')
@@ -121,7 +111,6 @@ apiRouter.post('/register', async (req, res, next) => {
       imageURL,
       username,
       password,
-      isAdmin,
     })
 
     const token = jwt.sign(
@@ -131,14 +120,11 @@ apiRouter.post('/register', async (req, res, next) => {
       },
       `${process.env.JWT_SECRET}`,
       {
-        expiresIn: '4w',
+        expiresIn: '6w',
       },
     )
 
-    res.send({
-      message: 'welcome! you are signed Up!',
-      token,
-    })
+    res.send(user)
   } catch (error) {
     next(error)
   }
@@ -212,6 +198,18 @@ apiRouter.get('/orders/cart', async (req, res, next) => {
   }
 })
 
+apiRouter.get('/orders/:orderId', async (req, res) => {
+  try {
+    console.log('getting one order')
+    const getOneOrder = await getOrderById(req.params.id)
+    console.log('this is one order', getOneOrder)
+
+    res.send(getOneOrder)
+  } catch (error) {
+    throw error
+  }
+})
+
 apiRouter.post('/orders', async (req, res, next) => {
   console.log('hitting create order')
   // const { userId = req.user.id } = req.body
@@ -228,8 +226,6 @@ apiRouter.post('/orders', async (req, res, next) => {
 })
 
 apiRouter.get('/orders', async (req, res) => {
-  const id = req.params.id
-  console.log(id)
   try {
     const allOrders = await getAllOrders()
     console.log(allOrders)
@@ -241,9 +237,9 @@ apiRouter.get('/orders', async (req, res) => {
 
 apiRouter.get('/users/:userId/orders', async (req, res) => {
   console.log('inside getting products by id')
-  console.log('this is id', req.params.id)
+  console.log('this is id', req.params.userId)
   try {
-    const orders = await getOrdersByProduct(req.params.id)
+    const orders = await getOrdersByProduct(req.params.userId)
     console.log(orders)
     res.send(orders)
   } catch (error) {
