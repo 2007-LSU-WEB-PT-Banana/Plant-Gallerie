@@ -14,7 +14,6 @@ const createUser = async ({
   imageURL,
   username,
   password,
-  isAdmin,
 }) => {
   try {
     console.log('creating users')
@@ -23,11 +22,11 @@ const createUser = async ({
       rows: [user],
     } = await client.query(
       `
-    INSERT INTO users("firstName","lastName" ,email,"imageURL", username , password ,"isAdmin")
-    VALUES($1,$2,$3,$4,$5,$6,$7)
+    INSERT INTO users("firstName","lastName" ,email,"imageURL", username , password )
+    VALUES($1,$2,$3,$4,$5,$6)
     RETURNING *; 
     `,
-      [firstName, lastName, email, imageURL, username, password, isAdmin],
+      [firstName, lastName, email, imageURL, username, password],
     )
 
     const hashPassword = await bcrypt.hash(user.password, 5)
@@ -161,13 +160,15 @@ const getProductById = async (id) => {
       }
     }
 
+    console.log('product is here', product)
+
     return product
   } catch (error) {
     throw error
   }
 }
 
-const createOrder = async (status, userId) => {
+const createOrder = async ({ status, userId }) => {
   try {
     console.log('creatimh oders')
     const {
@@ -223,20 +224,6 @@ const getOrdersByUser = async (userId) => {
   }
 }
 
-const createProductsOnOrder = async (productId, orderId) => {
-  try {
-    const { rows: productOrders } = await client.query(
-      `
-    INSERT INTO order_products("productId","orderId")
-    VALUES($1,$2);
-    `,
-      [productId, orderId],
-    )
-  } catch (error) {
-    throw error
-  }
-}
-
 const getOrderById = async (orderId) => {
   try {
     const {
@@ -249,29 +236,7 @@ const getOrderById = async (orderId) => {
     `,
       [orderId],
     )
-
-    const { rows: products } = await client.query(
-      `
-    SELECT products.*
-    FROM products
-    JOIN order_products ON products.id=order_products."productId"
-    WHERE order_products."orderId"=$1;
-    `,
-      [orderId],
-    )
-    const {
-      rows: [user],
-    } = await client.query(
-      `
-    SELECT id, username
-    FROM users
-    WHERE id=$1;
-    `,
-      [order.productId],
-    )
-    order.products = products
-    product.user = user
-    delete order.productId
+    console.log('order', order)
     return order
   } catch (error) {
     throw error
@@ -299,28 +264,24 @@ const getCartByUser = async (userId) => {
 
 const getOrdersByProduct = async (id) => {
   try {
-    console.log('hitting query for getting order with product')
-    const { rows: orderIds } = await client.query(
+    const { rows: productIds } = await client.query(
       `
-    SELECT orders.id 
-    FROM orders
-    JOIN order_products ON orders.id=order_products."orderId"
-    JOIN products ON products.id=order_products."productId"
-    WHERE product.id=$1;
+      SELECT *
+      FROM order_products
+      JOIN orders ON order_products."orderId" = orders.id
+      JOIN products ON order_products."productId"=${id};
     `,
-      [id],
     )
-
-    const products = await Promise.all(
-      orderIds.map((order) => getOrderById(order.id)),
-    )
-    return products
+    console.log('product ids are ', productIds)
+    const allProducts = productIds.map((product) => {
+      return getProductById(product.id)
+    })
+    return allProducts
   } catch (error) {
     throw error
   }
 }
 
-// export
 module.exports = {
   client,
   createUser,
@@ -334,4 +295,5 @@ module.exports = {
   createOrder,
   getOrdersByProduct,
   getAllOrders,
+  getOrderById,
 }
