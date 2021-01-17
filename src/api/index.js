@@ -62,7 +62,6 @@ export const NewUser = async (
   imageURL,
   username,
   password,
-  isAdmin,
 ) => {
   const url = `${BASE_URL}/register`
   const response = await fetch(url, {
@@ -75,7 +74,6 @@ export const NewUser = async (
       lastName: lastName,
       email: email,
       imageURL: imageURL,
-      isAdmin: isAdmin,
     }),
   })
   const { error, data } = await response.json()
