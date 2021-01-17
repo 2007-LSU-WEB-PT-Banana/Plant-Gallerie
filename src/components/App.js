@@ -49,9 +49,7 @@ const App = () => {
 
   return (
     <>
-    <header>
-      <Header />
-    </header>
+    <Header />
     <main class="wrapper">
       <Switch>
         <Route exact path="/" component={Home} />

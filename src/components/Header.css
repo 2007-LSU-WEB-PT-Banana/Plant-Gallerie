@@ -1,43 +1,59 @@
-/* @import url('https://fonts.googleapis.com/css2?family=Alegreya+Sans+SC:wght@100;300&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Alegreya+Sans+SC:wght@100;300&display=swap");
 
-.header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: #c0c0c0;
-  position: fixed;
-  top: 0;
-  width: 100%;
-  z-index: 100;
-  border: 2px solid rgb(208, 211, 214);
-  box-shadow: 2px -1px 2px 0px rgb(108, 184, 108);
-  padding: 10px;
-  font-family: 'Alegreya Sans SC, sans-serif';
-  font-weight: bold;
-  font-size: 20px;
-  text-decoration: none;
-  color: black;
-};
+.Header {
+	background: #c0c0c0;
+	position: fixed;
+	top: 0;
+	width: 100%;
+	z-index: 100;
+	padding: 10px;
+	font-family: "Alegreya Sans SC, sans-serif";
+	border-bottom: 4px solid #607848;
+	font-weight: bold;
+	font-size: 20px;
+	text-decoration: none;
+	color: black;
+	margin-bottom: 20px;
+}
 
-.headerLink {
-  margin-right: 35px;
-  justify-content: space-between;
-  font-weight: normal;
-  background-color: #c0c0c0;
-  padding: 6px;
-  text-decoration: none;
-  color: black;
-  border-radius: .25rem;
-  text-align: center;
-  transition: all .3s; 
-  text-transform: uppercase;
-  font-family: 'Alegreya Sans SC, sans-serif',
-} */
+.Header {
+	display: grid;
+	grid-template-areas: "logo nav";
+}
 
-@media screen and (max-width: 768px) {
-  .header {
-    flex-direction: column;
-    align-items: flex-start;
-    float: left;
-  }
+.Nav {
+	grid-area: nav;
+	display: grid;
+	grid-template-columns: repeat(8, auto);
+	align-items: center;
+	justify-items: center;
+}
+
+.Burger {
+	display: none;
+	background-color: #c0c0c0;
+}
+
+.logo {
+	justify-self: start;
+}
+
+#burger-icon {
+	background-color: #c0c0c0;
+}
+
+@media (max-width: 700px) {
+	.Header {
+		grid-template-areas: "logo burger" "nav nav";
+	}
+
+	.Nav {
+		grid-template-rows: repeat(8, auto);
+		grid-template-columns: none;
+		grid-row-gap: 5px;
+	}
+
+	.Burger {
+		display: block;
+	}
 }

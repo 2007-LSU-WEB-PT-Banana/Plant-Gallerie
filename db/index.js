@@ -112,10 +112,9 @@ const createProduct = async ({
       rows: [product],
     } = await client.query(
       `
-  INSERT INTO products (name, description, price,"imageURL", "inStock",category )
-  VALUES($1, $2,$3,$4,$5,$6)
+  INSERT INTO products (name, description, price,"imageURL", "inStock",category)
+  VALUES($1,$2,$3,$4,$5,$6)
   RETURNING *;
-
   `,
       [name, description, price, imageURL, inStock, category],
     )
@@ -142,7 +141,7 @@ const getAllProducts = async () => {
   }
 }
 
-const getProductById = async (id) => {
+const getProductById = async (productId) => {
   try {
     const {
       rows: [product],
@@ -152,7 +151,7 @@ const getProductById = async (id) => {
     FROM products
     WHERE id=$1;
     `,
-      [id],
+      [productId],
     )
 
     if (!product) {
@@ -167,9 +166,9 @@ const getProductById = async (id) => {
   }
 }
 
-const createOrder = async ({status, userId}) => {
+const createOrder = async (status, userId) => {
   try {
-    console.log('creatimh oders')
+    console.log('creating order')
     const {
       rows: [order],
     } = await client.query(
@@ -267,17 +266,19 @@ const getOrderById = async (orderId) => {
     FROM users
     WHERE id=$1;
     `,
-      [order.productId],
+      [order.userId], //shouldn't this be order.userId? There is no productID in the users table
     )
     order.products = products
     product.user = user
-    delete order.productId
+    delete order.productId //why are we deleting the product IDs?
     return order
   } catch (error) {
     throw error
   }
 }
 
+//I don't think this function is going to work. Maybe we should call "getOrderById" below
+//instead of getProductById
 const getCartByUser = async (userId) => {
   try {
     const { rows: userCart } = await client.query(
@@ -289,7 +290,7 @@ const getCartByUser = async (userId) => {
       [userId],
     )
     const orders = await Promise.all(
-      userCart.map((order) => getProductById(order.id)),
+      userCart.map((order) => getProductById(order.id)), //this function's parameter calls for the productId not the orderID
     )
     return orders
   } catch (error) {
