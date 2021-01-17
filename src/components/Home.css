@@ -39,7 +39,7 @@ html {
   background: url(../images/homePhotoWide.jpg) center;
   height: 92vh;
   width: 100vw;
-  background-size: 100vmin 80%;
+  background-size: 150vmin 90%;
   background-position: center center; 
   background-repeat: no-repeat;
   background-attachment: fixed;
@@ -177,10 +177,11 @@ html {
   margin: auto;
 } 
 
-@media only screen and (max-width: 500px) {
-  body {
+@media only screen and (max-width: 768) {
+  .homepage {
     /* The file size of this background image is 93% smaller
        to improve page load speed on mobile internet connections */
-    background-image: url(/src/images/homePhoto.jpg);
+    margin-top: 5em;
+    padding-top: 3rem;
   }
 }

@@ -1,5 +1,3 @@
-//import axios from 'axios';
-
 export const BASE_URL = '/api'
 
 export const getToken = () => {
@@ -30,20 +28,56 @@ function buildHeaders() {
   return base
 }
 
-export const auth = async (username, password, isNew = false) => {
-  const url = `${BASE_URL}/users` + (isNew ? '/register' : '/login')
+export const auth = async (username, password) => {
+  console.log('inside auth')
+  const url = `${BASE_URL}/login`
+  console.log('after url')
 
   const response = await fetch(url, {
     method: 'POST',
     headers: buildHeaders(),
     body: JSON.stringify({
-      user: {
-        username: username,
-        password: password,
-      },
+      username: username,
+      password: password,
     }),
   })
+  console.log('this is respones', response)
+  const { error, data } = await response.json()
 
+  if (error) {
+    throw Error(error.message)
+  }
+
+  if (data && data.token) {
+    setToken(data.token)
+  }
+
+  return data
+}
+
+export const NewUser = async (
+  firstName,
+  lastName,
+  email,
+  imageURL,
+  username,
+  password,
+  isAdmin,
+) => {
+  const url = `${BASE_URL}/register`
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: buildHeaders(),
+    body: JSON.stringify({
+      username: username,
+      password: password,
+      firstName: firstName,
+      lastName: lastName,
+      email: email,
+      imageURL: imageURL,
+      isAdmin: isAdmin,
+    }),
+  })
   const { error, data } = await response.json()
 
   if (error) {
@@ -74,7 +108,6 @@ export const fetchAPI = async (url, method = 'GET', sendData = null) => {
   }
 
   console.log('this is what we are sending in the fetch', fetchOptions)
-  //console.log("this is the initial response:", response);
 
   const response = await fetch(url, fetchOptions)
   const data = await response.json()
@@ -82,13 +115,3 @@ export const fetchAPI = async (url, method = 'GET', sendData = null) => {
 
   return data
 }
-
-// export async function getSomething() {
-//   try {
-//     const { data } = await axios.get('/api');
-//     return data;
-//   } catch (error) {
-//     throw error;
-//   }
-// }
-

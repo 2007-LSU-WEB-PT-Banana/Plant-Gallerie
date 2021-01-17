@@ -6,10 +6,11 @@ import ShoppingCartIcon from "@material-ui/icons/ShoppingCart";
 import { CenterFocusStrong } from "@material-ui/icons";
 import './Header.css';
 
+
 const headerStyling = {
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "space-between",
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
   background: '#c0c0c0',
   position: "fixed",
   top: "0",
@@ -26,20 +27,19 @@ const headerStyling = {
 };
 
 const headerLink = {
-  marginRight: "35px",
+  marginRight: '35px',
   justifyContent: 'space-between',
   fontWeight: 'normal',
-  backgroundColor: "#c0c0c0",
+  backgroundColor: '#c0c0c0',
   padding: '6px',
   textDecoration: 'none',
   color: 'black',
   borderRadius: '.25rem',
   textAlign: 'center',
-  transition: 'all .3s', 
+  transition: 'all .3s',
   textTransform: 'uppercase',
   fontFamily: 'Alegreya Sans SC, sans-serif',
 }
-
 
 const Header = () => {
   return (

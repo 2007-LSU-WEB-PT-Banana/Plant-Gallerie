@@ -1,11 +1,7 @@
 import React, { useState, useEffect } from 'react'
-import {
-  Switch,
-  Route,
-  useHistory
-} from 'react-router-dom'
+import { Switch, Route, useHistory, Link } from 'react-router-dom'
+import { fetchAPI, BASE_URL, auth, getToken, clearToken } from '../api'
 import './Home.css';
-import { fetchAPI, BASE_URL } from '../api'
 import { 
   AllProducts, 
   SingleProduct, 
@@ -14,17 +10,20 @@ import {
   FloweringPlants, 
   BonsaiPlants, 
   HousePlants, 
-  Home
+  Home,
+  Register
 } from './index'
-import CartComponent from "./Cart"
-
+import CartComponent from './Cart'
+import SingleOrder from './SingleOrder'
 
 const App = () => {
   const history = useHistory()
+
+  const [isLoggedIn, setIsLoggedIn] = useState(!!getToken())
   const [message, setMessage] = useState('')
   const [productList, setProductList] = useState([])
   const [activeProduct, setActiveProduct] = useState('')
-  const [cartData, setCartData] = useState({}); 
+  const [cartData, setCartData] = useState({})
 
   useEffect(() => {
     fetchAPI(BASE_URL + '/')
@@ -78,6 +77,9 @@ const App = () => {
           <BonsaiPlants productList={productList} setActiveProduct={setActiveProduct} history={history} />
         </Route>
         <Route exact path="/login" component={Login} />
+        <Route exact path="/register">
+          <Register setIsLoggedIn={setIsLoggedIn} />
+        </Route>
         <Route path="/cart">
           <CartComponent cartData={cartData}
             setCartData={setCartData} />
