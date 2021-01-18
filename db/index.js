@@ -164,49 +164,67 @@ const getProductById = async (id) => {
 }
 
 
-const createOrder = async ({ status, orderId, datePlaced }) => {
-  try {
-    const {
-      rows: [order],
-    } = await client.query(
-      `
-    INSERT INTO orders(status, "orderId", "datePlaced")
-    VALUES($1,$2,$3)
-    RETURNING *;
-    `,
-      [status, orderId, datePlaced],
-    )
-    return order
-  } catch (error) {
-    throw error
-  }
-}
-
-//This is Evon's function.
-// const createOrder = async ({status='created', userId})=>{
+// const createOrder = async ({ status, orderId, datePlaced }) => {
 //   try {
-   
-//       const {rows: [order]} = await client.query(`
-//       INSERT INTO orders(status, "userId", "datePlaced") 
-//       VALUES ($1, $2, $3)
-//       RETURNING *
-//       `, [status, userId, date])
-
-//       return order
-   
+//     const {
+//       rows: [order],
+//     } = await client.query(
+//       `
+//     INSERT INTO orders(status, "orderId", "datePlaced")
+//     VALUES($1,$2,$3)
+//     RETURNING *;
+//     `,
+//       [status, orderId, datePlaced],
+//     )
+//     return order
 //   } catch (error) {
-//       console.error(error)
+//     throw error
 //   }
 // }
 
+//This is Evon's function.
+const createOrder = async ({status='created', userId})=>{
+  try {
+   
+      const {rows: [order]} = await client.query(`
+      INSERT INTO orders(status, "userId") 
+      VALUES ($1, $2)
+      RETURNING *
+      `, [status, userId])
+
+      console.log("making orders");
+
+		order.datePlaced = new Date();
+
+      return order
+   
+  } catch (error) {
+      console.error(error)
+  }
+}
+
 //This function needs to be tested.
-const getCartByUser = async ({id}) => {
+const getCartByUserId= async (id) => {
 
   try{
       const {rows: [cartOrder] } = await client.query(`
           SELECT * FROM orders 
           WHERE "userId"=$1 AND status='created'
       `,[id])
+      
+
+      const productsOrdered = await getOrderProductByOrderId(cartOrder.id);
+      const productsInOrder = await Promise.all(productsOrdered.map(async (productsOrdered) =>{
+        const newProduct = await getProductById(productsOrdered.productId)
+        return newProduct;
+      }))
+      if(productsOrdered && productsInOrder){
+        cartOrder.productsOrdered = productsOrdered;
+        cartOrder.productsInOrder = productsInOrder;
+      }else{
+        cartOrder.productsOrdered = [];
+        cartOrder.productsInOrder = [];
+      }
 
     
       return cartOrder
@@ -308,7 +326,7 @@ const getOrderProductByOrderId = async (orderId) => {
     const {rows: [orderProduct]} = await client.query(`
 SELECT * 
 FROM order_products
-WHERE "orderId=$1;
+WHERE "orderId"=$1;
 `, [orderId]);
 return orderProduct;
 
@@ -354,6 +372,8 @@ const addProductToOrder = async ({orderId, productId, price, quantity}) => {
   }
 }
 
+
+
 const updateOrderProduct = async ({id, price, quantity}) =>{
 
   try{
@@ -397,6 +417,8 @@ const destroyOrderProduct = async (id) =>{
 }
 
 
+
+
 // export
 module.exports = {
   client,
@@ -410,7 +432,7 @@ module.exports = {
   createProduct,
   getProductById,
   getAllProducts,
-  getCartByUser,
+  getCartByUserId,
   createOrder,
   getOrderByProductId,
   destroyOrderProduct,
@@ -419,5 +441,6 @@ module.exports = {
   getOrdersByProduct,
   getOrderByUser,
   getAllOrders,
+  getOrderProductByOrderId,
 
 }

@@ -10,6 +10,11 @@ const {
   getUserByUsername,
   requireUser,
   requireActiveUser,
+  getOrderByProductId,
+  getOrderProductByOrderId,
+  addProductToOrder,
+  createOrder,
+  getCartByUserId,
 } = require('../db/index')
 
 require('dotenv').config()
@@ -62,8 +67,8 @@ apiRouter.post('/login', async (req, res, next) => {
       res.send({
         message: "you're logged in!",
         token:
-          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJhbGJlcnQiLCJpYXQiOjE2MDc2NTQzNTR9.p-RxeCLsZlUncNqNlKdProbc68gvNSTeucy9UwjO8CE',
-      })
+          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywidXNlcm5hbWUiOiJldm9uc2FuZGVycyIsImlhdCI6MTYxMDkyNDg2MywiZXhwIjoxNjEzMzQ0MDYzfQ.QSBxbpwCKTESwSYDdFfVsK2F_qZwbOQdAyeA0Bk7EXo'
+         })
     } else {
       next({
         name: 'IncorrectCredentialsError',
@@ -163,11 +168,12 @@ apiRouter.get('/products', async (req, res, next) => {
 })
 
 apiRouter.get('/products/:productId', async (req, res, next) => {
-  const id = req.body.productId
-  console.log('the product id is', id)
+ // const id = req.body.productId
+  //console.log('the product id is', id)
   try {
+    const {productId} = req.params
     console.log('inside the try for getting product by ID')
-    const requestedProduct = await getProductById(id)
+    const requestedProduct = await getProductById(productId)
     res.send(requestedProduct)
     next()
   } catch (error) {
@@ -198,14 +204,23 @@ apiRouter.get('/orders/cart', async (req,res,next) => {
   //const id = req.body.id;
   //need to confirm if this will be user id 
 try {
-  if(id) {
-    const user = await getUserById(id)
-  } if (user) {
-    const userOrders = await getCartByUser({id})
+//   //const {id} = await getUserById(req.params.id)
+//   const bearer = 'Bearer';
+//   const authorization = req.header('Authorization')
+
+//   if( authorization.startsWith(bearer)){
+//    const jwtToken = authorization.slice(bearer.length)
+//     if(jwtToken){
+//       const { id } = jwt.verify(jwtToken, JWT_SECRET);
+// if(id){
+    //const currentUser = await getUserById(id)
+   //if(currentUser){
+    const userOrders = await getCartByUserId(req.body.userId)
     res.send( userOrders)
-  }else{
-    res.send({message: 'there are no orders here'})
-  }
+  
+  
+
+  
 
   }catch(error){
     throw(error)
@@ -216,16 +231,58 @@ try {
 apiRouter.post('/orders', async (req,res,next) =>{
 
   try{
-    if(id) {
-      const newOrder = await createOrder({userId: id})
+ 
+      const newOrder = await createOrder(req.body)
       res.send(newOrder)
-    } else {
-      res.send({message:'You must be logged in to create an order'})
-      }
+
   }catch(error){
     throw(error)
   }
 
+})
+
+apiRouter.post('/orders/:orderId/products', async (req,res,next)=>{
+  try{
+    const {orderId} = req.params;
+    const {productId, price, quantity } = req.body;
+
+    const orderProducts = await getOrderByOrderId(orderId)
+    
+    let allQuantity;
+    let allPrice;
+
+    if(!orderProducts.length){
+      allPrice = price * quantity;
+      const addProduct = await addProductToOrder({orderId,productId, price:allPrice, quantity})
+      console.log("this is added product", addProduct)
+      res.send(addProduct)
+      return
+    }else{
+      for(let i=0; i<orderProducts.length; i++){
+
+        if(orderProducts[i].productId == productId){
+          allQuantity = Number(quantity) + Number(orderProducts[i].quantity)
+          allPrice = Number(allQuantity) * Number(price)
+            const addProduct = await addProductToOrder({orderId, productId, price: allPrice, quantity: allQuantity})
+            res.send(addProduct)
+            return
+            
+        }else if(i===orderProducts.length-1 && orderProducts[i].productId !== productId){
+
+          allPrice = Number(quantity) * Number(price)
+          const prod = {orderId, productId, price: allPrice, quantity}
+          const addProduct = await addProductToOrder(prod)
+          res.send(addProduct)
+          return 
+      }
+    }
+
+    }
+
+
+  }catch(error){
+    throw error
+  }
 })
 
 
