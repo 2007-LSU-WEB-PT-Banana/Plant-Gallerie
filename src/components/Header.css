@@ -1,0 +1,60 @@
+@import url("https://fonts.googleapis.com/css2?family=Alegreya+Sans+SC:wght@100;300&display=swap");
+
+.Header {
+	background: #c0c0c0;
+	position: fixed;
+	top: 0;
+	width: 100%;
+	z-index: 100;
+	font-family: "Alegreya Sans SC, sans-serif";
+	border-bottom: 4px solid #607848;
+	font-weight: bold;
+	font-size: 20px;
+	text-decoration: none;
+	color: black;
+	margin-bottom: 20px;
+}
+
+.Header {
+	display: grid;
+	grid-template-areas: "logo nav";
+}
+
+.Nav {
+	grid-area: nav;
+	display: grid;
+	grid-template-columns: repeat(8, auto);
+	align-items: center;
+	justify-items: center;
+}
+
+.Burger {
+	display: none;
+	background-color: #c0c0c0;
+}
+
+.logo {
+	justify-self: start;
+	font-weight: bolder;
+	font-size: 30px;
+}
+
+#burger-icon {
+	background-color: #c0c0c0;
+}
+
+@media (max-width: 812px) {
+	.Header {
+		grid-template-areas: "logo burger" "nav nav";
+	}
+
+	.Nav {
+		grid-template-rows: repeat(8, auto);
+		grid-template-columns: none;
+		grid-row-gap: 5px;
+	}
+
+	.Burger {
+		display: block;
+	}
+}
