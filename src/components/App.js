@@ -1,116 +1,111 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect } from "react";
+import { Switch, Route, useHistory, Link } from "react-router-dom";
+import { fetchAPI, BASE_URL, auth, getToken, clearToken } from "../api";
+import "./Home.css";
 import {
-  Switch,
-  Route,
-  useHistory,
-  Link,
-} from 'react-router-dom'
-import './App.css';
-import { fetchAPI, BASE_URL } from '../api'
-import { 
-  AllProducts, 
-  SingleProduct, 
-  Header, 
-  Login, 
-  FloweringPlants, 
-  BonsaiPlants, 
-  HousePlants 
-} from './index'
-import CartComponent from "./Cart"
-
+	AllProducts,
+	SingleProduct,
+	Header,
+	Login,
+	FloweringPlants,
+	BonsaiPlants,
+	HousePlants,
+	Home,
+	Register,
+} from "./index";
+import CartComponent from "./Cart";
+import SingleOrder from "./SingleOrder";
 
 const App = () => {
-  const history = useHistory()
-  const [message, setMessage] = useState('')
-  const [productList, setProductList] = useState([])
-  const [activeProduct, setActiveProduct] = useState('')
-  const [cartData, setCartData] = useState({}); 
+	const history = useHistory();
 
-  useEffect(() => {
-    fetchAPI(BASE_URL + '/')
-      .then((response) => {
-        setMessage(response.message)
-      })
-      .catch((error) => {
-        setMessage(error.message)
-      })
-  })
+	const [isLoggedIn, setIsLoggedIn] = useState(!!getToken());
+	const [message, setMessage] = useState("");
+	const [productList, setProductList] = useState([]);
+	const [activeProduct, setActiveProduct] = useState("");
+	const [cartData, setCartData] = useState([]);
+	const [count, setCount] = useState(1);
 
-  useEffect(() => {
-    fetchAPI(BASE_URL + '/products')
-      .then((data) => {
-        setProductList(data)
-      })
-      .catch(console.error)
-  }, [])
+	useEffect(() => {
+		fetchAPI(BASE_URL + "/")
+			.then((response) => {
+				setMessage(response.message);
+			})
+			.catch((error) => {
+				setMessage(error.message);
+			});
+	});
 
+	useEffect(() => {
+		fetchAPI(BASE_URL + "/products")
+			.then((data) => {
+				data.map((product) => {
+					let newPrice = product.price / 100;
+					product.price = newPrice;
+				});
+				setProductList(data);
+			})
+			.catch(console.error);
+	}, []);
 
-  return (
-    <>
-    <header>
-      <Header />
-    </header>
-    <main>
-      <div className="App">
-        <Switch>
-          <Route exact path="/">
-            <div className="homepage">
-              <div className="main-page-image">
-              </div>
-              <div className="text-box">
-                <h1 className="heading-primary">
-                  <span className="heading-title">
-                    Plant Gallerie</span>
-                </h1>
-              </div>
-              <div className="main-page-subtext">
-                <span className="heading-main">buy 3 plants for $200</span>
-                <span className="heading-main-sub">plus free shipping</span>
-                <button className="main-image-button" id="shopButton">
-                  <Link to="/products" className='allProdLink'>Shop Now
-                  </Link>
-                </button>
-              </div>
-            </div>
-          </Route>
-          <Route exact path="/products/:productId">
-            <SingleProduct
-              activeProduct={activeProduct}
-              setActiveProduct={setActiveProduct}
-              history={history}/>
-          </Route>
-          <Route exact path="/products">
+	console.log("The cart data is", cartData);
 
-            <AllProducts
-              productList={productList}
-              history={history}
-              setActiveProduct={setActiveProduct}/>
-          </Route>
-          <Route exact path="/houseplants">
-            <HousePlants productList={productList} setActiveProduct={setActiveProduct} history={history} />
-          </Route>
-          <Route exact path="/floweringplants">
-            <FloweringPlants productList={productList} setActiveProduct={setActiveProduct} history={history} />
-          </Route>
-          <Route exact path="/bonsaiplants">
-            <BonsaiPlants productList={productList} setActiveProduct={setActiveProduct} history={history} />
-          </Route>
-          <Route exact path="/login">
-            <Login />
-          </Route>
-          <Route exact path="/cart">
-          </Route>
-          <Route path="/cart">
-         
-              <CartComponent cartData={cartData}
-                setCartData={setCartData}
-              />
-            </Route>
-        </Switch>
-      </div>
-    </main>
-    </>
-  )
-}
+	return (
+		<>
+			<Header />
+			<main class="wrapper">
+				<Switch>
+					<Route exact path="/" component={Home} />
+					<Route path={`/products/:productId`}>
+						<SingleProduct
+							activeProduct={activeProduct}
+							setActiveProduct={setActiveProduct}
+							history={history}
+							count={count}
+							setCount={setCount}
+							cartData={cartData}
+							setCartData={setCartData}
+						/>
+					</Route>
+					<Route exact path="/products">
+						<AllProducts
+							productList={productList}
+							history={history}
+							setActiveProduct={setActiveProduct}
+						/>
+					</Route>
+					<Route exact path="/houseplants">
+						<HousePlants
+							productList={productList}
+							setActiveProduct={setActiveProduct}
+							history={history}
+						/>
+					</Route>
+					<Route exact path="/floweringplants">
+						<FloweringPlants
+							productList={productList}
+							setActiveProduct={setActiveProduct}
+							history={history}
+						/>
+					</Route>
+					<Route exact path="/bonsaiplants">
+						<BonsaiPlants
+							productList={productList}
+							setActiveProduct={setActiveProduct}
+							history={history}
+						/>
+					</Route>
+					<Route exact path="/login" component={Login} />
+					<Route exact path="/register">
+						<Register setIsLoggedIn={setIsLoggedIn} />
+					</Route>
+					<Route path="/cart">
+						<CartComponent cartData={cartData} setCartData={setCartData} />
+					</Route>
+				</Switch>
+			</main>
+		</>
+	);
+};
 
-export default App
+export default App;

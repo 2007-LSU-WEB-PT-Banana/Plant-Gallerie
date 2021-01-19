@@ -1,8 +1,10 @@
 import React, { useState } from 'react'
 
 import { Link, useHistory } from 'react-router-dom'
+import { NewUser } from '../api/index'
 
-function Register() {
+function Register(props) {
+  const { setIsLoggedIn } = props
   const history = useHistory()
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
@@ -12,8 +14,23 @@ function Register() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
-  const register = (event) => {
+  const register = async (event) => {
     event.preventDefault()
+    console.log('registering')
+    try {
+      const result = await NewUser(
+        firstName,
+        lastName,
+        email,
+        isAdmin,
+        username,
+        password,
+      )
+      setIsLoggedIn(true)
+      history.push('/')
+    } catch (error) {
+      console.error(error)
+    }
   }
 
   return (
@@ -34,9 +51,6 @@ function Register() {
             value={lastName}
             onChange={(event) => setLastName(event.target.value)}
           />
-          <h5>Image</h5>
-          <img src={imageURL} alt="" />
-
           <h5>Email</h5>
           <input
             type="btext"
@@ -55,12 +69,6 @@ function Register() {
             value={password}
             onChange={(event) => setPassword(event.target.value)}
             type="password"
-          />
-          <h5>Is Admin</h5>
-          <input
-            type="text"
-            value={isAdmin}
-            onChange={(event) => setIsAdmin(event.target.value)}
           />
 
           <button
