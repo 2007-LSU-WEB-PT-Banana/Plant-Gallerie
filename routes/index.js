@@ -13,10 +13,12 @@ const {
 	getOrdersByProduct,
 	getAllOrders,
 	getOrderById,
+	getUser,
 } = require("../db/index");
 
 require("dotenv").config();
 const jwt = require("jsonwebtoken");
+const { token } = require("morgan");
 
 const requireUser = (req, res, next) => {
 	if (!req.user) {
@@ -62,15 +64,19 @@ apiRouter.get("/users", async (req, res, next) => {
 apiRouter.post("/login", async (req, res, next) => {
 	const { username, password } = req.body;
 	console.log("this is req.body", req.body);
+
 	if (!username || !password) {
 		throw "u need user name and password";
 	}
+
 	try {
 		const user = await getUser(req.body);
 		console.log("this is user", user);
+
 		if (user && user.password == password) {
 			// console.log('users token is ', token)
 			await bcrypt.compare(password, user.password);
+
 			const token = jwt.sign(
 				{
 					id: user.id,
@@ -93,9 +99,11 @@ apiRouter.post("/login", async (req, res, next) => {
 		throw error;
 	}
 });
+
 apiRouter.post("/register", async (req, res, next) => {
 	console.log("here in register");
 	const { firstName, lastName, email, imageURL, username, password } = req.body;
+
 	console.log("here in register 1");
 	console.log(req.body, "this is body");
 	try {
@@ -118,11 +126,30 @@ apiRouter.post("/register", async (req, res, next) => {
 			username,
 			password,
 		});
+
 		res.send({
 			user: user,
 		});
 	} catch (error) {
 		next(error);
+	}
+});
+
+apiRouter.get("/users/me", async (req, res) => {
+	console.log("this is username", req.body);
+	try {
+		const user = await getUserByUsername(req.body);
+
+		if (user) {
+			jwt.verify({
+				id: user.id,
+				password: user.password,
+				username: user.username,
+			});
+		}
+		res.send(user);
+	} catch (error) {
+		throw error;
 	}
 });
 
@@ -180,14 +207,13 @@ apiRouter.post("/createproduct", async (req, res, next) => {
 
 apiRouter.get("/orders/cart", async (req, res, next) => {
 	try {
-		if (req.id) {
-			const user = await getUserById(req.id);
-			if (user) {
-				const userOrders = await getCartByUser(req.id);
-				res.send(userOrders);
-			} else {
-				res.send({ message: "there are no open orders" });
-			}
+		const user = await getUserById(req.body.userId);
+
+		if (user) {
+			const userOrders = await getCartByUser(user.id);
+			res.send(userOrders);
+		} else {
+			res.send({ message: "there are no orders here" });
 		}
 	} catch (error) {
 		throw error;
@@ -208,12 +234,8 @@ apiRouter.get("/orders/:orderId", async (req, res) => {
 
 apiRouter.post("/orders", async (req, res, next) => {
 	console.log("hitting create order");
-	// const { userId = req.user.id } = req.body
-	// const orderData = {}
-	try {
-		// orderData.status = status
-		// orderData.userId = userId
 
+	try {
 		const newOrder = await createOrder(req.body);
 		res.send(newOrder);
 	} catch (error) {

@@ -57,6 +57,30 @@ const getAllUsers = async () => {
 	}
 };
 
+const getUser = async ({ username, password }) => {
+	try {
+		console.log("inside get user");
+		const {
+			rows: [user],
+		} = await client.query(
+			`
+    SELECT username, password
+    FROM users
+    WHERE username=$1 AND password=$2;
+    `,
+			[username, password]
+		);
+
+		console.log("this is username", username);
+		console.log("this is password", password);
+		console.log("this is user ", user);
+
+		return user;
+	} catch (error) {
+		throw error;
+	}
+};
+
 const getUserById = async (id) => {
 	try {
 		const {
@@ -76,7 +100,7 @@ const getUserById = async (id) => {
 	}
 };
 
-const getUserByUsername = async (username) => {
+const getUserByUsername = async ({ username }) => {
 	console.log("inside db");
 	try {
 		const {
@@ -89,6 +113,8 @@ const getUserByUsername = async (username) => {
     `,
 			[username]
 		);
+
+		console.log("username", username);
 		console.log("required user is ", user);
 
 		console.log("existing user by user function");
@@ -167,7 +193,7 @@ const getProductById = async (productId) => {
 	}
 };
 
-const createOrder = async ({ status, userId }) => {
+const createOrder = async ({ status, userId, products = [] }) => {
 	try {
 		console.log("creating order");
 		const {
@@ -183,6 +209,7 @@ const createOrder = async ({ status, userId }) => {
 		console.log("making orders");
 
 		order.datePlaced = new Date();
+
 		return order;
 	} catch (error) {
 		throw error;
@@ -242,8 +269,6 @@ const getOrderById = async (orderId) => {
 	}
 };
 
-//I don't think this function is going to work. Maybe we should call "getOrderById" below
-//instead of getProductById
 const getCartByUser = async (userId) => {
 	try {
 		const { rows: userCart } = await client.query(
@@ -255,7 +280,7 @@ const getCartByUser = async (userId) => {
 			[userId]
 		);
 		const orders = await Promise.all(
-			userCart.map((order) => getOrderById(order.id)) //this function's parameter calls for the productId not the orderID
+			userCart.map((order) => getOrderById(order.id))
 		);
 		return orders;
 	} catch (error) {
@@ -263,19 +288,53 @@ const getCartByUser = async (userId) => {
 	}
 };
 
+const createOrderProducts = async ({ productId, orderId, price, quantity }) => {
+	try {
+		const {
+			rows: [orderProduct],
+		} = await client.query(
+			`
+    INSERT INTO order_products("productId","orderId",price ,quantity)
+    VALUES($1, $2,$3,$4)
+    RETURNING *;
+    `,
+			[productId, orderId, price, quantity]
+		);
+
+		return orderProduct;
+	} catch (error) {
+		throw error;
+	}
+};
+
+const addProductsToOrder = async (orderId, products) => {
+	try {
+		const createOrderProductsPromises = products.map((product) =>
+			createOrderProducts(orderId, post.id)
+		);
+
+		await Promise.all(createOrderProductsPromises);
+
+		return await getOrderById(orderId);
+	} catch (error) {
+		throw error;
+	}
+};
+
 const getOrdersByProduct = async (id) => {
 	try {
-		const { rows: productIds } = await client.query(
+		const { rows: ordersIds } = await client.query(
 			`
       SELECT *
       FROM order_products
       JOIN orders ON order_products."orderId" = orders.id
-      JOIN products ON order_products."productId"=${id};
-    `
+      JOIN products ON order_products."productId"=$1;
+    `,
+			[id]
 		);
-		console.log("product ids are ", productIds);
-		const allProducts = productIds.map((product) => {
-			return getProductById(product.id);
+		console.log("this is product id", ordersIds.productId);
+		const allProducts = ordersIds.map((order) => {
+			return getOrdersByUser(order.id);
 		});
 		return allProducts;
 	} catch (error) {
@@ -297,4 +356,5 @@ module.exports = {
 	getOrdersByProduct,
 	getAllOrders,
 	getOrderById,
+	getUser,
 };

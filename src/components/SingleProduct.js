@@ -11,6 +11,7 @@ const SingleProduct = (props) => {
 		setCartData,
 	} = props;
 
+	//deCha will rework the "add to Cart" function so that it sends the cartData to the database for authenticated users
 	const [message, setMessage] = useState("");
 
 	function backToSearch(event) {

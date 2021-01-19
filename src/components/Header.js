@@ -22,7 +22,7 @@ const headerLink = {
 };
 
 const Header = (props) => {
-	const { cartData } = props;
+	const { cartData, setIsLoggedIn } = props;
 
 	const [isNavVisible, setIsNavVisible] = useState(true);
 	const [isSmallScreen, setIsSmallScreen] = useState(false);
@@ -77,7 +77,7 @@ const Header = (props) => {
 						<SearchIcon className="header-searchIcon" />
 					</Link>
 					<Link to="/login" className="header-link" style={headerLink}>
-						<PersonOutlineIcon />
+						{setIsLoggedIn ? ` hello user` : <PersonOutlineIcon />}
 					</Link>
 					<Link to="/cart" className="header-link" style={headerLink}>
 						<ShoppingCartIcon />({cartData.length})

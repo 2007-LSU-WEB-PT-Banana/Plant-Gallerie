@@ -109,7 +109,11 @@ const App = () => {
 						<Register setIsLoggedIn={setIsLoggedIn} />
 					</Route>
 					<Route path="/cart">
-						<Cart cartData={cartData} setCartData={setCartData} />
+						<Cart
+							cartData={cartData}
+							setCartData={setCartData}
+							history={history}
+						/>
 					</Route>
 					<Route path={`/orders/:orderId`}>
 						<SingleOrder
