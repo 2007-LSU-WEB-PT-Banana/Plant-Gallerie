@@ -61,34 +61,41 @@ apiRouter.get("/users", async (req, res, next) => {
 
 apiRouter.post("/login", async (req, res, next) => {
 	const { username, password } = req.body;
-
+	console.log("this is req.body", req.body);
 	if (!username || !password) {
 		throw "u need user name and password";
 	}
-
 	try {
-		const user = await getUserByUsername(username);
+		const user = await getUser(req.body);
 		console.log("this is user", user);
-
 		if (user && user.password == password) {
+			// console.log('users token is ', token)
 			await bcrypt.compare(password, user.password);
+			const token = jwt.sign(
+				{
+					id: user.id,
+					password: user.password,
+					username: user.username,
+				},
+				`${process.env.JWT_SECRET}`,
+				{
+					expiresIn: "6w",
+				}
+			);
 			res.send({
-				message: "you are logged in",
+				user: user,
+				token: token,
 			});
 		} else {
 			throw "u need user name and password again";
 		}
-		//why is there a token hard-coded in this res.send? -deCha
 	} catch (error) {
-		console.log(error);
-		next(error);
+		throw error;
 	}
 });
-
 apiRouter.post("/register", async (req, res, next) => {
 	console.log("here in register");
 	const { firstName, lastName, email, imageURL, username, password } = req.body;
-
 	console.log("here in register 1");
 	console.log(req.body, "this is body");
 	try {
@@ -111,17 +118,9 @@ apiRouter.post("/register", async (req, res, next) => {
 			username,
 			password,
 		});
-		const token = jwt.sign(
-			{
-				id: user.id,
-				username: user.username,
-			},
-			`${process.env.JWT_SECRET}`,
-			{
-				expiresIn: "6w",
-			}
-		);
-		res.send(user);
+		res.send({
+			user: user,
+		});
 	} catch (error) {
 		next(error);
 	}
@@ -181,14 +180,14 @@ apiRouter.post("/createproduct", async (req, res, next) => {
 
 apiRouter.get("/orders/cart", async (req, res, next) => {
 	try {
-		if (id) {
-			const user = await getUserById(id);
-		}
-		if (user) {
-			const userOrders = await getCartByUser({ id });
-			res.send(userOrders);
-		} else {
-			res.send({ message: "there are no orders here" });
+		if (req.id) {
+			const user = await getUserById(req.id);
+			if (user) {
+				const userOrders = await getCartByUser(req.id);
+				res.send(userOrders);
+			} else {
+				res.send({ message: "there are no open orders" });
+			}
 		}
 	} catch (error) {
 		throw error;

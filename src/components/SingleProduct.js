@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 const SingleProduct = (props) => {
 	const {
@@ -11,9 +11,12 @@ const SingleProduct = (props) => {
 		setCartData,
 	} = props;
 
-	function cancelOption(event) {
+	const [message, setMessage] = useState("");
+
+	function backToSearch(event) {
 		event.preventDefault();
 		setActiveProduct("");
+		setMessage("");
 		history.goBack();
 	}
 
@@ -32,15 +35,20 @@ const SingleProduct = (props) => {
 			price: activeProduct.price,
 			productName: activeProduct.name,
 			quantity: count,
+			id: activeProduct.id,
+			image: activeProduct.imageURL,
 		};
+
 		setCartData([...cartData, newCartItem]);
 		setCount(1);
-		setActiveProduct("");
-		history.goBack();
+		setMessage("Added to Cart");
 	}
 
 	return (
 		<>
+			<button className="backButton" onClick={backToSearch}>
+				Back to Search
+			</button>
 			<div className="singleProduct">
 				<img
 					src={activeProduct.imageURL}
@@ -88,9 +96,7 @@ const SingleProduct = (props) => {
 					<button className="addToCart" onClick={updateCart}>
 						Add to Cart
 					</button>
-					<button className="cancel" onClick={cancelOption}>
-						Cancel
-					</button>
+					<p className="addToCartMessage">{message}</p>
 				</div>
 			</div>
 		</>

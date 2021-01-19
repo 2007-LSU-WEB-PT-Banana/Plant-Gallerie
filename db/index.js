@@ -255,7 +255,7 @@ const getCartByUser = async (userId) => {
 			[userId]
 		);
 		const orders = await Promise.all(
-			userCart.map((order) => getProductById(order.id)) //this function's parameter calls for the productId not the orderID
+			userCart.map((order) => getOrderById(order.id)) //this function's parameter calls for the productId not the orderID
 		);
 		return orders;
 	} catch (error) {

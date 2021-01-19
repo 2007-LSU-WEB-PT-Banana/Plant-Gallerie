@@ -1,82 +1,58 @@
-import React, { useEffect, useState } from 'react'
-import {
-  Button,
-  Card,
-  CardContent,
-  CardActions,
-  Typography,
-  CardActionArea,
-  CardMedia,
-} from '@material-ui/core'
-import { makeStyles } from '@material-ui/core/styles'
-import { fetchAPI, BASE_URL } from '../api'
-import SingleOrder from './SingleOrder'
+import React, { useEffect, useState } from "react";
 
-const cartItems = [
-  { price: '5.00', productName: 'potted flower', quantity: '1' },
-  { price: '15.00', productName: 'fern', quantity: '2' },
-  { price: '55.00', productName: 'flower pot', quantity: '3' },
-]
+const Cart = (props) => {
+	const { cartData } = props;
 
-const CartComponent = (props) => {
-  const [getCart, setCart] = useState([])
-  const [orderId, setOrderId] = useState('')
-  const [getPrice, setPrice] = ''
-  const [updateCart, setUpdateCart] = useState('')
-  const [cartData, setCartData] = useState([])
+	const [grandTotal, setGrandTotal] = useState(0);
 
-  const { id, price, productName, quantity } = props
-  const useStyles = makeStyles({
-    root: {
-      maxWidth: 345,
-    },
-    media: {
-      height: 100,
-      width: 100,
-    },
-  })
+	function findGrandTotal() {
+		let findGrandTotal = 0;
 
-  const classes = useStyles()
+		for (let i = 0; i < cartData.length; i++) {
+			let pennyPrice = cartData[i].price / 100;
+			let totalPennyPrice = pennyPrice * cartData[i].quantity;
+			findGrandTotal = findGrandTotal + totalPennyPrice;
+		}
+		let finalGrandTotal = findGrandTotal * 100;
+		setGrandTotal(finalGrandTotal.toFixed(2));
+	}
 
-  return (
-    <div>
-      <div>
-        <h1
-          style={{
-            fontSize: '80px',
-            display: 'flex',
-            textAlign: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          {' '}
-          Here is your cart
-        </h1>
+	useEffect(() => {
+		findGrandTotal();
+	}, [cartData]);
 
-        <div style={{ display: 'inline-block', float: 'right' }}>
-          <h2> Here is Your Total</h2>
-          <div
-            style={{
-              display: 'flex',
-              height: '250px',
-              width: '300px',
-              background: 'red',
-              fontSize: '40px',
-              textAlign: 'center',
-              justifyContent: 'center',
-              verticalAlign: 'middle',
-            }}
-          >
-            72.99
-          </div>
-        </div>
+	return (
+		<div>
+			<h1>Shopping Cart</h1>
 
-        {cartItems.map((currentCartItems) => {
-          return <SingleOrder price={cartItems.price} />
-        })}
-      </div>
-    </div>
-  )
-}
+			<div className="orderOptions">
+				<button>Continue Shopping</button>
+				<button>Checkout</button>
+			</div>
 
-export default CartComponent
+			<div style={{ display: "inline-block", float: "right" }}>
+				<h3>Order Total</h3>
+				<p>${grandTotal}</p>
+			</div>
+
+			{cartData.map((product) => {
+				let priceInPennies = product.price / 100;
+				let extendedTotalInPennies = priceInPennies * product.quantity;
+				let totalExtendedPrice = extendedTotalInPennies * 100;
+
+				return (
+					<div className="cartCard">
+						<img src={product.image} alt="plant" height="200" width="200"></img>
+						<p className="productName">{product.productName}</p>
+						<p className="productQty">Quantity: {product.quantity}</p>
+						<p className="productPrice">Price: ${totalExtendedPrice}</p>
+						<button className="updateQty">Update Quantity</button>
+						<button className="removeItem">Remove Item</button>
+					</div>
+				);
+			})}
+		</div>
+	);
+};
+
+export default Cart;

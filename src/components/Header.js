@@ -21,7 +21,9 @@ const headerLink = {
 	fontFamily: "Alegreya Sans SC, sans-serif",
 };
 
-const Header = () => {
+const Header = (props) => {
+	const { cartData } = props;
+
 	const [isNavVisible, setIsNavVisible] = useState(true);
 	const [isSmallScreen, setIsSmallScreen] = useState(false);
 
@@ -78,11 +80,11 @@ const Header = () => {
 						<PersonOutlineIcon />
 					</Link>
 					<Link to="/cart" className="header-link" style={headerLink}>
-						<ShoppingCartIcon />
+						<ShoppingCartIcon />({cartData.length})
 					</Link>
 				</nav>
 			)}
-			<button class="Burger" onClick={toggleNav}>
+			<button className="Burger" onClick={toggleNav}>
 				<DehazeIcon id="burger-icon"></DehazeIcon>
 			</button>
 		</header>

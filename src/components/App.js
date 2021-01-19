@@ -12,9 +12,9 @@ import {
 	HousePlants,
 	Home,
 	Register,
+	Cart,
+	SingleOrder,
 } from "./index";
-import CartComponent from "./Cart";
-import SingleOrder from "./SingleOrder";
 
 const App = () => {
 	const history = useHistory();
@@ -25,6 +25,7 @@ const App = () => {
 	const [activeProduct, setActiveProduct] = useState("");
 	const [cartData, setCartData] = useState([]);
 	const [count, setCount] = useState(1);
+	const [currentUser, setCurrentUser] = useState();
 
 	useEffect(() => {
 		fetchAPI(BASE_URL + "/")
@@ -52,8 +53,8 @@ const App = () => {
 
 	return (
 		<>
-			<Header />
-			<main class="wrapper">
+			<Header cartData={cartData} />
+			<main className="wrapper">
 				<Switch>
 					<Route exact path="/" component={Home} />
 					<Route path={`/products/:productId`}>
@@ -95,12 +96,27 @@ const App = () => {
 							history={history}
 						/>
 					</Route>
-					<Route exact path="/login" component={Login} />
+					<Route exact path="/login">
+						<Login
+							currentUser={currentUser}
+							setCurrentUser={setCurrentUser}
+							message={message}
+							setMessage={setMessage}
+							setIsLoggedIn={setIsLoggedIn}
+						/>
+					</Route>
 					<Route exact path="/register">
 						<Register setIsLoggedIn={setIsLoggedIn} />
 					</Route>
 					<Route path="/cart">
-						<CartComponent cartData={cartData} setCartData={setCartData} />
+						<Cart cartData={cartData} setCartData={setCartData} />
+					</Route>
+					<Route path={`/orders/:orderId`}>
+						<SingleOrder
+							currentUser={currentUser}
+							cartData={cartData}
+							setCartData={setCartData}
+						/>
 					</Route>
 				</Switch>
 			</main>
