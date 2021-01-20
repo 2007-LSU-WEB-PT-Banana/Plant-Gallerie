@@ -22,7 +22,7 @@ const headerLink = {
 };
 
 const Header = (props) => {
-	const { setIsLoggedIn, isLoggedIn, setActiveUser } = props;
+	const { cartData, setIsLoggedIn, isLoggedIn, setActiveUser } = props;
 	const [isNavVisible, setIsNavVisible] = useState(true);
 	const [isSmallScreen, setIsSmallScreen] = useState(false);
 

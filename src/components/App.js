@@ -12,9 +12,9 @@ import {
 	HousePlants,
 	Home,
 	Register,
+	Cart,
+	SingleOrder,
 } from "./index";
-import CartComponent from "./Cart";
-import SingleOrder from "./SingleOrder";
 
 const App = () => {
 	const history = useHistory();
@@ -66,11 +66,12 @@ const App = () => {
 	return (
 		<>
 			<Header
+				cartData={cartData}
 				setIsLoggedIn={setIsLoggedIn}
 				isLoggedIn={isLoggedIn}
 				setActiveUser={setActiveUser}
 			/>
-			<main class="wrapper">
+			<main className="wrapper">
 				<Switch>
 					<Route exact path="/" component={Home} />
 					<Route path={`/products/:productId`}>
@@ -114,15 +115,29 @@ const App = () => {
 					</Route>
 					<Route exact path="/login">
 						<Login
+							currentUser={currentUser}
+							setCurrentUser={setCurrentUser}
+							message={message}
+							setMessage={setMessage}
 							setIsLoggedIn={setIsLoggedIn}
-							setActiveUser={setActiveUser}
 						/>
 					</Route>
 					<Route exact path="/register">
 						<Register setIsLoggedIn={setIsLoggedIn} />
 					</Route>
 					<Route path="/cart">
-						<CartComponent cartData={cartData} setCartData={setCartData} />
+						<Cart
+							cartData={cartData}
+							setCartData={setCartData}
+							history={history}
+						/>
+					</Route>
+					<Route path={`/orders/:orderId`}>
+						<SingleOrder
+							currentUser={currentUser}
+							cartData={cartData}
+							setCartData={setCartData}
+						/>
 					</Route>
 				</Switch>
 			</main>

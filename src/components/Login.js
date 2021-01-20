@@ -4,7 +4,14 @@ import { useHistory } from "react-router-dom";
 import { getToken, setToken, clearToken, auth } from "../api/index";
 
 function Login(props) {
-	const { setIsLoggedIn, setActiveUser } = props;
+	const {
+		setIsLoggedIn,
+		currentUser,
+		setCurrentUser,
+		message,
+		setMessage,
+		setActiveUser,
+	} = props;
 	const history = useHistory();
 	const [username, setUserName] = useState("");
 	const [password, setPassword] = useState("");
@@ -15,9 +22,9 @@ function Login(props) {
 		try {
 			console.log("hhhhh");
 			const result = await auth(username, password);
-			console.log("the result is", result);
 			setIsLoggedIn(true);
-			setActiveUser(result.user); //this may need to be changed depending on what the response looks like
+			setMessage("Currently Logged In");
+			setActiveUser(result.userId);
 			history.push("/");
 		} catch (error) {
 			console.error(error);
