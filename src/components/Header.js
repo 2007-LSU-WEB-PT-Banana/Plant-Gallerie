@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, Fragment } from 'react'
 import { Link } from 'react-router-dom'
 import SearchIcon from '@material-ui/icons/Search'
 import PersonOutlineIcon from '@material-ui/icons/PersonOutline'
@@ -22,7 +22,13 @@ const headerLink = {
 }
 
 const Header = (props) => {
-  const { setIsLoggedIn } = props
+  const {
+    setIsLoggedIn,
+    history,
+    clearToken,
+    activeUser,
+    setActiveUser,
+  } = props
   const [isNavVisible, setIsNavVisible] = useState(true)
   const [isSmallScreen, setIsSmallScreen] = useState(false)
 
@@ -35,6 +41,12 @@ const Header = (props) => {
       mediaQuery.removeEventListener('change', handleMediaQueryChange)
     }
   }, [])
+
+  const handleSignOut = () => {
+    console.log('hitting signout')
+    clearToken()
+    setIsLoggedIn(false)
+  }
 
   const toggleNav = () => {
     setIsNavVisible(!isNavVisible)
@@ -76,15 +88,24 @@ const Header = (props) => {
             <SearchIcon className="header-searchIcon" />
           </Link>
 
-          <Link to="/login" className="header-link" style={headerLink}>
-            {setIsLoggedIn ? ` hello user` : <PersonOutlineIcon />}
-          </Link>
+          {!setActiveUser ? (
+            <Link to="/" className="header-link" style={headerLink}>
+              <span onClick={handleSignOut}>
+                Hello {activeUser.username} Signout
+              </span>
+            </Link>
+          ) : (
+            <Link to="/login" className="header-link" style={headerLink}>
+              <PersonOutlineIcon />
+            </Link>
+          )}
+
           <Link to="/cart" className="header-link" style={headerLink}>
             <ShoppingCartIcon />
           </Link>
         </nav>
       )}
-      <button class="Burger" onClick={toggleNav}>
+      <button className="Burger" onClick={toggleNav}>
         <DehazeIcon id="burger-icon"></DehazeIcon>
       </button>
     </header>

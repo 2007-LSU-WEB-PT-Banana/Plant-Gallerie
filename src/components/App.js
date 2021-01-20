@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from 'react'
 import { Switch, Route, useHistory, Link } from 'react-router-dom'
-import { fetchAPI, BASE_URL, auth, getToken, clearToken } from '../api'
+import {
+  fetchAPI,
+  BASE_URL,
+  auth,
+  getToken,
+  clearToken,
+  getActiveUser,
+} from '../api'
 import './Home.css'
 import {
   AllProducts,
@@ -15,6 +22,7 @@ import {
 } from './index'
 import CartComponent from './Cart'
 import SingleOrder from './SingleOrder'
+import Payment from './Payment'
 
 const App = () => {
   const history = useHistory()
@@ -25,6 +33,7 @@ const App = () => {
   const [activeProduct, setActiveProduct] = useState('')
   const [cartData, setCartData] = useState([])
   const [count, setCount] = useState(1)
+  const [activeUser, setActiveUser] = useState('')
 
   useEffect(() => {
     fetchAPI(BASE_URL + '/')
@@ -39,6 +48,7 @@ const App = () => {
   useEffect(() => {
     fetchAPI(BASE_URL + '/products')
       .then((data) => {
+        console.log('this is data', data)
         data.map((product) => {
           let newPrice = product.price / 100
           product.price = newPrice
@@ -48,12 +58,28 @@ const App = () => {
       .catch(console.error)
   }, [])
 
+  useEffect(() => {
+    getActiveUser()
+      .then((data) => {
+        console.log('this is singleuser', data)
+        setActiveUser(data)
+      })
+
+      .catch(console.error)
+  }, [])
+
   console.log('The cart data is', cartData)
 
   return (
     <>
-      <Header setIsLoggedIn={setIsLoggedIn} />
-      <main class="wrapper">
+      <Header
+        activeUser={activeUser}
+        setActiveUser={setActiveUser}
+        setIsLoggedIn={setIsLoggedIn}
+        history={history}
+        clearToken={clearToken}
+      />
+      <main className="wrapper">
         <Switch>
           <Route exact path="/" component={Home} />
           <Route path={`/products/:productId`}>
@@ -103,6 +129,13 @@ const App = () => {
           </Route>
           <Route path="/cart">
             <CartComponent cartData={cartData} setCartData={setCartData} />
+          </Route>
+
+          <Route path="/payment">
+            <Payment
+              productList={productList}
+              setProductList={setProductList}
+            />
           </Route>
         </Switch>
       </main>

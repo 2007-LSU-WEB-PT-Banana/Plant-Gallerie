@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import './Login.css'
 import { useHistory } from 'react-router-dom'
-import { getToken, setToken, clearToken, auth } from '../api/index'
+import { getToken, setToken, clearToken, loginUser } from '../api/index'
 
 function Login(props) {
   const { setIsLoggedIn } = props
@@ -14,7 +14,8 @@ function Login(props) {
     console.log('logging in')
     try {
       console.log('hhhhh')
-      const result = await auth(username, password)
+      const result = await loginUser(username, password)
+      console.log('this is result', result)
       setIsLoggedIn(true)
       history.push('/')
     } catch (error) {
