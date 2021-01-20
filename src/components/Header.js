@@ -95,6 +95,7 @@ const Header = (props) => {
 					</Link>
 					<Link to="/cart" className="header-link" style={headerLink}>
 						<ShoppingCartIcon />
+						{cartData.length}
 					</Link>
 				</nav>
 			)}

@@ -115,8 +115,8 @@ const App = () => {
 					</Route>
 					<Route exact path="/login">
 						<Login
-							currentUser={currentUser}
-							setCurrentUser={setCurrentUser}
+							activeUser={activeUser}
+							setActiveUser={setActiveUser}
 							message={message}
 							setMessage={setMessage}
 							setIsLoggedIn={setIsLoggedIn}
@@ -134,7 +134,7 @@ const App = () => {
 					</Route>
 					<Route path={`/orders/:orderId`}>
 						<SingleOrder
-							currentUser={currentUser}
+							activeUser={activeUser}
 							cartData={cartData}
 							setCartData={setCartData}
 						/>

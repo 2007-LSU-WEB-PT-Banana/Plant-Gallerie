@@ -37,6 +37,7 @@
 	justify-self: start;
 	font-weight: bolder;
 	font-size: 30px;
+	align-self: center;
 }
 
 #burger-icon {

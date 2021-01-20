@@ -24,7 +24,7 @@ function Login(props) {
 			const result = await auth(username, password);
 			setIsLoggedIn(true);
 			setMessage("Currently Logged In");
-			setActiveUser(result.userId);
+			//setActiveUser(result.userId);
 			history.push("/");
 		} catch (error) {
 			console.error(error);
