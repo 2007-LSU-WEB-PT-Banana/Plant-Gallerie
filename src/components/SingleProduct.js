@@ -29,6 +29,7 @@ const SingleProduct = (props) => {
 
 	function updateCart() {
 		let newCartItem = {
+			productId: activeProduct.id,
 			price: activeProduct.price,
 			productName: activeProduct.name,
 			quantity: count,

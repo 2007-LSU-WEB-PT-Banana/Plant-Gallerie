@@ -1,63 +1,65 @@
-import React, { useState } from 'react'
-import './Login.css'
-import { useHistory } from 'react-router-dom'
-import { getToken, setToken, clearToken, auth } from '../api/index'
+import React, { useState } from "react";
+import "./Login.css";
+import { useHistory } from "react-router-dom";
+import { getToken, setToken, clearToken, auth } from "../api/index";
 
 function Login(props) {
-  const { setIsLoggedIn } = props
-  const history = useHistory()
-  const [username, setUserName] = useState('')
-  const [password, setPassword] = useState('')
+	const { setIsLoggedIn, setActiveUser } = props;
+	const history = useHistory();
+	const [username, setUserName] = useState("");
+	const [password, setPassword] = useState("");
 
-  const login = async (event) => {
-    event.preventDefault()
-    console.log('logging in')
-    try {
-      console.log('hhhhh')
-      const result = await auth(username, password)
-      setIsLoggedIn(true)
-      history.push('/')
-    } catch (error) {
-      console.error(error)
-    }
-  }
+	const login = async (event) => {
+		event.preventDefault();
+		console.log("logging in");
+		try {
+			console.log("hhhhh");
+			const result = await auth(username, password);
+			console.log("the result is", result);
+			setIsLoggedIn(true);
+			setActiveUser(result.user); //this may need to be changed depending on what the response looks like
+			history.push("/");
+		} catch (error) {
+			console.error(error);
+		}
+	};
 
-  const register = (event) => {
-    history.push('/register')
-  }
-  return (
-    <div className="login">
-      <div className="login-container">
-        <h1>Sign In</h1>
-        <form>
-          <h5>Username</h5>
-          <input
-            type="username"
-            value={username}
-            onChange={(event) => setUserName(event.target.value)}
-          />
-          <h5>Password</h5>
-          <input
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
-            type="password"
-          />
+	const register = (event) => {
+		history.push("/register");
+	};
+	return (
+		<div className="login">
+			<div className="login-container">
+				<h1>Sign In</h1>
+				<form>
+					<h5>Username</h5>
+					<input
+						type="username"
+						value={username}
+						onChange={(event) => setUserName(event.target.value)}
+					/>
+					<h5>Password</h5>
+					<input
+						value={password}
+						onChange={(event) => setPassword(event.target.value)}
+						type="password"
+					/>
 
-          <button onClick={login} type="submit" className="login-siginbutton">
-            Sign In
-          </button>
-        </form>
-        <p>
-          By signing in you agree to Plant Gallerie Terms and Conditions of Use
-          & Sale. Please see our Privacy Notice, our Cookies and our
-          interest-Based Ads Notice.
-        </p>
-        <button onClick={register} className="login-createbutton">
-          Create your Plant Gallerie Account
-        </button>
-      </div>
-    </div>
-  )
+					<button onClick={login} type="submit" className="login-siginbutton">
+						Sign In
+					</button>
+				</form>
+				<p>
+					By signing in you agree to Plant Gallerie Terms and Conditions of Use
+					& Sale. Please see our Privacy Notice, our Cookies and our
+					interest-Based Ads Notice.
+				</p>
+				<button onClick={register} className="login-createbutton">
+					Create your Plant Gallerie Account
+				</button>
+			</div>
+		</div>
+	);
 }
 
-export default Login
+export default Login;

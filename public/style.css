@@ -22,7 +22,7 @@ body {
 }
 
 main {
-	margin-top: 60px;
+	margin-top: 65px;
 	background-color: #f0f0f0;
 }
 
@@ -191,6 +191,19 @@ main {
 .quantity.buttons_added .minus:focus,
 .quantity.buttons_added .plus:focus {
 	outline: none;
+}
+
+.logOut {
+	background-color: #303018;
+	padding: 5px;
+	text-decoration: none;
+	color: white;
+	border-radius: 0.25rem;
+	text-align: center;
+	transition: all 0.3s;
+	justify-content: center;
+	text-transform: uppercase;
+	margin-top: 5px;
 }
 
 @media (max-width: 1171px) {

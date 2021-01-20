@@ -1,115 +1,115 @@
-export const BASE_URL = '/api'
+export const BASE_URL = "/api";
 
 export const getToken = () => {
-  if (localStorage.getItem('auth-token')) {
-    return localStorage.getItem('auth-token')
-  } else {
-    localStorage.removeItem('auth-token')
-  }
-}
+	if (localStorage.getItem("auth-token")) {
+		return localStorage.getItem("auth-token");
+	} else {
+		localStorage.removeItem("auth-token");
+	}
+};
 
 export const clearToken = () => {
-  localStorage.removeItem('auth-token')
-}
+	localStorage.removeItem("auth-token");
+};
 
 const setToken = (token) => {
-  localStorage.setItem('auth-token', token)
-}
+	localStorage.setItem("auth-token", token);
+};
 
 function buildHeaders() {
-  let base = {
-    'Content-Type': 'application/json',
-  }
+	let base = {
+		"Content-Type": "application/json",
+	};
 
-  if (getToken()) {
-    base['Authorization'] = `Bearer ${getToken()}`
-  }
+	if (getToken()) {
+		base["Authorization"] = `Bearer ${getToken()}`;
+	}
 
-  return base
+	return base;
 }
 
 export const auth = async (username, password) => {
-  console.log('inside auth')
-  const url = `${BASE_URL}/login`
-  console.log('after url')
+	console.log("inside auth");
+	const url = `${BASE_URL}/login`;
+	console.log("after url");
 
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: buildHeaders(),
-    body: JSON.stringify({
-      username: username,
-      password: password,
-    }),
-  })
-  console.log('this is respones', response)
-  const { error, data } = await response.json()
+	const response = await fetch(url, {
+		method: "POST",
+		headers: buildHeaders(),
+		body: JSON.stringify({
+			username: username,
+			password: password,
+		}),
+	});
+	console.log("this is respones", response);
+	const { error, data } = await response.json();
 
-  if (error) {
-    throw Error(error.message)
-  }
+	if (error) {
+		throw Error(error.message);
+	}
 
-  if (data && data.token) {
-    setToken(data.token)
-  }
-
-  return data
-}
+	if (data && data.token) {
+		setToken(data.token);
+	}
+	console.log("the data is", data);
+	return data;
+};
 
 export const NewUser = async (
-  firstName,
-  lastName,
-  email,
-  imageURL,
-  username,
-  password,
+	firstName,
+	lastName,
+	email,
+	imageURL,
+	username,
+	password
 ) => {
-  const url = `${BASE_URL}/register`
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: buildHeaders(),
-    body: JSON.stringify({
-      username: username,
-      password: password,
-      firstName: firstName,
-      lastName: lastName,
-      email: email,
-      imageURL: imageURL,
-    }),
-  })
-  const { error, data } = await response.json()
+	const url = `${BASE_URL}/register`;
+	const response = await fetch(url, {
+		method: "POST",
+		headers: buildHeaders(),
+		body: JSON.stringify({
+			username: username,
+			password: password,
+			firstName: firstName,
+			lastName: lastName,
+			email: email,
+			imageURL: imageURL,
+		}),
+	});
+	const { error, data } = await response.json();
 
-  if (error) {
-    throw Error(error.message)
-  }
+	if (error) {
+		throw Error(error.message);
+	}
 
-  if (data && data.token) {
-    setToken(data.token)
-  }
+	if (data && data.token) {
+		setToken(data.token);
+	}
 
-  return data
-}
+	return data;
+};
 
-export const fetchAPI = async (url, method = 'GET', sendData = null) => {
-  const fetchOptions = {
-    method: method,
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  }
+export const fetchAPI = async (url, method = "GET", sendData = null) => {
+	const fetchOptions = {
+		method: method,
+		headers: {
+			"Content-Type": "application/json",
+		},
+	};
 
-  if (sendData) {
-    if (sendData.price) {
-      let newPrice = sendData.price * 100;
-      sendData.price = newPrice;
-    }
-    fetchOptions.body = JSON.stringify(sendData)
-  }
+	if (sendData) {
+		if (sendData.price) {
+			let newPrice = sendData.price * 100;
+			sendData.price = newPrice;
+		}
+		fetchOptions.body = JSON.stringify(sendData);
+	}
 
-  console.log('this is what we are sending in the fetch', fetchOptions)
+	console.log("this is what we are sending in the fetch", fetchOptions);
 
-  const response = await fetch(url, fetchOptions)
-  const data = await response.json()
-  console.log("The response we are receiving in the fetch is", data)
+	const response = await fetch(url, fetchOptions);
+	const data = await response.json();
+	console.log("The response we are receiving in the fetch is", data);
 
-  return data
-}
+	return data;
+};
