@@ -25,7 +25,7 @@ import SingleOrder from './SingleOrder'
 import Payment from './Payment'
 
 const App = () => {
-  const history = useHistory()
+	const history = useHistory();
 
   const [isLoggedIn, setIsLoggedIn] = useState(!!getToken())
   const [message, setMessage] = useState('')
@@ -35,15 +35,16 @@ const App = () => {
   const [count, setCount] = useState(1)
   const [activeUser, setActiveUser] = useState('')
 
-  useEffect(() => {
-    fetchAPI(BASE_URL + '/')
-      .then((response) => {
-        setMessage(response.message)
-      })
-      .catch((error) => {
-        setMessage(error.message)
-      })
-  })
+
+	useEffect(() => {
+		fetchAPI(BASE_URL + "/")
+			.then((response) => {
+				setMessage(response.message);
+			})
+			.catch((error) => {
+				setMessage(error.message);
+			});
+	});
 
   useEffect(() => {
     fetchAPI(BASE_URL + '/products')
@@ -143,4 +144,4 @@ const App = () => {
   )
 }
 
-export default App
+export default App;

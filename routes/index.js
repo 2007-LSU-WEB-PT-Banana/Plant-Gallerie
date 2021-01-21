@@ -2,20 +2,23 @@ const apiRouter = require('express').Router()
 const bcrypt = require('bcrypt')
 const uuid = require('uuid/v4')
 
+
 const {
-  createProduct,
-  getProductById,
-  getAllProducts,
-  createUser,
-  getAllUsers,
-  getUserById,
-  getUserByUsername,
-  createOrder,
-  getOrdersByProduct,
-  getAllOrders,
+	createProduct,
+	getProductById,
+	getAllProducts,
+	createUser,
+	getAllUsers,
+	getUserById,
+	getUserByUsername,
+	createOrder,
+	getOrdersByProduct,
+	getAllOrders,
   getOrderById,
+  getCartByUser,
+  getOrderProductsByOrderId,
   getUser,
-} = require('../db/index')
+} = require("../db/index");
 
 require('dotenv').config()
 const jwt = require('jsonwebtoken')
@@ -28,54 +31,55 @@ apiRouter.get('/', (req, res) => {
   res.send(`Add your stripe secrete key to the .require('stripe') statmemt!`)
 })
 
-const requireUser = (req, res, next) => {
-  if (!req.user) {
-    next({
-      name: 'MissingUserError',
-      message: 'You must be logged in to perform this action',
-    })
-  }
 
-  next()
-}
+// const requireUser = (req, res, next) => {
+// 	if (!req.user) {
+// 		next({
+// 			name: "MissingUserError",
+// 			message: "You must be logged in to perform this action",
+// 		});
+// 	}
 
-const requireActiveUser = (req, res, next) => {
-  if (!req.user.active) {
-    next({
-      name: 'UserNotActive',
-      message: 'You must be active to perform this action',
-    })
-  }
-  next()
-}
+// 	next();
+// };
 
-apiRouter.get('/', async (req, res, next) => {
-  console.log('hitting api')
-  try {
-    console.log('inside main page try')
-    res.send('Plant Gallerie Main Page')
-  } catch (error) {
-    next(error)
-  }
-})
+// const requireActiveUser = (req, res, next) => {
+// 	if (!req.user.active) {
+// 		next({
+// 			name: "UserNotActive",
+// 			message: "You must be active to perform this action",
+// 		});
+// 	}
+// 	next();
+// };
 
-apiRouter.get('/users', async (req, res, next) => {
-  try {
-    const allUsers = await getAllUsers()
-    console.log('api try users', allUsers)
-    res.send(allUsers)
-  } catch (error) {
-    next(error)
-  }
-})
+apiRouter.get("/", async (req, res, next) => {
+	console.log("hitting api");
+	try {
+		console.log("inside main page try");
+		res.send("Plant Gallerie Main Page");
+	} catch (error) {
+		next(error);
+	}
+});
 
-apiRouter.post('/login', async (req, res, next) => {
-  const { username, password } = req.body
-  console.log('this is req.body', req.body)
+apiRouter.get("/users", async (req, res, next) => {
+	try {
+		const allUsers = await getAllUsers();
+		console.log("api try users", allUsers);
+		res.send(allUsers);
+	} catch (error) {
+		next(error);
+	}
+});
 
-  if (!username || !password) {
-    throw 'u need user name and password'
-  }
+apiRouter.post("/login", async (req, res, next) => {
+	const { username, password } = req.body;
+	console.log("this is req.body", req.body);
+
+	if (!username || !password) {
+		throw "u need user name and password";
+	}
 
   try {
     const user = await getUser(req.body)
@@ -114,28 +118,29 @@ apiRouter.post('/register', async (req, res, next) => {
 
   const { firstName, lastName, email, imageURL, username, password } = req.body
 
-  console.log('here in register 1')
-  console.log(req.body, 'this is body')
-  try {
-    console.log('here in register 6')
-    const _user = await getUserByUsername(username)
-    console.log(_user, 'this is user')
-    if (_user) {
-      console.log('inside user try')
-      next({
-        name: 'UserExistsError',
-        message: 'A user by that username already exists',
-      })
-    }
-    console.log('here in register 7')
-    const user = await createUser({
-      firstName,
-      lastName,
-      email,
-      imageURL,
-      username,
-      password,
-    })
+
+	console.log("here in register 1");
+	console.log(req.body, "this is body");
+	try {
+		console.log("here in register 6");
+		const _user = await getUserByUsername(username);
+		console.log(_user, "this is user");
+		if (_user) {
+			console.log("inside user try");
+			next({
+				name: "UserExistsError",
+				message: "A user by that username already exists",
+			});
+		}
+		console.log("here in register 7");
+		const user = await createUser({
+			firstName,
+			lastName,
+			email,
+			imageURL,
+			username,
+			password,
+		});
 
     if (user.password < 8) {
       throw 'Password should 8 or more characters'
@@ -172,27 +177,18 @@ apiRouter.get('/users/me', async (req, res, next) => {
   }
 })
 
-apiRouter.get('/users/:id', async (req, res, next) => {
-  console.log('getting user by id')
-  try {
-    console.log('getting user by id inside try')
-    const oneUser = await getUserById(req.params.id)
-    console.log('user is', oneUser)
-    res.send(oneUser)
-  } catch (error) {
-    next(error)
-  }
-})
 
-apiRouter.get('/products', async (req, res, next) => {
-  try {
-    console.log('inside try for getting all products')
-    const allProducts = await getAllProducts()
-    res.send(allProducts)
-  } catch (error) {
-    next(error)
-  }
-})
+apiRouter.get("/users/:id", async (req, res, next) => {
+	console.log("getting user by id");
+	try {
+		console.log("getting user by id inside try");
+		const oneUser = await getUserById(req.params.id);
+		console.log("user is", oneUser);
+		res.send(oneUser);
+	} catch (error) {
+		next(error);
+	}
+});
 
 apiRouter.get('/products/:id', async (req, res, next) => {
   const id = req.params.id
@@ -223,65 +219,85 @@ apiRouter.post('/createproduct', async (req, res, next) => {
   }
 })
 
-apiRouter.get('/orders/cart', async (req, res, next) => {
-  try {
-    const user = await getUserById(req.body.userId)
+apiRouter.get("/products", async (req, res, next) => {
+	try {
+		console.log("inside try for getting all products");
+		const allProducts = await getAllProducts();
+		res.send(allProducts);
+	} catch (error) {
+		next(error);
+	}
+});
 
-    if (user) {
-      const userOrders = await getCartByUser(user.id)
-      res.send(userOrders)
-    } else {
-      res.send({ message: 'there are no orders here' })
+apiRouter.get('/orders/cart', async (req,res,next) => {
+  try {
+    const prefix = 'Bearer ';
+    const auth = req.header('Authorization');
+    
+    if (auth.startsWith(prefix)) {
+    const token = auth.slice(prefix.length);
+    if (token){
+    const { id } = jwt.verify(token, `${process.env.JWT_SECRET}`);
+      if (id) {
+        const user = await getUserById(id)
+        if (user){
+            const orders = await getCartByUser({id})
+            res.send( orders )
+        } else {
+            res.send({message:'You must be logged in to view your cart'})
+        }
+      }
     }
-  } catch (error) {
-    throw error
-  }
-})
+}
+} catch (error) {
+    console.error(error)
+}
+});
 
-apiRouter.get('/orders/:orderId', async (req, res) => {
-  try {
-    console.log('getting one order')
-    const getOneOrder = await getOrderById(req.params.id)
-    console.log('this is one order', getOneOrder)
+apiRouter.get("/orders/:orderId", async (req, res) => {
+	try {
+		console.log("getting one order");
+		const getOneOrder = await getOrderById(req.params.id);
+		console.log("this is one order", getOneOrder);
 
-    res.send(getOneOrder)
-  } catch (error) {
-    throw error
-  }
-})
+		res.send(getOneOrder);
+	} catch (error) {
+		throw error;
+	}
+});
 
-apiRouter.post('/orders', async (req, res, next) => {
-  console.log('hitting create order')
+apiRouter.post("/orders", async (req, res, next) => {
+	console.log("hitting create order");
 
-  try {
-    const newOrder = await createOrder(req.body)
-    res.send(newOrder)
-  } catch (error) {
-    next(error)
-  }
-})
+	try {
+		const newOrder = await createOrder(req.body);
+		res.send(newOrder);
+	} catch (error) {
+		next(error);
+	}
+});
 
-apiRouter.get('/orders', async (req, res) => {
-  try {
-    const allOrders = await getAllOrders()
-    console.log(allOrders)
-    res.send(allOrders)
-  } catch (error) {
-    throw error
-  }
-})
+apiRouter.get("/orders", async (req, res) => {
+	try {
+		const allOrders = await getAllOrders();
+		console.log(allOrders);
+		res.send(allOrders);
+	} catch (error) {
+		throw error;
+	}
+});
 
-apiRouter.get('/users/:userId/orders', async (req, res) => {
-  console.log('inside getting products by id')
-  console.log('this is id', req.params.userId)
-  try {
-    const orders = await getOrdersByProduct(req.params.userId)
-    console.log(orders)
-    res.send(orders)
-  } catch (error) {
-    throw error
-  }
-})
+apiRouter.get("/users/:userId/orders", async (req, res) => {
+	console.log("inside getting products by id");
+	console.log("this is id", req.params.userId);
+	try {
+		const orders = await getOrdersByProduct(req.params.userId);
+		console.log(orders);
+		res.send(orders);
+	} catch (error) {
+		throw error;
+	}
+});
 
 apiRouter.post('/payment', async (req, res) => {
   console.log(req.body)
