@@ -7,6 +7,7 @@ import {
 	getToken,
 	clearToken,
 	getActiveUser,
+	getCartData,
 } from "../api";
 import "./Home.css";
 import {
@@ -69,7 +70,7 @@ const App = () => {
 	console.log("The cart data is", cartData);
 	console.log("the active user is", activeUser);
 
-	//going to have to make this a function in the api folder and possibly use params for userID instead of body
+	// //going to have to make this a function in the api folder and possibly use params for userID instead of body
 	// useEffect(() => {
 	// 	if (activeUser) {
 	// 		fetchAPI(BASE_URL + "/orders/cart", "GET", activeUser.id)
@@ -137,7 +138,11 @@ const App = () => {
 						/>
 					</Route>
 					<Route exact path="/login">
-						<Login setIsLoggedIn={setIsLoggedIn} history={history} />
+						<Login
+							setIsLoggedIn={setIsLoggedIn}
+							history={history}
+							setCartData={setCartData}
+						/>
 					</Route>
 					<Route exact path="/register">
 						<Register setIsLoggedIn={setIsLoggedIn} />

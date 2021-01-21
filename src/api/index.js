@@ -42,9 +42,28 @@ export const getActiveUser = async () => {
 	if (error) {
 		throw Error(error.message);
 	}
-	console.log("this is user fron end fetcgh", user);
+	console.log("this is user front end fetch", user);
 	return user;
 };
+
+// export const getCartData = async () => {
+// 	const url = `${BASE_URL}/orders/cart`;
+// 	const user = activeUser || null;
+// 	const response = await fetch(url, {
+// 		method: "GET",
+// 		headers: { "Content-Type": "application/json" },
+// 		body: JSON.stringify({ user }),
+// 	});
+// 	console.log("response from getCartData on frontend", response);
+
+// 	const { error, cart } = await response.json();
+
+// 	if (error) {
+// 		throw Error(error.message);
+// 	}
+// 	console.log("this is the cart from the front end request", cart);
+// 	return cart;
+// };
 
 export const loginUser = async (username, password) => {
 	console.log("inside auth");
@@ -59,7 +78,7 @@ export const loginUser = async (username, password) => {
 			password: password,
 		}),
 	});
-	console.log("this is respones", response);
+	console.log("this is response", response);
 	const { error, user, token } = await response.json();
 
 	if (error) {
@@ -116,17 +135,20 @@ export const fetchAPI = async (url, method = "GET", sendData = null) => {
 		},
 	};
 
+	console.log("the sendData is", sendData);
 	if (sendData) {
 		if (sendData.price) {
 			let newPrice = sendData.price * 100;
 			sendData.price = newPrice;
 		}
-		fetchOptions.body = JSON.stringify(sendData);
+		//fetchOptions.body = JSON.stringify(sendData);
+		fetchOptions.body = sendData;
 	}
-
+	console.log("fetchoptions.body", fetchOptions.body);
 	console.log("this is what we are sending in the fetch", fetchOptions);
 
-	const response = await fetch(url, fetchOptions);
+	const response = await fetch(url, fetchOptions.body);
+	console.log("the response from line 148 is:", response);
 	const data = await response.json();
 	console.log("The response we are receiving in the fetch is", data);
 

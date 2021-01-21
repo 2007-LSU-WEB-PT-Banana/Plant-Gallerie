@@ -103,9 +103,8 @@ const getUserById = async (id) => {
 	}
 };
 
+//this function is working - do not edit this code!
 const getUserByUsername = async ({ username }) => {
-	console.log("inside db");
-	console.log("this is insdide db usrername ", username);
 	try {
 		const {
 			rows: [user],
@@ -117,11 +116,6 @@ const getUserByUsername = async ({ username }) => {
     `,
 			[username]
 		);
-
-		console.log("username", username);
-		console.log("required user is ", user);
-
-		console.log("existing user by user function");
 		return user;
 	} catch (error) {
 		throw error;
@@ -310,21 +304,44 @@ const getOrderProductsById = async (orderId) => {
 };
 
 //this function works - do not edit this code!
+// const getCartByUser = async (userId) => {
+// 	try {
+// 		const { rows: userCart } = await client.query(
+// 			`
+//     SELECT *
+//     FROM orders
+//     JOIN products ON
+//     WHERE "userId"=$1 AND status='created';
+//     `,
+// 			[userId]
+// 		);
+// 		const orders = await Promise.all(
+// 			userCart.map((order) => getOrderById(order.id))
+// 		);
+// 		return orders;
+// 	} catch (error) {
+// 		throw error;
+// 	}
+// };
+
+//this function works - do not edit code!
 const getCartByUser = async (userId) => {
 	try {
-		const { rows: userCart } = await client.query(
+		const { rows: orders } = await client.query(
 			`
     SELECT *
     FROM orders
-    JOIN products ON 
     WHERE "userId"=$1 AND status='created';
     `,
 			[userId]
 		);
-		const orders = await Promise.all(
-			userCart.map((order) => getOrderById(order.id))
+		console.log("the orders are", orders);
+
+		const openOrders = await Promise.all(
+			orders.map((order) => getOrderById(order.id))
 		);
-		return orders;
+
+		return openOrders;
 	} catch (error) {
 		throw error;
 	}
@@ -498,12 +515,11 @@ const updateOrderProduct = async ({ id, price, quantity }) => {
 			rows: [orderProduct],
 		} = await client.query(
 			`
-
-    UPDATE order_products original
-    SET price=$2,
-    quantity=$3
-    WHERE original.id=$1
-    RETRUNING *;
+      UPDATE order_products original
+      SET price=$2,
+      quantity=$3
+      WHERE original.id=$1
+      RETURNING *;
     `,
 			[id, price, quantity]
 		);
@@ -513,24 +529,25 @@ const updateOrderProduct = async ({ id, price, quantity }) => {
 		throw error;
 	}
 };
-const destroyOrderProduct = async (id) => {
-	console.log("the id is ", id);
-	try {
-		const {
-			rows: [orderProduct],
-		} = await client.query(
-			`
-      DELETE FROM order_products
-      WHERE id=$1
-      RETURNING *
-      `,
-			[id]
-		);
-		return orderProduct;
-	} catch (error) {
-		throw error;
-	}
-};
+
+// const destroyOrderProduct = async (id) => {
+// 	console.log("the id is ", id);
+// 	try {
+// 		const {
+// 			rows: [orderProduct],
+// 		} = await client.query(
+// 			`
+//       DELETE FROM order_products
+//       WHERE id=$1
+//       RETURNING *
+//       `,
+// 			[id]
+// 		);
+// 		return orderProduct;
+// 	} catch (error) {
+// 		throw error;
+// 	}
+// };
 
 async function getOrderProductsByOrderId(orderId) {
 	try {
@@ -563,4 +580,5 @@ module.exports = {
 	getOrderById,
 	getUser,
 	getOrderProductsById,
+	getOrdersByUser,
 };
