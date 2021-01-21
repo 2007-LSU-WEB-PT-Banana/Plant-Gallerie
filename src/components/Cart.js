@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import SingleOrder from "./SingleOrder";
 
 const Cart = (props) => {

@@ -38,6 +38,8 @@ const Header = (props) => {
 		console.log("hitting signout");
 		clearToken();
 		setIsLoggedIn(false);
+		setActiveUser({});
+		history.push("/");
 	};
 
 	useEffect(() => {
@@ -61,11 +63,6 @@ const Header = (props) => {
 		} else {
 			setIsSmallScreen(false);
 		}
-	};
-
-	const logout = () => {
-		setIsLoggedIn(false);
-		setActiveUser({});
 	};
 
 	return (
@@ -101,7 +98,7 @@ const Header = (props) => {
 						) : (
 							<>
 								<h6 className="loginMessage">Welcome Back!</h6>
-								<button className="logOut" onClick={logout}>
+								<button className="logOut" onClick={handleSignOut}>
 									Log Out
 								</button>
 							</>
@@ -109,11 +106,11 @@ const Header = (props) => {
 					</Link>
 					<Link to="/cart" className="header-link" style={headerLink}>
 						<ShoppingCartIcon />
-						{cartData.length}
+						{cartData !== undefined ? cartData.length : "0"}
 					</Link>
 				</nav>
 			)}
-			<button class="Burger" onClick={toggleNav}>
+			<button className="Burger" onClick={toggleNav}>
 				<DehazeIcon id="burger-icon"></DehazeIcon>
 			</button>
 		</header>

@@ -274,13 +274,7 @@ apiRouter.get("/orders/cart", async (req, res, next) => {
 apiRouter.get("/orders/:orderId", async (req, res) => {
 	try {
 		console.log("getting one order");
-		const getOneOrder = await getOrderById(req.params.id);
-		console.log("this is one order", getOneOrder);
-		//From deCha: this worked for me when putting the id in the body as follows
-		// console.log("the request.body.id is", req.body.id);
-		// try {
-		//   console.log("getting one order");
-		//   const getOneOrder = await getOrderById(req.body.id);
+		const getOneOrder = await getOrderById(req.body.id);
 		res.send(getOneOrder);
 	} catch (error) {
 		throw error;

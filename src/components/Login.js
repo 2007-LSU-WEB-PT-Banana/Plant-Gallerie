@@ -4,33 +4,23 @@ import { useHistory } from "react-router-dom";
 import { getToken, setToken, clearToken, loginUser } from "../api/index";
 
 function Login(props) {
-	const {
-		setIsLoggedIn,
-		currentUser,
-		setCurrentUser,
-		message,
-		setMessage,
-		setActiveUser,
-	} = props;
+	const { setIsLoggedIn } = props;
 	const history = useHistory();
 	const [username, setUserName] = useState("");
 	const [password, setPassword] = useState("");
-
 	const login = async (event) => {
 		event.preventDefault();
 		console.log("logging in");
 		try {
 			console.log("hhhhh");
 			const result = await loginUser(username, password);
+			console.log("this is result", result);
 			setIsLoggedIn(true);
-			setMessage("Currently Logged In");
-			//setActiveUser(result.userId);
 			history.push("/");
 		} catch (error) {
 			console.error(error);
 		}
 	};
-
 	const register = (event) => {
 		history.push("/register");
 	};
@@ -51,7 +41,6 @@ function Login(props) {
 						onChange={(event) => setPassword(event.target.value)}
 						type="password"
 					/>
-
 					<button onClick={login} type="submit" className="login-siginbutton">
 						Sign In
 					</button>
@@ -68,5 +57,4 @@ function Login(props) {
 		</div>
 	);
 }
-
 export default Login;

@@ -70,17 +70,17 @@ const App = () => {
 
 	console.log("The cart data is", cartData);
 
-	useEffect(() => {
-		fetchAPI(BASE_URL + "/orders/cart", "GET", activeUser.id)
-			.then((data) => {
-				data.products.map((product) => {
-					let newPrice = product.price / 100;
-					product.price = newPrice;
-				});
-				setCartData(data.products);
-			})
-			.catch(console.error);
-	}, [activeUser]);
+	// useEffect(() => {
+	// 	fetchAPI(BASE_URL + "/orders/cart", "GET", activeUser.id)
+	// 		.then((data) => {
+	// 			data.products.map((product) => {
+	// 				let newPrice = product.price / 100;
+	// 				product.price = newPrice;
+	// 			});
+	// 			setCartData(data.products);
+	// 		})
+	// 		.catch(console.error);
+	// }, [activeUser]);
 
 	return (
 		<>
