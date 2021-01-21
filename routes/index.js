@@ -229,9 +229,29 @@ apiRouter.get("/products/:productId", async (req, res, next) => {
 
 //this route works - do not edit this code!
 apiRouter.get("/orders/cart/", async (req, res, next) => {
-	console.log("the body is", req.body);
+	console.log("the params", req.params);
 	try {
-		const user = await getUserById(req.body.userId);
+		const user = await getUserById(req.params.userId);
+		console.log("The user is:", user);
+
+		if (user) {
+			console.log("beginning getCartByUser");
+			console.log("the user.id is", user.id);
+			const userOrders = await getCartByUser(user.id);
+			res.send(userOrders);
+		} else {
+			res.send({ message: "there are no orders here" });
+		}
+	} catch (error) {
+		throw error;
+	}
+});
+
+apiRouter.get("/orders/cart/:userId", async (req, res, next) => {
+	console.log("the body is", req.body);
+	console.log("the params are:", req.params);
+	try {
+		const user = await getUserById(req.params.userId);
 		console.log("The user is:", user);
 
 		if (user) {

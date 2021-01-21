@@ -135,20 +135,17 @@ export const fetchAPI = async (url, method = "GET", sendData = null) => {
 		},
 	};
 
-	console.log("the sendData is", sendData);
 	if (sendData) {
 		if (sendData.price) {
 			let newPrice = sendData.price * 100;
 			sendData.price = newPrice;
 		}
-		//fetchOptions.body = JSON.stringify(sendData);
-		fetchOptions.body = sendData;
+		fetchOptions.body = JSON.stringify(sendData);
 	}
-	console.log("fetchoptions.body", fetchOptions.body);
+
 	console.log("this is what we are sending in the fetch", fetchOptions);
 
-	const response = await fetch(url, fetchOptions.body);
-	console.log("the response from line 148 is:", response);
+	const response = await fetch(url, fetchOptions);
 	const data = await response.json();
 	console.log("The response we are receiving in the fetch is", data);
 

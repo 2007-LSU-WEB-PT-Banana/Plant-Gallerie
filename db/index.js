@@ -251,36 +251,37 @@ const getOrdersByUser = async (userId) => {
 //this function is working - do not edit this code!
 const getOrderById = async (orderId) => {
 	try {
-		const {
-			rows: [order],
-		} = await client.query(
-			`
-      SELECT *
-      FROM orders
-      WHERE id=$1; 
-    `,
-			[orderId]
-		);
+		// const {
+		// 	rows: [order],
+		// } = await client.query(
+		// 	`
+		//   SELECT *
+		//   FROM orders
+		//   WHERE id=$1;
+		// `,
+		// 	[orderId]
+		// );
 
-		if (!order) {
-			throw {
-				name: "OrderNotFoundError",
-				message: "Could not find an order with that order ID",
-			};
-		}
+		// if (!order) {
+		// 	throw {
+		// 		name: "OrderNotFoundError",
+		// 		message: "Could not find an order with that order ID",
+		// 	};
+		// }
 
 		const { rows: products } = await client.query(
 			`
       SELECT *
-      FROM order_products
+      FROM orders
+      JOIN order_products ON order_products."orderId"=orders.id
+      JOIN products ON products.id=order_products."productId"
       WHERE "orderId"=$1;    
     `,
 			[orderId]
 		);
+		console.log("the products are", products);
 
-		order.products = products;
-
-		return order;
+		return products;
 	} catch (error) {
 		throw error;
 	}

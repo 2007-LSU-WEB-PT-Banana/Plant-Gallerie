@@ -8,6 +8,7 @@ import {
 	fetchAPI,
 	BASE_URL,
 } from "../api/index";
+import { AirlineSeatIndividualSuiteSharp } from "@material-ui/icons";
 
 function Login(props) {
 	const { setIsLoggedIn, history, setCartData } = props;
@@ -22,29 +23,31 @@ function Login(props) {
 			console.log("the result from logging in is", result);
 			setIsLoggedIn(true);
 
-			let sendData = { userId: result.id };
-			const openOrder = await fetchAPI(
-				`${BASE_URL}/orders/cart`,
-				"GET",
-				sendData
-			);
-			console.log("the open order is", openOrder.products);
-			setCartData(openOrder.products);
+			let url = `${BASE_URL}/orders/cart/${result.id}`;
+			const fetchOptions = {
+				method: "GET",
+				headers: {
+					"Content-Type": "application.json",
+				},
+			};
+			const response = await fetch(url, fetchOptions);
+			console.log("the response in the LOGIN file is:", response);
+			const data = await response.json();
+			console.log("the data is now", data);
+			setCartData(data[0]);
 			history.push("/");
 		} catch (error) {
 			console.error(error);
 		}
 	};
 
-	// export const getCartData = async () => {
+	// const getCartData = async () => {
 	// 	const url = `${BASE_URL}/orders/cart`;
-	// 	const user = activeUser || null;
 	// 	const response = await fetch(url, {
 	// 		method: "GET",
 	// 		headers: { "Content-Type": "application/json" },
-	// 		body: JSON.stringify({ user }),
+	// 		body: JSON.stringify(sendData),
 	// 	});
-	// 	console.log("response from getCartData on frontend", response);
 
 	// 	const { error, cart } = await response.json();
 
@@ -54,6 +57,7 @@ function Login(props) {
 	// 	console.log("this is the cart from the front end request", cart);
 	// 	return cart;
 	// };
+
 	const register = () => {
 		history.push("/register");
 	};
