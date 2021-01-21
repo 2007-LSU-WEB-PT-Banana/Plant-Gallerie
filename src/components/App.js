@@ -47,6 +47,7 @@ const App = () => {
 
 	useEffect(() => {
 		fetchAPI(BASE_URL + "/products")
+			.catch(console.error);
 			.then((data) => {
 				console.log("this is data", data);
 				data.map((product) => {
@@ -55,7 +56,6 @@ const App = () => {
 				});
 				setProductList(data);
 			})
-			.catch(console.error);
 	}, []);
 
 	useEffect(() => {
@@ -70,78 +70,79 @@ const App = () => {
 
 	console.log("The cart data is", cartData);
 
-	useEffect(() => {
-		fetchAPI(BASE_URL + "/orders/cart", "GET", activeUser.id)
-			.then((data) => {
-				data.products.map((product) => {
-					let newPrice = product.price / 100;
-					product.price = newPrice;
-				});
-				setCartData(data.products);
-			})
-			.catch(console.error);
-	}, [activeUser]);
 
-	return (
-		<>
-			<Header
-				activeUser={activeUser}
-				setActiveUser={setActiveUser}
-				setIsLoggedIn={setIsLoggedIn}
-				history={history}
-				clearToken={clearToken}
-			/>
-			<main className="wrapper">
-				<Switch>
-					<Route exact path="/" component={Home} />
-					<Route path={`/products/:productId`}>
-						<SingleProduct
-							activeProduct={activeProduct}
-							setActiveProduct={setActiveProduct}
-							history={history}
-							count={count}
-							setCount={setCount}
-							cartData={cartData}
-							setCartData={setCartData}
-						/>
-					</Route>
-					<Route exact path="/products">
-						<AllProducts
-							productList={productList}
-							history={history}
-							setActiveProduct={setActiveProduct}
-						/>
-					</Route>
-					<Route exact path="/houseplants">
-						<HousePlants
-							productList={productList}
-							setActiveProduct={setActiveProduct}
-							history={history}
-						/>
-					</Route>
-					<Route exact path="/floweringplants">
-						<FloweringPlants
-							productList={productList}
-							setActiveProduct={setActiveProduct}
-							history={history}
-						/>
-					</Route>
-					<Route exact path="/bonsaiplants">
-						<BonsaiPlants
-							productList={productList}
-							setActiveProduct={setActiveProduct}
-							history={history}
-						/>
-					</Route>
-					<Route exact path="/login">
-						<Login setIsLoggedIn={setIsLoggedIn} />
-					</Route>
-					<Route exact path="/register">
-						<Register setIsLoggedIn={setIsLoggedIn} />
-					</Route>
-					<Route path="/cart">
-						<CartComponent cartData={cartData} setCartData={setCartData} />
-					</Route>
+  useEffect(() => {
+    fetchAPI(BASE_URL + '/orders/cart', 'GET', activeUser.id)
+      .then((data) => {
+        data.products.map((product) => {
+          let newPrice = product.price / 100
+          product.price = newPrice
+        })
+        setCartData(data.products)
+      })
+      .catch(console.error)
+  }, [activeUser])
+
+  return (
+    <>
+      <Header
+        activeUser={activeUser}
+        setActiveUser={setActiveUser}
+        setIsLoggedIn={setIsLoggedIn}
+        history={history}
+        clearToken={clearToken}
+      />
+      <main className="wrapper">
+        <Switch>
+          <Route exact path="/" component={Home} />
+          <Route path={`/products/:productId`}>
+            <SingleProduct
+              activeProduct={activeProduct}
+              setActiveProduct={setActiveProduct}
+              history={history}
+              count={count}
+              setCount={setCount}
+              cartData={cartData}
+              setCartData={setCartData}
+            />
+          </Route>
+          <Route exact path="/products">
+            <AllProducts
+              productList={productList}
+              history={history}
+              setActiveProduct={setActiveProduct}
+            />
+          </Route>
+          <Route exact path="/houseplants">
+            <HousePlants
+              productList={productList}
+              setActiveProduct={setActiveProduct}
+              history={history}
+            />
+          </Route>
+          <Route exact path="/floweringplants">
+            <FloweringPlants
+              productList={productList}
+              setActiveProduct={setActiveProduct}
+              history={history}
+            />
+          </Route>
+          <Route exact path="/bonsaiplants">
+            <BonsaiPlants
+              productList={productList}
+              setActiveProduct={setActiveProduct}
+              history={history}
+            />
+          </Route>
+          <Route exact path="/login">
+            <Login setIsLoggedIn={setIsLoggedIn} setMessage={setMessage} />
+          </Route>
+          <Route exact path="/register">
+            <Register setIsLoggedIn={setIsLoggedIn} />
+          </Route>
+          <Route path="/cart">
+            <CartComponent cartData={cartData} setCartData={setCartData} />
+          </Route>
 
 					<Route path="/payment">
 						<Payment

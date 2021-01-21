@@ -22,17 +22,29 @@ const headerLink = {
 };
 
 const Header = (props) => {
-	const {
-		setIsLoggedIn,
-		history,
-		clearToken,
-		activeUser,
-		setActiveUser,
-		cartData,
-		isLoggedIn,
-	} = props;
-	const [isNavVisible, setIsNavVisible] = useState(true);
-	const [isSmallScreen, setIsSmallScreen] = useState(false);
+
+  const {
+    setIsLoggedIn,
+    history,
+    clearToken,
+    activeUser,
+    setActiveUser,
+    cartData,
+    isLoggedIn,
+  } = props
+  const [isNavVisible, setIsNavVisible] = useState(true)
+  const [isSmallScreen, setIsSmallScreen] = useState(false)
+  const [visible, setVisible] = useState(null)
+  const handleVisibility = () => {
+    setVisible(!visible)
+  }
+
+  const handleSignOut = () => {
+    console.log('hitting signout')
+    clearToken()
+    setIsLoggedIn(false)
+  }
+
 
 	const handleSignOut = () => {
 		console.log("hitting signout");
@@ -45,6 +57,7 @@ const Header = (props) => {
 		mediaQuery.addEventListener("change", handleMediaQueryChange);
 		handleMediaQueryChange(mediaQuery);
 
+
 		return () => {
 			mediaQuery.removeEventListener("change", handleMediaQueryChange);
 		};
@@ -53,6 +66,7 @@ const Header = (props) => {
 	const toggleNav = () => {
 		setIsNavVisible(!isNavVisible);
 	};
+
 
 	const handleMediaQueryChange = (mediaQuery) => {
 		if (mediaQuery.matches) {
@@ -63,61 +77,62 @@ const Header = (props) => {
 		}
 	};
 
-	const logout = () => {
-		setIsLoggedIn(false);
-		setActiveUser({});
-	};
+  const logout = () => {
+    setIsLoggedIn(false)
+    setActiveUser({})
+  }
 
-	return (
-		<header className="Header">
-			<Link to="/" className="logo" style={headerLink}>
-				Plant Gallerie
-			</Link>
-			{(!isSmallScreen || isNavVisible) && (
-				<nav className="Nav">
-					<Link to="/products" className="header-link" style={headerLink}>
-						All Plants
-					</Link>
-					<Link to="/houseplants" className="header-link" style={headerLink}>
-						House Plants
-					</Link>
-					<Link
-						to="/floweringplants"
-						className="header-link"
-						style={headerLink}
-					>
-						Flowering Plants
-					</Link>
-					<Link to="/bonsaiplants" className="header-link" style={headerLink}>
-						Bonsai and Bamboo
-					</Link>
-					<Link to="/search" className="header-link" style={headerLink}>
-						<SearchIcon className="header-searchIcon" />
-					</Link>
+  return (
+    <header className="Header">
+      <Link to="/" className="logo" style={headerLink}>
+        Plant Gallerie
+      </Link>
+      {(!isSmallScreen || isNavVisible) && (
+        <nav className="Nav">
+          <Link to="/products" className="header-link" style={headerLink}>
+            All Plants
+          </Link>
+          <Link to="/houseplants" className="header-link" style={headerLink}>
+            House Plants
+          </Link>
+          <Link
+            to="/floweringplants"
+            className="header-link"
+            style={headerLink}
+          >
+            Flowering Plants
+          </Link>
+          <Link to="/bonsaiplants" className="header-link" style={headerLink}>
+            Bonsai and Bamboo
+          </Link>
+          <Link to="/search" className="header-link" style={headerLink}>
+            <SearchIcon className="header-searchIcon" />
+          </Link>
 
-					<Link to="/login" className="header-link" style={headerLink}>
-						{!isLoggedIn ? (
-							<PersonOutlineIcon />
-						) : (
-							<>
-								<h6 className="loginMessage">Welcome Back!</h6>
-								<button className="logOut" onClick={logout}>
-									Log Out
-								</button>
-							</>
-						)}
-					</Link>
-					<Link to="/cart" className="header-link" style={headerLink}>
-						<ShoppingCartIcon />
-						{cartData.length}
-					</Link>
-				</nav>
-			)}
-			<button class="Burger" onClick={toggleNav}>
-				<DehazeIcon id="burger-icon"></DehazeIcon>
-			</button>
-		</header>
-	);
-};
+          <Link to="/login" className="header-link" style={headerLink}>
+            {!isLoggedIn ? (
+              <PersonOutlineIcon />
+            ) : (
+              <>
+                <h6 className="loginMessage">Welcome Back!</h6>
+                <button className="logOut" onClick={logout}>
+                  Log Out
+                </button>
+              </>
+            )}
+          </Link>
+          <Link to="/cart" className="header-link" style={headerLink}>
+            <ShoppingCartIcon />
+            {cartData !== undefined ? cartData.length : '0'}
+          </Link>
+        </nav>
+      )}
+      <button className="Burger" onClick={toggleNav}>
+        <DehazeIcon id="burger-icon"></DehazeIcon>
+      </button>
+    </header>
+  )
+}
+
 
 export default Header;

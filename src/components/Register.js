@@ -27,7 +27,7 @@ function Register(props) {
         password,
       )
       setIsLoggedIn(true)
-      history.push('/')
+      history.push('/login')
     } catch (error) {
       console.error(error)
     }
