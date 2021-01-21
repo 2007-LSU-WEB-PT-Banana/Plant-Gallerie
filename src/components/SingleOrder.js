@@ -3,7 +3,7 @@ import { BASE_URL, fetchAPI } from "../api";
 import "./SingleOrder.css";
 
 const SingleOrder = (props) => {
-	const { cartData, setCartData, currentUser, history } = props;
+	const { cartData, setCartData, activeUser, history } = props;
 	const [grandTotal, setGrandTotal] = useState(0);
 
 	function continueShopping() {
@@ -13,7 +13,7 @@ const SingleOrder = (props) => {
 	async function setOrderData() {
 		try {
 			let sendData = {
-				userId: currentUser,
+				userId: activeUser,
 			};
 
 			let orderInfo = await fetchAPI(
@@ -47,6 +47,10 @@ const SingleOrder = (props) => {
 		findGrandTotal();
 	}, [cartData]);
 
+	function removeItem(index) {
+		//will need to write this function to send a patch request to the db and then re-render the cart
+	}
+
 	return (
 		<div>
 			<h1>Order Detail</h1>
@@ -67,13 +71,13 @@ const SingleOrder = (props) => {
 			</div>
 
 			<div className="cartCardWrapper">
-				{cartData.map((product) => {
+				{cartData.map((product, index) => {
 					let priceInPennies = product.price / 100;
 					let extendedTotalInPennies = priceInPennies * product.quantity;
 					let totalExtendedPrice = extendedTotalInPennies * 100;
 
 					return (
-						<div className="cartCard">
+						<div className="cartCard" value={index}>
 							<img
 								src={product.image}
 								alt="plant"
@@ -86,7 +90,9 @@ const SingleOrder = (props) => {
 								Price: ${totalExtendedPrice.toFixed(2)}
 							</p>
 							<button className="updateQty">Update Quantity</button>
-							<button className="removeItem">Remove Item</button>
+							<button className="removeItem" onClick={removeItem(index)}>
+								Remove Item
+							</button>
 						</div>
 					);
 				})}

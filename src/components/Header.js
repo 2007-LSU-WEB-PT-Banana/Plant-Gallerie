@@ -1,11 +1,10 @@
-
-import React, { useState, useEffect, Fragment } from 'react'
-import { Link } from 'react-router-dom'
-import SearchIcon from '@material-ui/icons/Search'
-import PersonOutlineIcon from '@material-ui/icons/PersonOutline'
-import ShoppingCartIcon from '@material-ui/icons/ShoppingCart'
-import DehazeIcon from '@material-ui/icons/Dehaze'
-import './Header.css'
+import React, { useState, useEffect, Fragment } from "react";
+import { Link } from "react-router-dom";
+import SearchIcon from "@material-ui/icons/Search";
+import PersonOutlineIcon from "@material-ui/icons/PersonOutline";
+import ShoppingCartIcon from "@material-ui/icons/ShoppingCart";
+import DehazeIcon from "@material-ui/icons/Dehaze";
+import "./Header.css";
 
 const headerLink = {
 	marginRight: "35px",
@@ -23,25 +22,25 @@ const headerLink = {
 };
 
 const Header = (props) => {
-
-  const {
-    setIsLoggedIn,
-    history,
-    clearToken,
-    activeUser,
-    setActiveUser,
-    cartData
-  } = props
-  const [isNavVisible, setIsNavVisible] = useState(true)
-  const [isSmallScreen, setIsSmallScreen] = useState(false)
+	const {
+		setIsLoggedIn,
+		history,
+		clearToken,
+		activeUser,
+		setActiveUser,
+		cartData,
+		isLoggedIn,
+	} = props;
+	const [isNavVisible, setIsNavVisible] = useState(true);
+	const [isSmallScreen, setIsSmallScreen] = useState(false);
 
 	const handleSignOut = () => {
-    console.log('hitting signout')
-    clearToken()
-    setIsLoggedIn(false)
-  }
-		
-  useEffect(() => {
+		console.log("hitting signout");
+		clearToken();
+		setIsLoggedIn(false);
+	};
+
+	useEffect(() => {
 		const mediaQuery = window.matchMedia("(max-width: 812px)");
 		mediaQuery.addEventListener("change", handleMediaQueryChange);
 		handleMediaQueryChange(mediaQuery);
@@ -62,6 +61,11 @@ const Header = (props) => {
 		} else {
 			setIsSmallScreen(false);
 		}
+	};
+
+	const logout = () => {
+		setIsLoggedIn(false);
+		setActiveUser({});
 	};
 
 	return (
@@ -85,20 +89,31 @@ const Header = (props) => {
 						Flowering Plants
 					</Link>
 					<Link to="/bonsaiplants" className="header-link" style={headerLink}>
-						Bonsai Plants
+						Bonsai and Bamboo
 					</Link>
 					<Link to="/search" className="header-link" style={headerLink}>
 						<SearchIcon className="header-searchIcon" />
 					</Link>
+
 					<Link to="/login" className="header-link" style={headerLink}>
-						{setIsLoggedIn ? ` hello user` : <PersonOutlineIcon />}
+						{!isLoggedIn ? (
+							<PersonOutlineIcon />
+						) : (
+							<>
+								<h6 className="loginMessage">Welcome Back!</h6>
+								<button className="logOut" onClick={logout}>
+									Log Out
+								</button>
+							</>
+						)}
 					</Link>
 					<Link to="/cart" className="header-link" style={headerLink}>
-						<ShoppingCartIcon />({cartData.length})
+						<ShoppingCartIcon />
+						{cartData.length}
 					</Link>
 				</nav>
 			)}
-			<button className="Burger" onClick={toggleNav}>
+			<button class="Burger" onClick={toggleNav}>
 				<DehazeIcon id="burger-icon"></DehazeIcon>
 			</button>
 		</header>

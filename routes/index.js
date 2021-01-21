@@ -1,7 +1,6 @@
-const apiRouter = require('express').Router()
-const bcrypt = require('bcrypt')
-const uuid = require('uuid/v4')
-
+const apiRouter = require("express").Router();
+const bcrypt = require("bcrypt");
+const uuid = require("uuid/v4");
 
 const {
 	createProduct,
@@ -14,23 +13,22 @@ const {
 	createOrder,
 	getOrdersByProduct,
 	getAllOrders,
-  getOrderById,
-  getCartByUser,
-  getOrderProductsByOrderId,
-  getUser,
+	getOrderById,
+	getCartByUser,
+	getOrderProductsByOrderId,
+	getUser,
 } = require("../db/index");
 
-require('dotenv').config()
-const jwt = require('jsonwebtoken')
-const { token } = require('morgan')
-const stripe = require('stripe')(
-  'sk_test_51HuidgIXeGEdiWlBqlHtOInao7ompc6fIEbfcZ2FItRc0lNbGUaZMgNReA14VtusIB42N7L1D4bnxLLNNB3PgZqZ000rTTpD6K',
-)
+require("dotenv").config();
+const jwt = require("jsonwebtoken");
+const { token } = require("morgan");
+const stripe = require("stripe")(
+	"sk_test_51HuidgIXeGEdiWlBqlHtOInao7ompc6fIEbfcZ2FItRc0lNbGUaZMgNReA14VtusIB42N7L1D4bnxLLNNB3PgZqZ000rTTpD6K"
+);
 
-apiRouter.get('/', (req, res) => {
-  res.send(`Add your stripe secrete key to the .require('stripe') statmemt!`)
-})
-
+apiRouter.get("/", (req, res) => {
+	res.send(`Add your stripe secrete key to the .require('stripe') statmemt!`);
+});
 
 // const requireUser = (req, res, next) => {
 // 	if (!req.user) {
@@ -81,43 +79,42 @@ apiRouter.post("/login", async (req, res, next) => {
 		throw "u need user name and password";
 	}
 
-  try {
-    const user = await getUser(req.body)
+	try {
+		const user = await getUser(req.body);
 
-    console.log('this is users id insdie route', user.id)
+		console.log("this is users id insdie route", user.id);
 
-    if (user && user.password == password) {
-      await bcrypt.compare(password, user.password)
+		if (user && user.password == password) {
+			await bcrypt.compare(password, user.password);
 
-      const token = jwt.sign(
-        {
-          id: user.id,
-          username: user.username,
-        },
-        `${process.env.JWT_SECRET}`,
-        {
-          expiresIn: '6w',
-        },
-      )
+			const token = jwt.sign(
+				{
+					id: user.id,
+					username: user.username,
+				},
+				`${process.env.JWT_SECRET}`,
+				{
+					expiresIn: "6w",
+				}
+			);
 
-      delete user.password
-      res.send({
-        user: user,
-        token: token,
-      })
-    } else {
-      throw 'u need user name and password again'
-    }
-  } catch (error) {
-    throw error
-  }
-})
+			delete user.password;
+			res.send({
+				user: user,
+				token: token,
+			});
+		} else {
+			throw "u need user name and password again";
+		}
+	} catch (error) {
+		throw error;
+	}
+});
 
-apiRouter.post('/register', async (req, res, next) => {
-  console.log('here in register')
+apiRouter.post("/register", async (req, res, next) => {
+	console.log("here in register");
 
-  const { firstName, lastName, email, imageURL, username, password } = req.body
-
+	const { firstName, lastName, email, imageURL, username, password } = req.body;
 
 	console.log("here in register 1");
 	console.log(req.body, "this is body");
@@ -142,41 +139,40 @@ apiRouter.post('/register', async (req, res, next) => {
 			password,
 		});
 
-    if (user.password < 8) {
-      throw 'Password should 8 or more characters'
-    }
+		if (user.password < 8) {
+			throw "Password should 8 or more characters";
+		}
 
-    delete user.password
-    res.send({
-      user: user,
-    })
-  } catch (error) {
-    next(error)
-  }
-})
+		delete user.password;
+		res.send({
+			user: user,
+		});
+	} catch (error) {
+		next(error);
+	}
+});
 
-apiRouter.get('/users/me', async (req, res, next) => {
-  console.log('inside users/me in database')
-  try {
-    const token = req.headers.authorization.split(' ')[1]
-    console.log(token)
+apiRouter.get("/users/me", async (req, res, next) => {
+	console.log("inside users/me in database");
+	try {
+		const token = req.headers.authorization.split(" ")[1];
+		console.log(token);
 
-    const decoded = jwt.decode(token, `${process.env.JWT_SECRET}`)
+		const decoded = jwt.decode(token, `${process.env.JWT_SECRET}`);
 
-    req.userData = decoded
-    console.log('this is username', req.userData.username)
-    console.log(req.userData)
-    const userId = req.userData.id
-    console.log(userId)
+		req.userData = decoded;
+		console.log("this is username", req.userData.username);
+		console.log(req.userData);
+		const userId = req.userData.id;
+		console.log(userId);
 
-    const user = await getUserById(userId)
-    console.log(user)
-    res.send({ user })
-  } catch (error) {
-    next(error)
-  }
-})
-
+		const user = await getUserById(userId);
+		console.log(user);
+		res.send({ user });
+	} catch (error) {
+		next(error);
+	}
+});
 
 apiRouter.get("/users/:id", async (req, res, next) => {
 	console.log("getting user by id");
@@ -190,34 +186,34 @@ apiRouter.get("/users/:id", async (req, res, next) => {
 	}
 });
 
-apiRouter.get('/products/:id', async (req, res, next) => {
-  const id = req.params.id
-  try {
-    console.log('inside the try for getting product by ID')
-    const requestedProduct = await getProductById(id)
-    res.send(requestedProduct)
-  } catch (error) {
-    next(error)
-  }
-})
+apiRouter.get("/products/:id", async (req, res, next) => {
+	const id = req.params.id;
+	try {
+		console.log("inside the try for getting product by ID");
+		const requestedProduct = await getProductById(id);
+		res.send(requestedProduct);
+	} catch (error) {
+		next(error);
+	}
+});
 
-apiRouter.post('/createproduct', async (req, res, next) => {
-  const { name, description, price, imageURL, inStock, category } = req.body
-  console.log('The req.body is', req.body)
-  try {
-    const newProduct = await createProduct({
-      name,
-      description,
-      price,
-      imageURL,
-      inStock,
-      category,
-    })
-    res.send(newProduct)
-  } catch (error) {
-    throw error
-  }
-})
+apiRouter.post("/createproduct", async (req, res, next) => {
+	const { name, description, price, imageURL, inStock, category } = req.body;
+	console.log("The req.body is", req.body);
+	try {
+		const newProduct = await createProduct({
+			name,
+			description,
+			price,
+			imageURL,
+			inStock,
+			category,
+		});
+		res.send(newProduct);
+	} catch (error) {
+		throw error;
+	}
+});
 
 apiRouter.get("/products", async (req, res, next) => {
 	try {
@@ -229,29 +225,50 @@ apiRouter.get("/products", async (req, res, next) => {
 	}
 });
 
-apiRouter.get('/orders/cart', async (req,res,next) => {
-  try {
-    const prefix = 'Bearer ';
-    const auth = req.header('Authorization');
-    
-    if (auth.startsWith(prefix)) {
-    const token = auth.slice(prefix.length);
-    if (token){
-    const { id } = jwt.verify(token, `${process.env.JWT_SECRET}`);
-      if (id) {
-        const user = await getUserById(id)
-        if (user){
-            const orders = await getCartByUser({id})
-            res.send( orders )
-        } else {
-            res.send({message:'You must be logged in to view your cart'})
-        }
-      }
-    }
-}
-} catch (error) {
-    console.error(error)
-}
+apiRouter.get("/products/:productId", async (req, res, next) => {
+	const id = req.body.productId;
+	console.log("the product id is", id);
+	try {
+		console.log("inside the try for getting product by ID");
+		const requestedProduct = await getProductById(id);
+		res.send(requestedProduct);
+	} catch (error) {
+		next(error);
+	}
+});
+
+apiRouter.post("/createproduct", async (req, res, next) => {
+	const { name, description, price, imageURL, inStock, category } = req.body;
+	console.log("The req.body is", req.body);
+	try {
+		const newProduct = await createProduct({
+			name,
+			description,
+			price,
+			imageURL,
+			inStock,
+			category,
+		});
+		res.send(newProduct);
+	} catch (error) {
+		throw error;
+	}
+});
+
+//this route works - do not edit this code!
+apiRouter.get("/orders/cart", async (req, res, next) => {
+	try {
+		const user = await getUserById(req.body.userId);
+
+		if (user) {
+			const userOrders = await getCartByUser(user.id);
+			res.send(userOrders);
+		} else {
+			res.send({ message: "there are no orders here" });
+		}
+	} catch (error) {
+		throw error;
+	}
 });
 
 apiRouter.get("/orders/:orderId", async (req, res) => {
@@ -259,7 +276,11 @@ apiRouter.get("/orders/:orderId", async (req, res) => {
 		console.log("getting one order");
 		const getOneOrder = await getOrderById(req.params.id);
 		console.log("this is one order", getOneOrder);
-
+		//From deCha: this worked for me when putting the id in the body as follows
+		// console.log("the request.body.id is", req.body.id);
+		// try {
+		//   console.log("getting one order");
+		//   const getOneOrder = await getOrderById(req.body.id);
 		res.send(getOneOrder);
 	} catch (error) {
 		throw error;
@@ -299,49 +320,49 @@ apiRouter.get("/users/:userId/orders", async (req, res) => {
 	}
 });
 
-apiRouter.post('/payment', async (req, res) => {
-  console.log(req.body)
-  let error
-  let status
-  try {
-    const { product, token } = req.body
-    console.log('product', product)
-    console.log('this is price', product.price)
-    const customer = await stripe.customers.create({
-      email: token.email,
-      source: token.id,
-    })
+apiRouter.post("/payment", async (req, res) => {
+	console.log(req.body);
+	let error;
+	let status;
+	try {
+		const { product, token } = req.body;
+		console.log("product", product);
+		console.log("this is price", product.price);
+		const customer = await stripe.customers.create({
+			email: token.email,
+			source: token.id,
+		});
 
-    const idempotencyKey = uuid()
-    const charge = await stripe.charges.create(
-      {
-        amount: product.price * 100,
-        currency: 'usd',
-        customer: customer.id,
-        receipt_email: token.email,
-        description: `Purchased the ${product.productName}`,
-        shipping: {
-          name: token.card.name,
-          address: {
-            line1: token.card.address_line1,
-            line2: token.card.address_line2,
-            city: token.card.address_city,
-            country: token.card.address_country,
-            postal_code: token.card.address_zip,
-          },
-        },
-      },
-      {
-        idempotencyKey,
-      },
-    )
-    console.log('charge', { charge })
+		const idempotencyKey = uuid();
+		const charge = await stripe.charges.create(
+			{
+				amount: product.price * 100,
+				currency: "usd",
+				customer: customer.id,
+				receipt_email: token.email,
+				description: `Purchased the ${product.productName}`,
+				shipping: {
+					name: token.card.name,
+					address: {
+						line1: token.card.address_line1,
+						line2: token.card.address_line2,
+						city: token.card.address_city,
+						country: token.card.address_country,
+						postal_code: token.card.address_zip,
+					},
+				},
+			},
+			{
+				idempotencyKey,
+			}
+		);
+		console.log("charge", { charge });
 
-    res.json({
-      status: 'success',
-    })
-  } catch (error) {
-    throw error
-  }
-})
-module.exports = apiRouter
+		res.json({
+			status: "success",
+		});
+	} catch (error) {
+		throw error;
+	}
+});
+module.exports = apiRouter;

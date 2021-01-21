@@ -33,12 +33,14 @@ const SingleProduct = (props) => {
 
 	function updateCart() {
 		let newCartItem = {
+			productId: activeProduct.id,
 			price: activeProduct.price,
 			productName: activeProduct.name,
 			quantity: count,
 			id: activeProduct.id,
 			image: activeProduct.imageURL,
 		};
+		//going to need to do a fetch here to post the new cart item to the order
 
 		setCartData([...cartData, newCartItem]);
 		setCount(1);
