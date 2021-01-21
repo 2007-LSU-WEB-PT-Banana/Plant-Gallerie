@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Fragment } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import SearchIcon from "@material-ui/icons/Search";
 import PersonOutlineIcon from "@material-ui/icons/PersonOutline";
@@ -33,9 +33,13 @@ const Header = (props) => {
 	} = props;
 	const [isNavVisible, setIsNavVisible] = useState(true);
 	const [isSmallScreen, setIsSmallScreen] = useState(false);
+	// const [visible, setVisible] = useState(null);
+
+	// const handleVisibility = () => {
+	// 	setVisible(!visible);
+	// };
 
 	const handleSignOut = () => {
-		console.log("hitting signout");
 		clearToken();
 		setIsLoggedIn(false);
 		setActiveUser({});
@@ -106,7 +110,7 @@ const Header = (props) => {
 					</Link>
 					<Link to="/cart" className="header-link" style={headerLink}>
 						<ShoppingCartIcon />
-						{cartData !== undefined ? cartData.length : "0"}
+						{cartData === undefined ? "0" : cartData.length}
 					</Link>
 				</nav>
 			)}

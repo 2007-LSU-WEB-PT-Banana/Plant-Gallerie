@@ -43,10 +43,11 @@ const App = () => {
 			.catch((error) => {
 				setMessage(error.message);
 			});
-	});
+	}, []);
 
 	useEffect(() => {
 		fetchAPI(BASE_URL + "/products")
+			.catch(console.error)
 			.then((data) => {
 				console.log("this is data", data);
 				data.map((product) => {
@@ -54,32 +55,33 @@ const App = () => {
 					product.price = newPrice;
 				});
 				setProductList(data);
-			})
-			.catch(console.error);
+			});
 	}, []);
 
 	useEffect(() => {
 		getActiveUser()
 			.then((data) => {
-				console.log("this is singleuser", data);
 				setActiveUser(data);
 			})
-
 			.catch(console.error);
-	}, []);
+	}, [isLoggedIn]);
 
 	console.log("The cart data is", cartData);
+	console.log("the active user is", activeUser);
 
+	//going to have to make this a function in the api folder and possibly use params for userID instead of body
 	// useEffect(() => {
-	// 	fetchAPI(BASE_URL + "/orders/cart", "GET", activeUser.id)
-	// 		.then((data) => {
-	// 			data.products.map((product) => {
-	// 				let newPrice = product.price / 100;
-	// 				product.price = newPrice;
-	// 			});
-	// 			setCartData(data.products);
-	// 		})
-	// 		.catch(console.error);
+	// 	if (activeUser) {
+	// 		fetchAPI(BASE_URL + "/orders/cart", "GET", activeUser.id)
+	// 			.then((data) => {
+	// 				data.products.map((product) => {
+	// 					let newPrice = product.price / 100;
+	// 					product.price = newPrice;
+	// 				});
+	// 				setCartData(data.products);
+	// 			})
+	// 			.catch(console.error);
+	// 	}
 	// }, [activeUser]);
 
 	return (
@@ -88,6 +90,7 @@ const App = () => {
 				activeUser={activeUser}
 				setActiveUser={setActiveUser}
 				setIsLoggedIn={setIsLoggedIn}
+				isLoggedIn={isLoggedIn}
 				history={history}
 				clearToken={clearToken}
 			/>
@@ -134,7 +137,7 @@ const App = () => {
 						/>
 					</Route>
 					<Route exact path="/login">
-						<Login setIsLoggedIn={setIsLoggedIn} />
+						<Login setIsLoggedIn={setIsLoggedIn} history={history} />
 					</Route>
 					<Route exact path="/register">
 						<Register setIsLoggedIn={setIsLoggedIn} />

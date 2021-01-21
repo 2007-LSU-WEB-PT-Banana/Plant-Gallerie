@@ -1,29 +1,28 @@
 import React, { useState } from "react";
 import "./Login.css";
-import { useHistory } from "react-router-dom";
 import { getToken, setToken, clearToken, loginUser } from "../api/index";
 
 function Login(props) {
-	const { setIsLoggedIn } = props;
-	const history = useHistory();
+	const { setIsLoggedIn, history } = props;
+
 	const [username, setUserName] = useState("");
 	const [password, setPassword] = useState("");
+
 	const login = async (event) => {
 		event.preventDefault();
-		console.log("logging in");
 		try {
-			console.log("hhhhh");
 			const result = await loginUser(username, password);
-			console.log("this is result", result);
 			setIsLoggedIn(true);
 			history.push("/");
 		} catch (error) {
 			console.error(error);
 		}
 	};
-	const register = (event) => {
+
+	const register = () => {
 		history.push("/register");
 	};
+
 	return (
 		<div className="login">
 			<div className="login-container">
@@ -41,6 +40,7 @@ function Login(props) {
 						onChange={(event) => setPassword(event.target.value)}
 						type="password"
 					/>
+
 					<button onClick={login} type="submit" className="login-siginbutton">
 						Sign In
 					</button>
@@ -57,4 +57,5 @@ function Login(props) {
 		</div>
 	);
 }
+
 export default Login;

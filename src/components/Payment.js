@@ -33,7 +33,7 @@ function Payment(props) {
   return (
     <div>
       <StripeCheckout
-        stripeKey="pk_test_51HuidgIXeGEdiWlB278QNtAQdCLZFHqDFglx5tRlzt1TdK9W7QaFFqNh78Pfvw876B0owQxVyDj7LA5aMS40oFzQ00jvc0bZf0"
+        stripeKey={process.env.REACT_APP_MYPKEY}
         token={handleToken}
         billingAddress
         shippingAddress

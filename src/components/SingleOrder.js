@@ -9,7 +9,7 @@ const SingleOrder = (props) => {
 	function continueShopping() {
 		history.goBack();
 	}
-	//this function will need to be reworked depending on how the backend ends up
+	//	this function will need to be reworked depending on how the backend ends up
 	async function setOrderData() {
 		try {
 			let sendData = {
@@ -27,9 +27,9 @@ const SingleOrder = (props) => {
 		}
 	}
 
-	useEffect(() => {
-		setOrderData();
-	}, []);
+	// useEffect(() => {
+	// 	setOrderData();
+	// }, []);
 
 	function findGrandTotal() {
 		let findGrandTotal = 0;
