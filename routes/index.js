@@ -15,11 +15,12 @@ const {
   getOrderById,
   getCartByUser,
   getOrderProductsByOrderId,
-
+  getUser,
 } = require("../db/index");
 
 require("dotenv").config();
 const jwt = require("jsonwebtoken");
+const { token } = require("morgan");
 
 // const requireUser = (req, res, next) => {
 // 	if (!req.user) {
@@ -64,27 +65,40 @@ apiRouter.get("/users", async (req, res, next) => {
 
 apiRouter.post("/login", async (req, res, next) => {
 	const { username, password } = req.body;
+	console.log("this is req.body", req.body);
 
 	if (!username || !password) {
 		throw "u need user name and password";
 	}
 
 	try {
-		const user = await getUserByUsername(username);
+		const user = await getUser(req.body);
 		console.log("this is user", user);
 
 		if (user && user.password == password) {
+			// console.log('users token is ', token)
 			await bcrypt.compare(password, user.password);
+
+			const token = jwt.sign(
+				{
+					id: user.id,
+					password: user.password,
+					username: user.username,
+				},
+				`${process.env.JWT_SECRET}`,
+				{
+					expiresIn: "6w",
+				}
+			);
 			res.send({
-				message: "you are logged in",
+				user: user,
+				token: token,
 			});
 		} else {
 			throw "u need user name and password again";
 		}
-		//why is there a token hard-coded in this res.send? -deCha
 	} catch (error) {
-		console.log(error);
-		next(error);
+		throw error;
 	}
 });
 
@@ -114,19 +128,30 @@ apiRouter.post("/register", async (req, res, next) => {
 			username,
 			password,
 		});
-		const token = jwt.sign(
-			{
-				id: user.id,
-				username: user.username,
-			},
-			`${process.env.JWT_SECRET}`,
-			{
-				expiresIn: "6w",
-			}
-		);
-		res.send(user);
+
+		res.send({
+			user: user,
+		});
 	} catch (error) {
 		next(error);
+	}
+});
+
+apiRouter.get("/users/me", async (req, res) => {
+	console.log("this is username", req.body);
+	try {
+		const user = await getUserByUsername(req.body);
+
+		if (user) {
+			jwt.verify({
+				id: user.id,
+				password: user.password,
+				username: user.username,
+			});
+		}
+		res.send(user);
+	} catch (error) {
+		throw error;
 	}
 });
 
@@ -221,12 +246,8 @@ apiRouter.get("/orders/:orderId", async (req, res) => {
 
 apiRouter.post("/orders", async (req, res, next) => {
 	console.log("hitting create order");
-	// const { userId = req.user.id } = req.body
-	// const orderData = {}
-	try {
-		// orderData.status = status
-		// orderData.userId = userId
 
+	try {
 		const newOrder = await createOrder(req.body);
 		res.send(newOrder);
 	} catch (error) {

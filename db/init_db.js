@@ -55,7 +55,7 @@ async function buildTables() {
         id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
         "productId" INTEGER REFERENCES products(id),
         "orderId" INTEGER REFERENCES orders(id),
-        price numeric NOT NULL ,
+        price INTEGER NOT NULL ,
         quantity INTEGER NOT NULL DEFAULT 0
         );
     `)

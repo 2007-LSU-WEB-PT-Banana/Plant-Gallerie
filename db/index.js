@@ -57,6 +57,30 @@ const getAllUsers = async () => {
 	}
 };
 
+const getUser = async ({ username, password }) => {
+	try {
+		console.log("inside get user");
+		const {
+			rows: [user],
+		} = await client.query(
+			`
+    SELECT username, password
+    FROM users
+    WHERE username=$1 AND password=$2;
+    `,
+			[username, password]
+		);
+
+		console.log("this is username", username);
+		console.log("this is password", password);
+		console.log("this is user ", user);
+
+		return user;
+	} catch (error) {
+		throw error;
+	}
+};
+
 const getUserById = async (id) => {
 	try {
 		const {
@@ -76,7 +100,7 @@ const getUserById = async (id) => {
 	}
 };
 
-const getUserByUsername = async (username) => {
+const getUserByUsername = async ({ username }) => {
 	console.log("inside db");
 	try {
 		const {
@@ -89,6 +113,8 @@ const getUserByUsername = async (username) => {
     `,
 			[username]
 		);
+
+		console.log("username", username);
 		console.log("required user is ", user);
 
 		console.log("existing user by user function");
@@ -162,78 +188,29 @@ const getProductById = async (id) => {
   }
 }
 
-
-// const createOrder = async ({ status, orderId, datePlaced }) => {
-//   try {
-//     const {
-//       rows: [order],
-//     } = await client.query(
-//       `
-//     INSERT INTO orders(status, "orderId", "datePlaced")
-//     VALUES($1,$2,$3)
-//     RETURNING *;
-//     `,
-//       [status, orderId, datePlaced],
-//     )
-//     return order
-//   } catch (error) {
-//     throw error
-//   }
-// }
-
-//This is Evon's function.
-const createOrder = async ({status='created', userId})=>{
-  try {
-   
-      const {rows: [order]} = await client.query(`
-      INSERT INTO orders(status, "userId") 
-      VALUES ($1, $2)
-      RETURNING *
-      `, [status, userId])
-
-      console.log("making orders");
+const createOrder = async ({ status, userId, products = [] }) => {
+	try {
+		console.log("creating order");
+		const {
+			rows: [order],
+		} = await client.query(
+			`
+    INSERT INTO orders(status,"userId")
+    VALUES($1, $2)
+    RETURNING *;
+    `,
+			[status, userId]
+		);
+		console.log("making orders");
 
 		order.datePlaced = new Date();
 
-      return order
-   
-  } catch (error) {
-      console.error(error)
-  }
-}
+		return order;
+	} catch (error) {
+		throw error;
+	}
+};
 
-//This function needs to be tested.
-// const getCartByUserId= async (id) => {
-
-//   try{
-//       const {rows: [cartOrder] } = await client.query(`
-//           SELECT * FROM orders 
-//           WHERE "userId"=$1 AND status='created'
-//       `,[id])
-      
-
-//       const productsOrdered = await getOrderProductByOrderId(cartOrder.id);
-//       const productsInOrder = await Promise.all(productsOrdered.map(async (productsOrdered) =>{
-//         const newProduct = await getProductById(productsOrdered.productId)
-//         return newProduct;
-//       }))
-//       if(productsOrdered && productsInOrder){
-//         cartOrder.productsOrdered = productsOrdered;
-//         cartOrder.productsInOrder = productsInOrder;
-//       }else{
-//         cartOrder.productsOrdered = [];
-//         cartOrder.productsInOrder = [];
-//       }
-
-    
-//       return cartOrder
-
-
-//   }catch(error){
-//       console.log(error)
-//   }
-
-// }
 
 const getAllOrders = async () => {
 	try {
@@ -288,9 +265,8 @@ const getOrderById = async (orderId) => {
 	}
 };
 
-//I don't think this function is going to work. Maybe we should call "getOrderById" below
-//instead of getProductById
-const getCartByUser = async ({id}) => {
+
+const getCartByUser = async (userId) => {
 	try {
 		const { rows: cartOrder } = await client.query(
 			`
@@ -298,23 +274,46 @@ const getCartByUser = async ({id}) => {
     FROM orders
     WHERE "userId"=$1 AND status='created';
     `,
-			[id]
-    );
-    const orderProducts = await getOrderProductsByOrderId(cartOrder.id)
-    const products = await Promise.all(orderProducts.map(async (orderProduct) =>{
 
-        const product = await getProductById(orderProduct.productId)
-        return product
-    }))
+			[userId]
+		);
+		const orders = await Promise.all(
+			userCart.map((order) => getOrderById(order.id))
+		);
+		return orders;
+	} catch (error) {
+		throw error;
+	}
+};
 
-    if(orderProducts && products){
-    cartOrder.orderProducts = orderProducts
-    cartOrder.products = products}else{
-        cartOrder.orderProducts = []
-        cartOrder.products = []
-    }
-	
-		return cartOrder;
+const createOrderProducts = async ({ productId, orderId, price, quantity }) => {
+	try {
+		const {
+			rows: [orderProduct],
+		} = await client.query(
+			`
+    INSERT INTO order_products("productId","orderId",price ,quantity)
+    VALUES($1, $2,$3,$4)
+    RETURNING *;
+    `,
+			[productId, orderId, price, quantity]
+		);
+
+		return orderProduct;
+	} catch (error) {
+		throw error;
+	}
+};
+
+const addProductsToOrder = async (orderId, products) => {
+	try {
+		const createOrderProductsPromises = products.map((product) =>
+			createOrderProducts(orderId, post.id)
+		);
+
+		await Promise.all(createOrderProductsPromises);
+
+		return await getOrderById(orderId);
 	} catch (error) {
 		throw error;
 	}
@@ -322,17 +321,18 @@ const getCartByUser = async ({id}) => {
 
 const getOrdersByProduct = async (id) => {
 	try {
-		const { rows: productIds } = await client.query(
+		const { rows: ordersIds } = await client.query(
 			`
       SELECT *
       FROM order_products
       JOIN orders ON order_products."orderId" = orders.id
-      JOIN products ON order_products."productId"=${id};
-    `
+      JOIN products ON order_products."productId"=$1;
+    `,
+			[id]
 		);
-		console.log("product ids are ", productIds);
-		const allProducts = productIds.map((product) => {
-			return getProductById(product.id);
+		console.log("this is product id", ordersIds.productId);
+		const allProducts = ordersIds.map((order) => {
+			return getOrdersByUser(order.id);
 		});
 		return allProducts;
 	} catch (error) {
@@ -465,28 +465,19 @@ async function getOrderProductsByOrderId(orderId){
 
 // export
 module.exports = {
-  client,
-  // db methods
-  // requireUser,
-  // requireActiveUser,
-  createUser,
-  getAllUsers,
-  getUserById,
-  getUserByUsername,
-  createProduct,
-  getProductById,
-  getAllProducts,
+	client,
+	createUser,
+	getAllUsers,
+	getUserById,
+	getUserByUsername,
+	createProduct,
+	getProductById,
+	getAllProducts,
+	getCartByUser,
+	createOrder,
+	getOrdersByProduct,
+	getAllOrders,
+	getOrderById,
+	getUser,
+};
 
-  createOrder,
-  getOrderByProductId,
-  destroyOrderProduct,
-  updateOrderProduct,
-  addProductToOrder,
-  getOrdersByProduct,
-  getOrdersByUser,
-  getAllOrders,
-  getOrderProductByOrderId,
-  getCartByUser,
-  getOrderProductsByOrderId,
-
-}
