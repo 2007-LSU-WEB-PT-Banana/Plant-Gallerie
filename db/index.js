@@ -294,6 +294,23 @@ const getOrderById = async (orderId) => {
 	}
 };
 
+const getOrderProductsById = async (orderId) => {
+	try {
+		const { rows: products } = await client.query(
+			`
+      SELECT *
+      FROM order_products
+      WHERE "orderId"=$1;
+    `,
+			orderId
+		);
+
+		return products;
+	} catch (error) {
+		throw error;
+	}
+};
+
 //this function works - do not edit this code!
 const getCartByUser = async (userId) => {
 	try {
@@ -393,4 +410,5 @@ module.exports = {
 	getAllOrders,
 	getOrderById,
 	getUser,
+	getOrderProductsById,
 };
