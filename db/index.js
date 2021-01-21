@@ -58,22 +58,22 @@ const getAllUsers = async () => {
 };
 
 const getUser = async ({ username, password }) => {
-	try {
-		console.log("inside get user");
-		const {
-			rows: [user],
-		} = await client.query(
-			`
-    SELECT username, password
+  try {
+    console.log('inside get user')
+    const {
+      rows: [user],
+    } = await client.query(
+      `
+    SELECT username, password,id
     FROM users
     WHERE username=$1 AND password=$2;
     `,
 			[username, password]
 		);
 
-		console.log("this is username", username);
-		console.log("this is password", password);
-		console.log("this is user ", user);
+    console.log('this is username', username)
+    console.log('this is password', password)
+    console.log('this is user ', user.id)
 
 		return user;
 	} catch (error) {
@@ -101,12 +101,13 @@ const getUserById = async (id) => {
 };
 
 const getUserByUsername = async ({ username }) => {
-	console.log("inside db");
-	try {
-		const {
-			rows: [user],
-		} = await client.query(
-			`
+  console.log('inside db')
+  console.log('this is insdide db usrername ', username)
+  try {
+    const {
+      rows: [user],
+    } = await client.query(
+      `
     SELECT *
     FROM users 
     WHERE username=$1;
@@ -141,27 +142,27 @@ const createProduct = async ({
   VALUES($1,$2,$3,$4,$5,$6)
   RETURNING *;
   `,
-			[name, description, price, imageURL, inStock, category]
-		);
-		return product;
-	} catch (error) {
-		throw error;
-	}
-};
+      [name, description, price, imageURL, inStock, category],
+    )
+
+    await createOrderProducts({ product })
+    return product
+  } catch (error) {
+    throw error
+  }
+}
 
 const getAllProducts = async () => {
-	try {
-		const { rows: products } = await client.query(`
+  try {
+    const { rows: allProducts } = await client.query(`
     SELECT *
     FROM products;
-    `);
-
-		
-		return products;
-	} catch (error) {
-		throw error;
-	}
-};
+    `)
+    return allProducts
+  } catch (error) {
+    throw error
+  }
+}
 
 const getProductById = async (id) => {
   try {
@@ -188,29 +189,30 @@ const getProductById = async (id) => {
   }
 }
 
-const createOrder = async ({ status, userId, products = [] }) => {
-	try {
-		console.log("creating order");
-		const {
-			rows: [order],
-		} = await client.query(
-			`
-    INSERT INTO orders(status,"userId")
-    VALUES($1, $2)
-    RETURNING *;
+const createOrder = async ({ status, userId, products }) => {
+  try {
+    console.log('creating order')
+    const {
+      rows: [order],
+    } = await client.query(
+      `
+      INSERT INTO orders(status,"userId")
+      VALUES($1, $2)
+      RETURNING *;
     `,
-			[status, userId]
-		);
-		console.log("making orders");
+      [status, userId],
+    )
+    console.log('making orders')
+    order.datePlaced = new Date()
 
-		order.datePlaced = new Date();
-
-		return order;
-	} catch (error) {
-		throw error;
-	}
-};
-
+    const productList = await createOrderProducts(products)
+    console.log('this is productlist', productList)
+    const newOrder = await addProductsToOrder(order.id, productList)
+    return newOrder
+  } catch (error) {
+    throw error
+  }
+}
 
 const getAllOrders = async () => {
 	try {
@@ -266,63 +268,69 @@ const getOrderById = async (orderId) => {
 };
 
 
-const getCartByUser = async (userId) => {
-	try {
-		const { rows: cartOrder } = await client.query(
-			`
+const getCartByUser = async (user) => {
+  try {
+    const { rows: userCart } = await client.query(
+      `
+
     SELECT *
     FROM orders
+    JOIN products ON 
     WHERE "userId"=$1 AND status='created';
     `,
+      [user],
+    )
+    const orders = await Promise.all(
+      userCart.map((order) => getOrderById(order.id)),
+    )
+    return orders
+  } catch (error) {
+    throw error
+  }
+}
 
-			[userId]
-		);
-		const orders = await Promise.all(
-			userCart.map((order) => getOrderById(order.id))
-		);
-		return orders;
-	} catch (error) {
-		throw error;
-	}
-};
+async function createOrderProducts(productId) {
+  console.log('here')
+  const product = await getProductById(productId)
+  const order = console.log(
+    'prodcts is indside creatre odere products',
+    product.id,
+  )
 
-const createOrderProducts = async ({ productId, orderId, price, quantity }) => {
-	try {
-		const {
-			rows: [orderProduct],
-		} = await client.query(
-			`
-    INSERT INTO order_products("productId","orderId",price ,quantity)
-    VALUES($1, $2,$3,$4)
-    RETURNING *;
-    `,
-			[productId, orderId, price, quantity]
-		);
+  const newProd = await getOrdersByProduct(product.id)
+  console.log('this is new product', newProd)
 
-		return orderProduct;
-	} catch (error) {
-		throw error;
-	}
-};
+  try {
+    await client.query(
+      `
+        INSERT INTO order_products("productId", "orderId", price, quantity)
+        VALUES($1, $2, $3, $4);
+      `,
+      [
+        product.productId,
+        product.orderId,
+        product.price,
+        (product.quantity = 1),
+      ],
+    )
 
-const addProductsToOrder = async (orderId, products) => {
-	try {
-		const createOrderProductsPromises = products.map((product) =>
-			createOrderProducts(orderId, post.id)
-		);
-
-		await Promise.all(createOrderProductsPromises);
-
-		return await getOrderById(orderId);
-	} catch (error) {
-		throw error;
-	}
-};
+    const { rows } = await client.query(`
+      SELECT * FROM order_products
+      WHERE "orderId"
+      IN (${product[0].orderId})
+    `)
+    console.log('this is row', rows)
+    return rows
+  } catch (error) {
+    throw error
+  }
+}
 
 const getOrdersByProduct = async (id) => {
-	try {
-		const { rows: ordersIds } = await client.query(
-			`
+  try {
+    const { rows: order } = await client.query(
+      `
+
       SELECT *
       FROM order_products
       JOIN orders ON order_products."orderId" = orders.id
@@ -461,9 +469,6 @@ async function getOrderProductsByOrderId(orderId){
 }
 
 
-
-
-// export
 module.exports = {
 	client,
 	createUser,

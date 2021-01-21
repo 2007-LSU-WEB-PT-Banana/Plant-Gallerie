@@ -1,3 +1,5 @@
+// import axios from 'axios'
+
 export const BASE_URL = '/api'
 
 export const getToken = () => {
@@ -24,11 +26,27 @@ function buildHeaders() {
   if (getToken()) {
     base['Authorization'] = `Bearer ${getToken()}`
   }
-
   return base
 }
 
-export const auth = async (username, password) => {
+export const getActiveUser = async () => {
+  const url = `${BASE_URL}/users/me`
+  const response = await fetch(url, {
+    method: 'GET',
+    headers: buildHeaders(),
+  })
+
+  const { error, user } = await response.json()
+  console.log('response from getting single user is ', response)
+
+  if (error) {
+    throw Error(error.message)
+  }
+  console.log('this is user fron end fetcgh', user)
+  return user
+}
+
+export const loginUser = async (username, password) => {
   console.log('inside auth')
   const url = `${BASE_URL}/login`
   console.log('after url')
@@ -42,17 +60,18 @@ export const auth = async (username, password) => {
     }),
   })
   console.log('this is respones', response)
-  const { error, data } = await response.json()
+  const { error, user, token } = await response.json()
 
   if (error) {
     throw Error(error.message)
   }
 
-  if (data && data.token) {
-    setToken(data.token)
+  if (token) {
+    console.log('this is token in login', token)
+    setToken(token)
   }
 
-  return data
+  return user
 }
 
 export const NewUser = async (
@@ -76,17 +95,17 @@ export const NewUser = async (
       imageURL: imageURL,
     }),
   })
-  const { error, data } = await response.json()
+  const { error, user, token } = await response.json()
 
   if (error) {
     throw Error(error.message)
   }
 
-  if (data && data.token) {
-    setToken(data.token)
+  if (token) {
+    setToken(token)
   }
 
-  return data
+  return user
 }
 
 export const fetchAPI = async (url, method = 'GET', sendData = null) => {
@@ -99,8 +118,8 @@ export const fetchAPI = async (url, method = 'GET', sendData = null) => {
 
   if (sendData) {
     if (sendData.price) {
-      let newPrice = sendData.price * 100;
-      sendData.price = newPrice;
+      let newPrice = sendData.price * 100
+      sendData.price = newPrice
     }
     fetchOptions.body = JSON.stringify(sendData)
   }
@@ -109,7 +128,7 @@ export const fetchAPI = async (url, method = 'GET', sendData = null) => {
 
   const response = await fetch(url, fetchOptions)
   const data = await response.json()
-  console.log("The response we are receiving in the fetch is", data)
+  console.log('The response we are receiving in the fetch is', data)
 
   return data
 }

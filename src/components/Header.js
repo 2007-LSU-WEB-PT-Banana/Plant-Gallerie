@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import SearchIcon from "@material-ui/icons/Search";
-import PersonOutlineIcon from "@material-ui/icons/PersonOutline";
-import ShoppingCartIcon from "@material-ui/icons/ShoppingCart";
-import DehazeIcon from "@material-ui/icons/Dehaze";
-import "./Header.css";
+
+import React, { useState, useEffect, Fragment } from 'react'
+import { Link } from 'react-router-dom'
+import SearchIcon from '@material-ui/icons/Search'
+import PersonOutlineIcon from '@material-ui/icons/PersonOutline'
+import ShoppingCartIcon from '@material-ui/icons/ShoppingCart'
+import DehazeIcon from '@material-ui/icons/Dehaze'
+import './Header.css'
 
 const headerLink = {
 	marginRight: "35px",
@@ -22,12 +23,25 @@ const headerLink = {
 };
 
 const Header = (props) => {
-	const { cartData, setIsLoggedIn } = props;
 
-	const [isNavVisible, setIsNavVisible] = useState(true);
-	const [isSmallScreen, setIsSmallScreen] = useState(false);
+  const {
+    setIsLoggedIn,
+    history,
+    clearToken,
+    activeUser,
+    setActiveUser,
+    cartData
+  } = props
+  const [isNavVisible, setIsNavVisible] = useState(true)
+  const [isSmallScreen, setIsSmallScreen] = useState(false)
 
-	useEffect(() => {
+	const handleSignOut = () => {
+    console.log('hitting signout')
+    clearToken()
+    setIsLoggedIn(false)
+  }
+		
+  useEffect(() => {
 		const mediaQuery = window.matchMedia("(max-width: 812px)");
 		mediaQuery.addEventListener("change", handleMediaQueryChange);
 		handleMediaQueryChange(mediaQuery);

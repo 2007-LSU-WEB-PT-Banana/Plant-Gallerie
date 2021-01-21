@@ -1,7 +1,8 @@
-import React, { useState } from "react";
-import "./Login.css";
-import { useHistory } from "react-router-dom";
-import { getToken, setToken, clearToken, auth } from "../api/index";
+import React, { useState } from 'react'
+import './Login.css'
+import { useHistory } from 'react-router-dom'
+import { getToken, setToken, clearToken, loginUser } from '../api/index'
+
 
 function Login(props) {
 	const {
@@ -15,20 +16,19 @@ function Login(props) {
 	const [username, setUserName] = useState("");
 	const [password, setPassword] = useState("");
 
-	const login = async (event) => {
-		event.preventDefault();
-		console.log("logging in");
-		try {
-			console.log("hhhhh");
-			const result = await auth(username, password);
-			setIsLoggedIn(true);
-			setMessage("Currently Logged In");
-			setCurrentUser(result.userId);
-			history.push("/");
-		} catch (error) {
-			console.error(error);
-		}
-	};
+  const login = async (event) => {
+    event.preventDefault()
+    console.log('logging in')
+    try {
+      console.log('hhhhh')
+      const result = await loginUser(username, password)
+      console.log('this is result', result)
+      setIsLoggedIn(true)
+      history.push('/')
+    } catch (error) {
+      console.error(error)
+    }
+  }
 
 	const register = (event) => {
 		history.push("/register");
