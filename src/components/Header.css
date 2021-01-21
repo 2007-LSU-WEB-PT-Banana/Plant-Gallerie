@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Alegreya+Sans+SC:wght@100;300&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Alegreya+Sans+SC:wght@100;300&display=swap');
 
 .Header {
 	background: #c0c0c0;
@@ -6,7 +6,7 @@
 	top: 0;
 	width: 100%;
 	z-index: 100;
-	font-family: "Alegreya Sans SC, sans-serif";
+	font-family: 'Alegreya Sans SC, sans-serif';
 	border-bottom: 4px solid #607848;
 	font-weight: bold;
 	font-size: 20px;
@@ -17,7 +17,7 @@
 
 .Header {
 	display: grid;
-	grid-template-areas: "logo nav";
+	grid-template-areas: 'logo nav';
 }
 
 .Nav {
@@ -43,9 +43,35 @@
 	background-color: #c0c0c0;
 }
 
+.search-bar {
+	width: 100%;
+	border: 0.2px solid rgb(172, 170, 170);
+	display: flex;
+	border-radius: 100px;
+	overflow: hidden;
+	font-size: 1.25em;
+	position: relative;
+	transition: width 450ms cubic-bezier(0.18, 0.89, 0.32, 1.28);
+	padding: 3px;
+	background: transparent;
+	color: rgb(230, 224, 224);
+}
+
+#toggle-search {
+	float: right;
+}
+
+.search-bar_input {
+	background-color: rgb(190, 189, 189);
+	outline: none;
+}
+.search-bar_submit {
+	background-color: rgb(190, 189, 189);
+}
+
 @media (max-width: 812px) {
 	.Header {
-		grid-template-areas: "logo burger" "nav nav";
+		grid-template-areas: 'logo burger' 'nav nav';
 	}
 
 	.Nav {
@@ -57,4 +83,14 @@
 	.Burger {
 		display: block;
 	}
+}
+
+.open {
+	display: block;
+	transition: display 0.35s ease-out;
+}
+
+.close {
+	display: none;
+	transition: display 0.35s ease-out;
 }

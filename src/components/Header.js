@@ -31,6 +31,11 @@ const Header = (props) => {
   } = props
   const [isNavVisible, setIsNavVisible] = useState(true)
   const [isSmallScreen, setIsSmallScreen] = useState(false)
+  const [visible, setVisible] = useState(null)
+
+  const handleVisibility = () => {
+    setVisible(!visible)
+  }
 
   useEffect(() => {
     const mediaQuery = window.matchMedia('(max-width: 812px)')
@@ -84,8 +89,27 @@ const Header = (props) => {
           <Link to="/bonsaiplants" className="header-link" style={headerLink}>
             Bonsai Plants
           </Link>
-          <Link to="/search" className="header-link" style={headerLink}>
-            <SearchIcon className="header-searchIcon" />
+          <Link to="/" className="header-link" style={headerLink}>
+            <div className="search-bar">
+              <input
+                className={visible ? 'open' : 'close'}
+                className="search-bar_input"
+                placeholder="Enter your query..."
+                aria-label="search"
+                display="none"
+                type="text"
+              />
+
+              <button
+                style={{ outline: 'none' }}
+                id="toggle-search"
+                aria-label="submit search"
+                className="search-bar_submit"
+                onClick={handleVisibility}
+              >
+                <SearchIcon className="search-header" />
+              </button>
+            </div>
           </Link>
 
           {!setActiveUser ? (

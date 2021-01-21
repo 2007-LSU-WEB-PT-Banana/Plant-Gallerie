@@ -20,13 +20,7 @@ const {
 require('dotenv').config()
 const jwt = require('jsonwebtoken')
 const { token } = require('morgan')
-const stripe = require('stripe')(
-  'sk_test_51HuidgIXeGEdiWlBqlHtOInao7ompc6fIEbfcZ2FItRc0lNbGUaZMgNReA14VtusIB42N7L1D4bnxLLNNB3PgZqZ000rTTpD6K',
-)
-
-apiRouter.get('/', (req, res) => {
-  res.send(`Add your stripe secrete key to the .require('stripe') statmemt!`)
-})
+const stripe = require('stripe')(`${process.env.mySKey}`)
 
 const requireUser = (req, res, next) => {
   if (!req.user) {
@@ -285,8 +279,7 @@ apiRouter.get('/users/:userId/orders', async (req, res) => {
 
 apiRouter.post('/payment', async (req, res) => {
   console.log(req.body)
-  let error
-  let status
+
   try {
     const { product, token } = req.body
     console.log('product', product)
