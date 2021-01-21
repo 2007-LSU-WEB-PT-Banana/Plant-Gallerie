@@ -12,34 +12,36 @@ const {
 	createOrder,
 	getOrdersByProduct,
 	getAllOrders,
-	getOrderById,
-	getUser,
+  getOrderById,
+  getCartByUser,
+  getOrderProductsByOrderId,
+  getUser,
 } = require("../db/index");
 
 require("dotenv").config();
 const jwt = require("jsonwebtoken");
 const { token } = require("morgan");
 
-const requireUser = (req, res, next) => {
-	if (!req.user) {
-		next({
-			name: "MissingUserError",
-			message: "You must be logged in to perform this action",
-		});
-	}
+// const requireUser = (req, res, next) => {
+// 	if (!req.user) {
+// 		next({
+// 			name: "MissingUserError",
+// 			message: "You must be logged in to perform this action",
+// 		});
+// 	}
 
-	next();
-};
+// 	next();
+// };
 
-const requireActiveUser = (req, res, next) => {
-	if (!req.user.active) {
-		next({
-			name: "UserNotActive",
-			message: "You must be active to perform this action",
-		});
-	}
-	next();
-};
+// const requireActiveUser = (req, res, next) => {
+// 	if (!req.user.active) {
+// 		next({
+// 			name: "UserNotActive",
+// 			message: "You must be active to perform this action",
+// 		});
+// 	}
+// 	next();
+// };
 
 apiRouter.get("/", async (req, res, next) => {
 	console.log("hitting api");
@@ -174,19 +176,19 @@ apiRouter.get("/products", async (req, res, next) => {
 		next(error);
 	}
 });
-
-apiRouter.get("/products/:productId", async (req, res, next) => {
-	const id = req.body.productId;
-	console.log("the product id is", id);
-	try {
-		console.log("inside the try for getting product by ID");
-		const requestedProduct = await getProductById(id);
-		res.send(requestedProduct);
-	} catch (error) {
-		next(error);
-	}
-});
-
+apiRouter.get('/products/:productId', async (req, res, next) => {
+  // const id = req.body.productId
+   //console.log('the product id is', id)
+   try {
+     const {productId} = req.params
+     console.log('inside the try for getting product by ID')
+     const requestedProduct = await getProductById(productId)
+     res.send(requestedProduct)
+     next()
+   } catch (error) {
+     next(error)
+   }
+ })
 apiRouter.post("/createproduct", async (req, res, next) => {
 	const { name, description, price, imageURL, inStock, category } = req.body;
 	console.log("The req.body is", req.body);
@@ -205,19 +207,29 @@ apiRouter.post("/createproduct", async (req, res, next) => {
 	}
 });
 
-apiRouter.get("/orders/cart", async (req, res, next) => {
-	try {
-		const user = await getUserById(req.body.userId);
-
-		if (user) {
-			const userOrders = await getCartByUser(user.id);
-			res.send(userOrders);
-		} else {
-			res.send({ message: "there are no orders here" });
-		}
-	} catch (error) {
-		throw error;
-	}
+apiRouter.get('/orders/cart', async (req,res,next) => {
+  try {
+    const prefix = 'Bearer ';
+    const auth = req.header('Authorization');
+    
+    if (auth.startsWith(prefix)) {
+    const token = auth.slice(prefix.length);
+    if (token){
+    const { id } = jwt.verify(token, `${process.env.JWT_SECRET}`);
+      if (id) {
+        const user = await getUserById(id)
+        if (user){
+            const orders = await getCartByUser({id})
+            res.send( orders )
+        } else {
+            res.send({message:'You must be logged in to view your cart'})
+        }
+      }
+    }
+}
+} catch (error) {
+    console.error(error)
+}
 });
 
 apiRouter.get("/orders/:orderId", async (req, res) => {
