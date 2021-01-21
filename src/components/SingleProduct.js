@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+import { BASE_URL, fetchAPI } from "../api";
 
 const SingleProduct = (props) => {
 	const {
@@ -9,10 +10,14 @@ const SingleProduct = (props) => {
 		setCount,
 		cartData,
 		setCartData,
+		orderId,
 	} = props;
 
 	//deCha will rework the "add to Cart" function so that it sends the cartData to the database for authenticated users
 	const [message, setMessage] = useState("");
+	const [itemToUpdate, setItemToUpdate] = useState(false);
+
+	console.log("the active product is", activeProduct);
 
 	function backToSearch(event) {
 		event.preventDefault();
@@ -31,18 +36,38 @@ const SingleProduct = (props) => {
 		setCount(newCount);
 	}
 
-	function updateCart() {
-		let newCartItem = {
-			productId: activeProduct.id,
-			price: activeProduct.price,
-			productName: activeProduct.name,
-			quantity: count,
-			id: activeProduct.id,
-			image: activeProduct.imageURL,
-		};
-		//going to need to do a fetch here to post the new cart item to the order
+	async function updateCart() {
+		//write function - if the product does not appear in the cart already, make fetch request to post item to the order and
+		// re-render the cart
 
-		setCartData([...cartData, newCartItem]);
+		try {
+			let newCartItem = {
+				productId: activeProduct.id,
+				price: activeProduct.price,
+				productName: activeProduct.name,
+				quantity: count,
+				id: activeProduct.id,
+				image: activeProduct.imageURL,
+			};
+			//need to know the order number to attach to here
+			const newCart = await fetchAPI(
+				BASE_URL + "/orders/" + orderId + "/products",
+				"POST",
+				newCartItem
+			);
+			console.log("the newCart info is", newCart);
+			setCartData(newCart);
+		} catch (error) {
+			throw error;
+		}
+		//going to need to do a fetch here to post the new cart item to the order
+		// let newInfo = {changed: false};
+		// cartData.map((product, idx) => {
+		//   if (product.id === activeProduct.id) {
+		//     newInfo = {changed: true, index: idx, newQuantity: count + product.quantity, newPrice: activeProduct.price}
+		//   }
+		//   return newInfo;
+		// })
 		setCount(1);
 		setMessage("Added to Cart");
 	}

@@ -37,12 +37,10 @@ export const getActiveUser = async () => {
 	});
 
 	const { error, user } = await response.json();
-	console.log("response from getting single user is ", response);
 
 	if (error) {
 		throw Error(error.message);
 	}
-	console.log("this is user front end fetch", user);
 	return user;
 };
 
@@ -86,7 +84,6 @@ export const loginUser = async (username, password) => {
 	}
 
 	if (token) {
-		console.log("this is token in login", token);
 		setToken(token);
 	}
 
@@ -143,11 +140,8 @@ export const fetchAPI = async (url, method = "GET", sendData = null) => {
 		fetchOptions.body = JSON.stringify(sendData);
 	}
 
-	console.log("this is what we are sending in the fetch", fetchOptions);
-
 	const response = await fetch(url, fetchOptions);
 	const data = await response.json();
-	console.log("The response we are receiving in the fetch is", data);
 
 	return data;
 };

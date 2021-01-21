@@ -73,7 +73,6 @@ const SingleOrder = (props) => {
 			<div className="cartCardWrapper">
 				{cartData.map((product, index) => {
 					let priceInDollars = product.price / 100;
-					console.log("price in dollars", priceInDollars);
 					return (
 						<div className="cartCard" value={index}>
 							<img

@@ -3,11 +3,9 @@ import { Switch, Route, useHistory, Link } from "react-router-dom";
 import {
 	fetchAPI,
 	BASE_URL,
-	auth,
 	getToken,
 	clearToken,
 	getActiveUser,
-	getCartData,
 } from "../api";
 import "./Home.css";
 import {
@@ -20,10 +18,9 @@ import {
 	HousePlants,
 	Home,
 	Register,
+	Payment,
+	Cart,
 } from "./index";
-import CartComponent from "./Cart";
-import SingleOrder from "./SingleOrder";
-import Payment from "./Payment";
 
 const App = () => {
 	const history = useHistory();
@@ -35,6 +32,7 @@ const App = () => {
 	const [cartData, setCartData] = useState([]);
 	const [count, setCount] = useState(1);
 	const [activeUser, setActiveUser] = useState("");
+	const [orderId, setOrderId] = useState("");
 
 	useEffect(() => {
 		fetchAPI(BASE_URL + "/")
@@ -50,7 +48,6 @@ const App = () => {
 		fetchAPI(BASE_URL + "/products")
 			.catch(console.error)
 			.then((data) => {
-				console.log("this is data", data);
 				data.map((product) => {
 					let newPrice = product.price / 100;
 					product.price = newPrice;
@@ -68,7 +65,7 @@ const App = () => {
 	}, [isLoggedIn]);
 
 	console.log("The cart data is", cartData);
-	console.log("the active user is", activeUser);
+	console.log("the order id is:", orderId);
 
 	// //going to have to make this a function in the api folder and possibly use params for userID instead of body
 	// useEffect(() => {
@@ -107,6 +104,7 @@ const App = () => {
 							setCount={setCount}
 							cartData={cartData}
 							setCartData={setCartData}
+							orderId={orderId}
 						/>
 					</Route>
 					<Route exact path="/products">
@@ -142,13 +140,14 @@ const App = () => {
 							setIsLoggedIn={setIsLoggedIn}
 							history={history}
 							setCartData={setCartData}
+							setOrderId={setOrderId}
 						/>
 					</Route>
 					<Route exact path="/register">
 						<Register setIsLoggedIn={setIsLoggedIn} />
 					</Route>
 					<Route path="/cart">
-						<CartComponent cartData={cartData} setCartData={setCartData} />
+						<Cart cartData={cartData} setCartData={setCartData} />
 					</Route>
 
 					<Route path="/payment">

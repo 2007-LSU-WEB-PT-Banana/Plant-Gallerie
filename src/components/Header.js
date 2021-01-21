@@ -26,7 +26,6 @@ const Header = (props) => {
 		setIsLoggedIn,
 		history,
 		clearToken,
-		activeUser,
 		setActiveUser,
 		cartData,
 		isLoggedIn,
@@ -110,7 +109,7 @@ const Header = (props) => {
 					</Link>
 					<Link to="/cart" className="header-link" style={headerLink}>
 						<ShoppingCartIcon />
-						{cartData === undefined ? "0" : cartData.length}
+						{cartData ? cartData.length : "0"}
 					</Link>
 				</nav>
 			)}
