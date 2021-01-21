@@ -67,7 +67,7 @@ const getUser = async ({ username, password }) => {
 			rows: [user],
 		} = await client.query(
 			`
-    SELECT username, password
+    SELECT username, password,id
     FROM users
     WHERE username=$1 AND password=$2;
     `,
@@ -76,7 +76,7 @@ const getUser = async ({ username, password }) => {
 
 		console.log("this is username", username);
 		console.log("this is password", password);
-		console.log("this is user ", user);
+		console.log("this is user ", user.id);
 
 		return user;
 	} catch (error) {
@@ -105,6 +105,7 @@ const getUserById = async (id) => {
 
 const getUserByUsername = async ({ username }) => {
 	console.log("inside db");
+	console.log("this is insdide db usrername ", username);
 	try {
 		const {
 			rows: [user],
@@ -147,6 +148,8 @@ const createProduct = async ({
   `,
 			[name, description, price, imageURL, inStock, category]
 		);
+
+		await createOrderProducts({ product });
 		return product;
 	} catch (error) {
 		throw error;
@@ -155,22 +158,17 @@ const createProduct = async ({
 
 const getAllProducts = async () => {
 	try {
-		const { rows: productIds } = await client.query(`
-    SELECT id 
+		const { rows: allProducts } = await client.query(`
+    SELECT *
     FROM products;
     `);
-
-		const allProducts = await Promise.all(
-			productIds.map((product) => getProductById(product.id))
-		);
-
 		return allProducts;
 	} catch (error) {
 		throw error;
 	}
 };
 
-const getProductById = async (productId) => {
+const getProductById = async (id) => {
 	try {
 		const {
 			rows: [product],
@@ -318,6 +316,7 @@ const getCartByUser = async (userId) => {
 			`
     SELECT *
     FROM orders
+    JOIN products ON 
     WHERE "userId"=$1 AND status='created';
     `,
 			[userId]
@@ -376,8 +375,9 @@ const addProductsToOrder = async (orderId, productList) => {
 
 const getOrdersByProduct = async (id) => {
 	try {
-		const { rows: ordersIds } = await client.query(
+		const { rows: order } = await client.query(
 			`
+
       SELECT *
       FROM order_products
       JOIN orders ON order_products."orderId" = orders.id
@@ -394,6 +394,158 @@ const getOrdersByProduct = async (id) => {
 		throw error;
 	}
 };
+
+const getOrderByProductId = async (id) => {
+	try {
+		const {
+			rows: [orderProduct],
+		} = await client.query(
+			`
+SELECT * 
+FROM order_products
+WHERE id=$1;
+`,
+			[id]
+		);
+		return orderProduct;
+	} catch (error) {
+		throw error;
+	}
+};
+const getOrderProductByOrderId = async (orderId) => {
+	try {
+		const {
+			rows: [orderProduct],
+		} = await client.query(
+			`
+SELECT * 
+FROM order_products
+WHERE "orderId"=$1;
+`,
+			[orderId]
+		);
+		return orderProduct;
+	} catch (error) {
+		throw error;
+	}
+};
+
+const addProductToOrder = async ({ orderId, productId, price, quantity }) => {
+	try {
+		const orderProduct = await getOrderProductByOrderId(id);
+
+		if (orderProduct.length < 1) {
+			const {
+				rows: [productOrdered],
+			} = await client.query(
+				`
+      INSERT INTO order_products ("productId", "orderId", price, quantity)
+      VALUES ($1, $2, $3, $4)
+      RETURNING *
+      `,
+				[[productId, orderId, price, quantity]]
+			);
+			return productOrdered;
+		} else {
+			for (let i = 0; i < orderProduct.length; i++) {
+				if (orderProduct[i].productId === productId) {
+					const {
+						rows: [productOrder],
+					} = await client.query(
+						`
+                    UPDATE order_products SET (price, quantity) = 
+                    ($1, $2) WHERE "productId" = $3 AND "orderId" = $4
+                    RETURNING *
+                `,
+						[price, quantity, productId, orderId]
+					);
+
+					return productOrder;
+				} else if (
+					orderProduct[orderProducts.length - 1].productId !== productId &&
+					i === orderProduct.length - 1
+				) {
+					const {
+						rows: [productOrder],
+					} = await client.query(
+						`
+          INSERT INTO order_products ("productId", "orderId", price, quantity)
+          VALUES ($1, $2, $3, $4)
+          RETURNING *`,
+						[productId, orderId, price, quantity]
+					);
+					return productOrder;
+				}
+			}
+		}
+	} catch (error) {
+		throw error;
+	}
+};
+
+const updateOrderProduct = async ({ id, price, quantity }) => {
+	try {
+		const originalOrderProduct = await getOrderByProductId(id);
+
+		if (!price) {
+			originalOrderProduct.price = price;
+		}
+		if (!quantity) {
+			originalOrderProduct.quantity = quantity;
+		}
+
+		const {
+			rows: [orderProduct],
+		} = await client.query(
+			`
+
+    UPDATE order_products original
+    SET price=$2,
+    quantity=$3
+    WHERE original.id=$1
+    RETRUNING *;
+    `,
+			[id, price, quantity]
+		);
+		console.log("update order produc", orderProduct);
+		return orderProduct;
+	} catch (error) {
+		throw error;
+	}
+};
+const destroyOrderProduct = async (id) => {
+	console.log("the id is ", id);
+	try {
+		const {
+			rows: [orderProduct],
+		} = await client.query(
+			`
+      DELETE FROM order_products
+      WHERE id=$1
+      RETURNING *
+      `,
+			[id]
+		);
+		return orderProduct;
+	} catch (error) {
+		throw error;
+	}
+};
+
+async function getOrderProductsByOrderId(orderId) {
+	try {
+		const { rows: orderProducts } = await client.query(
+			`
+          SELECT * FROM order_products
+          WHERE "orderId" = $1
+      `,
+			[orderId]
+		);
+		return orderProducts;
+	} catch (error) {
+		console.error(error);
+	}
+}
 
 module.exports = {
 	client,

@@ -1,5 +1,6 @@
 const apiRouter = require("express").Router();
 const bcrypt = require("bcrypt");
+const uuid = require("uuid/v4");
 
 const {
 	createProduct,
@@ -13,35 +14,42 @@ const {
 	getOrdersByProduct,
 	getAllOrders,
 	getOrderById,
-	getUser,
 	getCartByUser,
-	getOrderProductsById,
+	getOrderProductsByOrderId,
+	getUser,
 } = require("../db/index");
 
 require("dotenv").config();
 const jwt = require("jsonwebtoken");
 const { token } = require("morgan");
+const stripe = require("stripe")(
+	"sk_test_51HuidgIXeGEdiWlBqlHtOInao7ompc6fIEbfcZ2FItRc0lNbGUaZMgNReA14VtusIB42N7L1D4bnxLLNNB3PgZqZ000rTTpD6K"
+);
 
-const requireUser = (req, res, next) => {
-	if (!req.user) {
-		next({
-			name: "MissingUserError",
-			message: "You must be logged in to perform this action",
-		});
-	}
+apiRouter.get("/", (req, res) => {
+	res.send(`Add your stripe secrete key to the .require('stripe') statmemt!`);
+});
 
-	next();
-};
+// const requireUser = (req, res, next) => {
+// 	if (!req.user) {
+// 		next({
+// 			name: "MissingUserError",
+// 			message: "You must be logged in to perform this action",
+// 		});
+// 	}
 
-const requireActiveUser = (req, res, next) => {
-	if (!req.user.active) {
-		next({
-			name: "UserNotActive",
-			message: "You must be active to perform this action",
-		});
-	}
-	next();
-};
+// 	next();
+// };
+
+// const requireActiveUser = (req, res, next) => {
+// 	if (!req.user.active) {
+// 		next({
+// 			name: "UserNotActive",
+// 			message: "You must be active to perform this action",
+// 		});
+// 	}
+// 	next();
+// };
 
 apiRouter.get("/", async (req, res, next) => {
 	console.log("hitting api");
@@ -73,16 +81,15 @@ apiRouter.post("/login", async (req, res, next) => {
 
 	try {
 		const user = await getUser(req.body);
-		console.log("this is user", user);
+
+		console.log("this is users id insdie route", user.id);
 
 		if (user && user.password == password) {
-			// console.log('users token is ', token)
 			await bcrypt.compare(password, user.password);
 
 			const token = jwt.sign(
 				{
 					id: user.id,
-					password: user.password,
 					username: user.username,
 				},
 				`${process.env.JWT_SECRET}`,
@@ -90,6 +97,8 @@ apiRouter.post("/login", async (req, res, next) => {
 					expiresIn: "6w",
 				}
 			);
+
+			delete user.password;
 			res.send({
 				user: user,
 				token: token,
@@ -104,6 +113,7 @@ apiRouter.post("/login", async (req, res, next) => {
 
 apiRouter.post("/register", async (req, res, next) => {
 	console.log("here in register");
+
 	const { firstName, lastName, email, imageURL, username, password } = req.body;
 
 	console.log("here in register 1");
@@ -129,6 +139,11 @@ apiRouter.post("/register", async (req, res, next) => {
 			password,
 		});
 
+		if (user.password < 8) {
+			throw "Password should 8 or more characters";
+		}
+
+		delete user.password;
 		res.send({
 			user: user,
 		});
@@ -137,21 +152,25 @@ apiRouter.post("/register", async (req, res, next) => {
 	}
 });
 
-apiRouter.get("/users/me", async (req, res) => {
-	console.log("this is username", req.body);
+apiRouter.get("/users/me", async (req, res, next) => {
+	console.log("inside users/me in database");
 	try {
-		const user = await getUserByUsername(req.body);
+		const token = req.headers.authorization.split(" ")[1];
+		console.log(token);
 
-		if (user) {
-			jwt.verify({
-				id: user.id,
-				password: user.password,
-				username: user.username,
-			});
-		}
-		res.send(user);
+		const decoded = jwt.decode(token, `${process.env.JWT_SECRET}`);
+
+		req.userData = decoded;
+		console.log("this is username", req.userData.username);
+		console.log(req.userData);
+		const userId = req.userData.id;
+		console.log(userId);
+
+		const user = await getUserById(userId);
+		console.log(user);
+		res.send({ user });
 	} catch (error) {
-		throw error;
+		next(error);
 	}
 });
 
@@ -164,6 +183,35 @@ apiRouter.get("/users/:id", async (req, res, next) => {
 		res.send(oneUser);
 	} catch (error) {
 		next(error);
+	}
+});
+
+apiRouter.get("/products/:id", async (req, res, next) => {
+	const id = req.params.id;
+	try {
+		console.log("inside the try for getting product by ID");
+		const requestedProduct = await getProductById(id);
+		res.send(requestedProduct);
+	} catch (error) {
+		next(error);
+	}
+});
+
+apiRouter.post("/createproduct", async (req, res, next) => {
+	const { name, description, price, imageURL, inStock, category } = req.body;
+	console.log("The req.body is", req.body);
+	try {
+		const newProduct = await createProduct({
+			name,
+			description,
+			price,
+			imageURL,
+			inStock,
+			category,
+		});
+		res.send(newProduct);
+	} catch (error) {
+		throw error;
 	}
 });
 
@@ -228,7 +276,7 @@ apiRouter.get("/orders/:orderId", async (req, res) => {
 		console.log("getting one order");
 		const getOneOrder = await getOrderById(req.params.id);
 		console.log("this is one order", getOneOrder);
-		//deCha: this worked for me when putting the id in the body as follows
+		//From deCha: this worked for me when putting the id in the body as follows
 		// console.log("the request.body.id is", req.body.id);
 		// try {
 		//   console.log("getting one order");
@@ -272,4 +320,49 @@ apiRouter.get("/users/:userId/orders", async (req, res) => {
 	}
 });
 
+apiRouter.post("/payment", async (req, res) => {
+	console.log(req.body);
+	let error;
+	let status;
+	try {
+		const { product, token } = req.body;
+		console.log("product", product);
+		console.log("this is price", product.price);
+		const customer = await stripe.customers.create({
+			email: token.email,
+			source: token.id,
+		});
+
+		const idempotencyKey = uuid();
+		const charge = await stripe.charges.create(
+			{
+				amount: product.price * 100,
+				currency: "usd",
+				customer: customer.id,
+				receipt_email: token.email,
+				description: `Purchased the ${product.productName}`,
+				shipping: {
+					name: token.card.name,
+					address: {
+						line1: token.card.address_line1,
+						line2: token.card.address_line2,
+						city: token.card.address_city,
+						country: token.card.address_country,
+						postal_code: token.card.address_zip,
+					},
+				},
+			},
+			{
+				idempotencyKey,
+			}
+		);
+		console.log("charge", { charge });
+
+		res.json({
+			status: "success",
+		});
+	} catch (error) {
+		throw error;
+	}
+});
 module.exports = apiRouter;

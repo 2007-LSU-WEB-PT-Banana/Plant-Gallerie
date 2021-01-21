@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { Switch, Route, useHistory, Link } from "react-router-dom";
-import { fetchAPI, BASE_URL, auth, getToken, clearToken } from "../api";
+import {
+	fetchAPI,
+	BASE_URL,
+	auth,
+	getToken,
+	clearToken,
+	getActiveUser,
+} from "../api";
 import "./Home.css";
 import {
 	AllProducts,
@@ -12,9 +19,10 @@ import {
 	HousePlants,
 	Home,
 	Register,
-	Cart,
-	SingleOrder,
 } from "./index";
+import CartComponent from "./Cart";
+import SingleOrder from "./SingleOrder";
+import Payment from "./Payment";
 
 const App = () => {
 	const history = useHistory();
@@ -25,7 +33,7 @@ const App = () => {
 	const [activeProduct, setActiveProduct] = useState("");
 	const [cartData, setCartData] = useState([]);
 	const [count, setCount] = useState(1);
-	const [activeUser, setActiveUser] = useState({});
+	const [activeUser, setActiveUser] = useState("");
 
 	useEffect(() => {
 		fetchAPI(BASE_URL + "/")
@@ -40,6 +48,7 @@ const App = () => {
 	useEffect(() => {
 		fetchAPI(BASE_URL + "/products")
 			.then((data) => {
+				console.log("this is data", data);
 				data.map((product) => {
 					let newPrice = product.price / 100;
 					product.price = newPrice;
@@ -48,6 +57,18 @@ const App = () => {
 			})
 			.catch(console.error);
 	}, []);
+
+	useEffect(() => {
+		getActiveUser()
+			.then((data) => {
+				console.log("this is singleuser", data);
+				setActiveUser(data);
+			})
+
+			.catch(console.error);
+	}, []);
+
+	console.log("The cart data is", cartData);
 
 	useEffect(() => {
 		fetchAPI(BASE_URL + "/orders/cart", "GET", activeUser.id)
@@ -61,15 +82,14 @@ const App = () => {
 			.catch(console.error);
 	}, [activeUser]);
 
-	console.log("The cart data is", cartData);
-
 	return (
 		<>
 			<Header
-				cartData={cartData}
-				setIsLoggedIn={setIsLoggedIn}
-				isLoggedIn={isLoggedIn}
+				activeUser={activeUser}
 				setActiveUser={setActiveUser}
+				setIsLoggedIn={setIsLoggedIn}
+				history={history}
+				clearToken={clearToken}
 			/>
 			<main className="wrapper">
 				<Switch>
@@ -114,29 +134,19 @@ const App = () => {
 						/>
 					</Route>
 					<Route exact path="/login">
-						<Login
-							activeUser={activeUser}
-							setActiveUser={setActiveUser}
-							message={message}
-							setMessage={setMessage}
-							setIsLoggedIn={setIsLoggedIn}
-						/>
+						<Login setIsLoggedIn={setIsLoggedIn} />
 					</Route>
 					<Route exact path="/register">
 						<Register setIsLoggedIn={setIsLoggedIn} />
 					</Route>
 					<Route path="/cart">
-						<Cart
-							cartData={cartData}
-							setCartData={setCartData}
-							history={history}
-						/>
+						<CartComponent cartData={cartData} setCartData={setCartData} />
 					</Route>
-					<Route path={`/orders/:orderId`}>
-						<SingleOrder
-							activeUser={activeUser}
-							cartData={cartData}
-							setCartData={setCartData}
+
+					<Route path="/payment">
+						<Payment
+							productList={productList}
+							setProductList={setProductList}
 						/>
 					</Route>
 				</Switch>

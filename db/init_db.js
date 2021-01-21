@@ -42,7 +42,7 @@ async function buildTables() {
         email VARCHAR(255) UNIQUE NOT NULL,
         "imageURL" TEXT DEFAULT 'no picture' NOT NULL,
         username VARCHAR(255) UNIQUE NOT NULL,
-        password VARCHAR(255) NOT NULL link_length CHECK(LENGTH(link) >= 8),
+        password VARCHAR(255) NOT NULL CONSTRAINT password_length CHECK(LENGTH(password) > 8),
         "isAdmin" BOOLEAN NOT NULL DEFAULT false
       );
       CREATE TABLE orders(
@@ -56,7 +56,7 @@ async function buildTables() {
         "productId" INTEGER REFERENCES products(id),
         "orderId" INTEGER REFERENCES orders(id),
         price INTEGER NOT NULL ,
-        quantity INTEGER NOT NULL DEFAULT 0
+        quantity INTEGER DEFAULT 1
         );
     `)
   } catch (error) {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Fragment } from "react";
 import { Link } from "react-router-dom";
 import SearchIcon from "@material-ui/icons/Search";
 import PersonOutlineIcon from "@material-ui/icons/PersonOutline";
@@ -22,9 +22,23 @@ const headerLink = {
 };
 
 const Header = (props) => {
-	const { cartData, setIsLoggedIn, isLoggedIn, setActiveUser } = props;
+	const {
+		setIsLoggedIn,
+		history,
+		clearToken,
+		activeUser,
+		setActiveUser,
+		cartData,
+		isLoggedIn,
+	} = props;
 	const [isNavVisible, setIsNavVisible] = useState(true);
 	const [isSmallScreen, setIsSmallScreen] = useState(false);
+
+	const handleSignOut = () => {
+		console.log("hitting signout");
+		clearToken();
+		setIsLoggedIn(false);
+	};
 
 	useEffect(() => {
 		const mediaQuery = window.matchMedia("(max-width: 812px)");

@@ -3,11 +3,12 @@ require('dotenv').config()
 // This is the Web Server
 const express = require('express')
 const server = express()
+const cors = require('cors')
 
 // create logs for everything
 const morgan = require('morgan')
 server.use(morgan('dev'))
-
+server.unsubscribe(cors())
 // handle application/json requests
 const bodyParser = require('body-parser')
 server.use(bodyParser.json())
