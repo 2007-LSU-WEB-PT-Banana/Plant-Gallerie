@@ -15,7 +15,6 @@ const SingleProduct = (props) => {
 
 	//deCha will rework the "add to Cart" function so that it sends the cartData to the database for authenticated users
 	const [message, setMessage] = useState("");
-	const [itemToUpdate, setItemToUpdate] = useState(false);
 
 	console.log("the active product is", activeProduct);
 
@@ -36,40 +35,60 @@ const SingleProduct = (props) => {
 		setCount(newCount);
 	}
 
-	async function updateCart() {
-		//write function - if the product does not appear in the cart already, make fetch request to post item to the order and
-		// re-render the cart
+	let match = -1;
+	match = cartData.findIndex((x) => x.id === activeProduct.id);
+	console.log("match is set to", match);
 
-		try {
-			let newCartItem = {
-				productId: activeProduct.id,
-				price: activeProduct.price,
-				productName: activeProduct.name,
-				quantity: count,
-				id: activeProduct.id,
-				image: activeProduct.imageURL,
-			};
-			//need to know the order number to attach to here
-			const newCart = await fetchAPI(
-				BASE_URL + "/orders/" + orderId + "/products",
-				"POST",
-				newCartItem
-			);
-			console.log("the newCart info is", newCart);
-			setCartData(newCart);
-		} catch (error) {
-			throw error;
+	async function updateCart() {
+		//if the current item matches anything in the cart, match will update to the index of that item in the cartData array
+
+		if (match === -1) {
+			try {
+				let newCartItem = {
+					productId: activeProduct.id,
+					price: activeProduct.price,
+					productName: activeProduct.name,
+					quantity: count,
+					id: activeProduct.id,
+					image: activeProduct.imageURL,
+				};
+
+				const newCart = await fetchAPI(
+					BASE_URL + "/orders/" + orderId + "/products",
+					"POST",
+					newCartItem
+				);
+				setCartData(newCart);
+				setCount(1);
+				setMessage("Added to Cart");
+			} catch (error) {
+				throw error;
+			}
+		} else {
+			try {
+				console.log("beginning update try");
+
+				let updatedCount = count + cartData[match].quantity;
+				console.log("the updated count should be", updatedCount);
+
+				let updatedCartItem = {
+					productId: activeProduct.id,
+					price: activeProduct.price,
+					quantity: updatedCount,
+				};
+				const updatedCart = await fetchAPI(
+					BASE_URL + "/order_products/" + orderId,
+					"PATCH",
+					updatedCartItem
+				);
+				console.log("the updated cart is", updatedCart);
+				setCartData(updatedCart);
+				setCount(1);
+				setMessage("Updated Cart");
+			} catch (error) {
+				throw error;
+			}
 		}
-		//going to need to do a fetch here to post the new cart item to the order
-		// let newInfo = {changed: false};
-		// cartData.map((product, idx) => {
-		//   if (product.id === activeProduct.id) {
-		//     newInfo = {changed: true, index: idx, newQuantity: count + product.quantity, newPrice: activeProduct.price}
-		//   }
-		//   return newInfo;
-		// })
-		setCount(1);
-		setMessage("Added to Cart");
 	}
 
 	return (

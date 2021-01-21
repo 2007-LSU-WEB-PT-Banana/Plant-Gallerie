@@ -251,37 +251,25 @@ const getOrdersByUser = async (userId) => {
 //this function is working - do not edit this code!
 const getOrderById = async (orderId) => {
 	try {
-		// const {
-		// 	rows: [order],
-		// } = await client.query(
-		// 	`
-		//   SELECT *
-		//   FROM orders
-		//   WHERE id=$1;
-		// `,
-		// 	[orderId]
-		// );
-
-		// if (!order) {
-		// 	throw {
-		// 		name: "OrderNotFoundError",
-		// 		message: "Could not find an order with that order ID",
-		// 	};
-		// }
-
-		const { rows: products } = await client.query(
+		const { rows: order } = await client.query(
 			`
       SELECT *
       FROM orders
       JOIN order_products ON order_products."orderId"=orders.id
       JOIN products ON products.id=order_products."productId"
       WHERE "orderId"=$1;    
-    `,
+      `,
 			[orderId]
 		);
-		console.log("the products are", products);
 
-		return products;
+		if (!order) {
+			throw {
+				name: "OrderNotFoundError",
+				message: "Could not find an order with that order ID",
+			};
+		} else {
+			return order;
+		}
 	} catch (error) {
 		throw error;
 	}
@@ -413,6 +401,8 @@ const getOrdersByProduct = async (id) => {
 	}
 };
 
+//i don't think this is going to work because this is selecting from
+//order_products not orders.
 const getOrderByProductId = async (id) => {
 	try {
 		const {
@@ -501,31 +491,33 @@ const addProductToOrder = async ({ orderId, productId, price, quantity }) => {
 	}
 };
 
-const updateOrderProduct = async ({ id, price, quantity }) => {
+//this function works - do not edit this code!
+const updateOrderProduct = async (orderId, { productId, price, quantity }) => {
 	try {
-		const originalOrderProduct = await getOrderByProductId(id);
+		const originalOrderProduct = await getOrderProductsByOrderId(orderId);
 
-		if (!price) {
-			originalOrderProduct.price = price;
-		}
-		if (!quantity) {
-			originalOrderProduct.quantity = quantity;
-		}
+		let index = originalOrderProduct.findIndex(
+			(x) => x.productId === productId
+		);
+		let itemToUpdate = originalOrderProduct[index];
+		itemToUpdate.price = price;
+		itemToUpdate.quantity = quantity;
 
 		const {
 			rows: [orderProduct],
 		} = await client.query(
 			`
-      UPDATE order_products original
+      UPDATE order_products
       SET price=$2,
       quantity=$3
-      WHERE original.id=$1
+      WHERE id=$1
       RETURNING *;
     `,
-			[id, price, quantity]
+			[itemToUpdate.id, itemToUpdate.price, itemToUpdate.quantity]
 		);
-		console.log("update order produc", orderProduct);
-		return orderProduct;
+
+		const updatedOrder = await getOrderById(orderId);
+		return updatedOrder;
 	} catch (error) {
 		throw error;
 	}
@@ -550,6 +542,7 @@ const updateOrderProduct = async ({ id, price, quantity }) => {
 // 	}
 // };
 
+//this function works - do not edit this code!
 async function getOrderProductsByOrderId(orderId) {
 	try {
 		const { rows: orderProducts } = await client.query(
@@ -583,4 +576,5 @@ module.exports = {
 	getOrderProductsById,
 	getOrdersByUser,
 	addProductsToOrder,
+	updateOrderProduct,
 };

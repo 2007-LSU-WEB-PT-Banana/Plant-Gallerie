@@ -19,6 +19,7 @@ const {
 	getOrdersByUser,
 	getUser,
 	addProductsToOrder,
+	updateOrderProduct,
 } = require("../db/index");
 
 require("dotenv").config();
@@ -280,6 +281,22 @@ apiRouter.post("/orders/:orderId/products", async (req, res, next) => {
 		);
 		console.log("the changed order is", changedOrder);
 		res.send(changedOrder);
+	} catch (error) {
+		throw error;
+	}
+});
+
+//this route works - do not edit this code!
+apiRouter.patch("/order_products/:orderId", async (req, res, next) => {
+	const { productId, price, quantity } = req.body;
+	try {
+		const updatedOrder = await updateOrderProduct(req.params.orderId, {
+			productId,
+			price,
+			quantity,
+		});
+		console.log("the updated order is", updatedOrder);
+		res.send(updatedOrder);
 	} catch (error) {
 		throw error;
 	}
