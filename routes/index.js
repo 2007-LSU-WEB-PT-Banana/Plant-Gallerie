@@ -181,6 +181,7 @@ apiRouter.get('/users/:id', async (req, res, next) => {
 })
 
 
+
 apiRouter.get("/products/:id", async (req, res, next) => {
 	const id = req.params.id;
 	try {
@@ -406,4 +407,5 @@ apiRouter.post('/payment', async (req, res) => {
     throw error
   }
 })
+
 module.exports = apiRouter;

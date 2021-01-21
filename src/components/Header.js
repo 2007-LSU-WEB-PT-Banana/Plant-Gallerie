@@ -1,27 +1,28 @@
-import React, { useState, useEffect, Fragment } from 'react'
-import { Link } from 'react-router-dom'
-import SearchIcon from '@material-ui/icons/Search'
-import PersonOutlineIcon from '@material-ui/icons/PersonOutline'
-import ShoppingCartIcon from '@material-ui/icons/ShoppingCart'
-import DehazeIcon from '@material-ui/icons/Dehaze'
-import './Header.css'
+import React, { useState, useEffect, Fragment } from "react";
+import { Link } from "react-router-dom";
+import SearchIcon from "@material-ui/icons/Search";
+import PersonOutlineIcon from "@material-ui/icons/PersonOutline";
+import ShoppingCartIcon from "@material-ui/icons/ShoppingCart";
+import DehazeIcon from "@material-ui/icons/Dehaze";
+import "./Header.css";
 
 const headerLink = {
-  marginRight: '35px',
-  justifyContent: 'space-between',
-  fontWeight: 'normal',
-  backgroundColor: '#c0c0c0',
-  padding: '6px',
-  textDecoration: 'none',
-  color: 'black',
-  borderRadius: '.25rem',
-  textAlign: 'center',
-  transition: 'all .3s',
-  textTransform: 'uppercase',
-  fontFamily: 'Alegreya Sans SC, sans-serif',
-}
+	marginRight: "35px",
+	justifyContent: "space-between",
+	fontWeight: "normal",
+	backgroundColor: "#c0c0c0",
+	padding: "6px",
+	textDecoration: "none",
+	color: "black",
+	borderRadius: ".25rem",
+	textAlign: "center",
+	transition: "all .3s",
+	textTransform: "uppercase",
+	fontFamily: "Alegreya Sans SC, sans-serif",
+};
 
 const Header = (props) => {
+
   const {
     setIsLoggedIn,
     history,
@@ -44,28 +45,37 @@ const Header = (props) => {
     setIsLoggedIn(false)
   }
 
-  useEffect(() => {
-    const mediaQuery = window.matchMedia('(max-width: 812px)')
-    mediaQuery.addEventListener('change', handleMediaQueryChange)
-    handleMediaQueryChange(mediaQuery)
 
-    return () => {
-      mediaQuery.removeEventListener('change', handleMediaQueryChange)
-    }
-  }, [])
+	const handleSignOut = () => {
+		console.log("hitting signout");
+		clearToken();
+		setIsLoggedIn(false);
+	};
 
-  const toggleNav = () => {
-    setIsNavVisible(!isNavVisible)
-  }
+	useEffect(() => {
+		const mediaQuery = window.matchMedia("(max-width: 812px)");
+		mediaQuery.addEventListener("change", handleMediaQueryChange);
+		handleMediaQueryChange(mediaQuery);
 
-  const handleMediaQueryChange = (mediaQuery) => {
-    if (mediaQuery.matches) {
-      setIsSmallScreen(true)
-      toggleNav()
-    } else {
-      setIsSmallScreen(false)
-    }
-  }
+
+		return () => {
+			mediaQuery.removeEventListener("change", handleMediaQueryChange);
+		};
+	}, []);
+
+	const toggleNav = () => {
+		setIsNavVisible(!isNavVisible);
+	};
+
+
+	const handleMediaQueryChange = (mediaQuery) => {
+		if (mediaQuery.matches) {
+			setIsSmallScreen(true);
+			toggleNav();
+		} else {
+			setIsSmallScreen(false);
+		}
+	};
 
   const logout = () => {
     setIsLoggedIn(false)
@@ -124,4 +134,5 @@ const Header = (props) => {
   )
 }
 
-export default Header
+
+export default Header;

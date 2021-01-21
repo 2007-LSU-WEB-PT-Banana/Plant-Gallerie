@@ -1,74 +1,75 @@
-import React, { useState, useEffect } from 'react'
-import { Switch, Route, useHistory, Link } from 'react-router-dom'
+import React, { useState, useEffect } from "react";
+import { Switch, Route, useHistory, Link } from "react-router-dom";
 import {
-  fetchAPI,
-  BASE_URL,
-  auth,
-  getToken,
-  clearToken,
-  getActiveUser,
-} from '../api'
-import './Home.css'
+	fetchAPI,
+	BASE_URL,
+	auth,
+	getToken,
+	clearToken,
+	getActiveUser,
+} from "../api";
+import "./Home.css";
 import {
-  AllProducts,
-  SingleProduct,
-  Header,
-  Login,
-  FloweringPlants,
-  BonsaiPlants,
-  HousePlants,
-  Home,
-  Register,
-} from './index'
-import CartComponent from './Cart'
-import SingleOrder from './SingleOrder'
-import Payment from './Payment'
+	AllProducts,
+	SingleProduct,
+	Header,
+	Login,
+	FloweringPlants,
+	BonsaiPlants,
+	HousePlants,
+	Home,
+	Register,
+} from "./index";
+import CartComponent from "./Cart";
+import SingleOrder from "./SingleOrder";
+import Payment from "./Payment";
 
 const App = () => {
-  const history = useHistory()
+	const history = useHistory();
 
-  const [isLoggedIn, setIsLoggedIn] = useState(!!getToken())
-  const [message, setMessage] = useState('')
-  const [productList, setProductList] = useState([])
-  const [activeProduct, setActiveProduct] = useState('')
-  const [cartData, setCartData] = useState([])
-  const [count, setCount] = useState(1)
-  const [activeUser, setActiveUser] = useState('')
+	const [isLoggedIn, setIsLoggedIn] = useState(!!getToken());
+	const [message, setMessage] = useState("");
+	const [productList, setProductList] = useState([]);
+	const [activeProduct, setActiveProduct] = useState("");
+	const [cartData, setCartData] = useState([]);
+	const [count, setCount] = useState(1);
+	const [activeUser, setActiveUser] = useState("");
 
-  useEffect(() => {
-    fetchAPI(BASE_URL + '/')
-      .then((response) => {
-        setMessage(response.message)
-      })
-      .catch((error) => {
-        setMessage(error.message)
-      })
-  })
+	useEffect(() => {
+		fetchAPI(BASE_URL + "/")
+			.then((response) => {
+				setMessage(response.message);
+			})
+			.catch((error) => {
+				setMessage(error.message);
+			});
+	});
 
-  useEffect(() => {
-    fetchAPI(BASE_URL + '/products')
-      .then((data) => {
-        console.log('this is data', data)
-        data.map((product) => {
-          let newPrice = product.price / 100
-          product.price = newPrice
-        })
-        setProductList(data)
-      })
-      .catch(console.error)
-  }, [])
+	useEffect(() => {
+		fetchAPI(BASE_URL + "/products")
+			.catch(console.error);
+			.then((data) => {
+				console.log("this is data", data);
+				data.map((product) => {
+					let newPrice = product.price / 100;
+					product.price = newPrice;
+				});
+				setProductList(data);
+			})
+	}, []);
 
-  useEffect(() => {
-    getActiveUser()
-      .then((data) => {
-        console.log('this is singleuser', data)
-        setActiveUser(data)
-      })
+	useEffect(() => {
+		getActiveUser()
+			.then((data) => {
+				console.log("this is singleuser", data);
+				setActiveUser(data);
+			})
 
-      .catch(console.error)
-  }, [])
+			.catch(console.error);
+	}, []);
 
-  console.log('The cart data is', cartData)
+	console.log("The cart data is", cartData);
+
 
   useEffect(() => {
     fetchAPI(BASE_URL + '/orders/cart', 'GET', activeUser.id)
@@ -143,16 +144,16 @@ const App = () => {
             <CartComponent cartData={cartData} setCartData={setCartData} />
           </Route>
 
-          <Route path="/payment">
-            <Payment
-              productList={productList}
-              setProductList={setProductList}
-            />
-          </Route>
-        </Switch>
-      </main>
-    </>
-  )
-}
+					<Route path="/payment">
+						<Payment
+							productList={productList}
+							setProductList={setProductList}
+						/>
+					</Route>
+				</Switch>
+			</main>
+		</>
+	);
+};
 
-export default App
+export default App;
