@@ -1,21 +1,23 @@
-const apiRouter = require('express').Router()
-const bcrypt = require('bcrypt')
-const uuid = require('uuid/v4')
+const apiRouter = require("express").Router();
+const bcrypt = require("bcrypt");
+const uuid = require("uuid/v4");
 
 const {
-  createProduct,
-  getProductById,
-  getAllProducts,
-  createUser,
-  getAllUsers,
-  getUserById,
-  getUserByUsername,
-  createOrder,
-  getOrdersByProduct,
-  getAllOrders,
-  getOrderById,
-  getUser,
-} = require('../db/index')
+	createProduct,
+	getProductById,
+	getAllProducts,
+	createUser,
+	getAllUsers,
+	getUserById,
+	getUserByUsername,
+	createOrder,
+	getOrdersByProduct,
+	getAllOrders,
+	getOrderById,
+	getCartByUser,
+	getOrderProductsByOrderId,
+	getUser,
+} = require("../db/index");
 
 require('dotenv').config()
 const jwt = require('jsonwebtoken')
@@ -178,104 +180,187 @@ apiRouter.get('/users/:id', async (req, res, next) => {
   }
 })
 
-apiRouter.get('/products', async (req, res, next) => {
-  try {
-    console.log('inside try for getting all products')
-    const allProducts = await getAllProducts()
-    res.send(allProducts)
-  } catch (error) {
-    next(error)
-  }
-})
 
-apiRouter.get('/products/:id', async (req, res, next) => {
-  const id = req.params.id
-  try {
-    console.log('inside the try for getting product by ID')
-    const requestedProduct = await getProductById(id)
-    res.send(requestedProduct)
-  } catch (error) {
-    next(error)
-  }
-})
+apiRouter.get("/products/:id", async (req, res, next) => {
+	const id = req.params.id;
+	try {
+		console.log("inside the try for getting product by ID");
+		const requestedProduct = await getProductById(id);
+		res.send(requestedProduct);
+	} catch (error) {
+		next(error);
+	}
+});
 
-apiRouter.post('/createproduct', async (req, res, next) => {
-  const { name, description, price, imageURL, inStock, category } = req.body
-  console.log('The req.body is', req.body)
-  try {
-    const newProduct = await createProduct({
-      name,
-      description,
-      price,
-      imageURL,
-      inStock,
-      category,
-    })
-    res.send(newProduct)
-  } catch (error) {
-    throw error
-  }
-})
+apiRouter.post("/createproduct", async (req, res, next) => {
+	const { name, description, price, imageURL, inStock, category } = req.body;
+	console.log("The req.body is", req.body);
+	try {
+		const newProduct = await createProduct({
+			name,
+			description,
+			price,
+			imageURL,
+			inStock,
+			category,
+		});
+		res.send(newProduct);
+	} catch (error) {
+		throw error;
+	}
+});
 
-apiRouter.get('/orders/cart', async (req, res, next) => {
-  try {
-    const user = await getUserById(req.body.userId)
+apiRouter.get("/products", async (req, res, next) => {
+	try {
+		console.log("inside try for getting all products");
+		const allProducts = await getAllProducts();
+		res.send(allProducts);
+	} catch (error) {
+		next(error);
+	}
+});
 
-    if (user) {
-      const userOrders = await getCartByUser(user.id)
-      res.send(userOrders)
-    } else {
-      res.send({ message: 'there are no orders here' })
-    }
-  } catch (error) {
-    throw error
-  }
-})
+apiRouter.get("/products/:productId", async (req, res, next) => {
+	const id = req.body.productId;
+	console.log("the product id is", id);
+	try {
+		console.log("inside the try for getting product by ID");
+		const requestedProduct = await getProductById(id);
+		res.send(requestedProduct);
+	} catch (error) {
+		next(error);
+	}
+});
 
-apiRouter.get('/orders/:orderId', async (req, res) => {
-  try {
-    console.log('getting one order')
-    const getOneOrder = await getOrderById(req.params.id)
-    console.log('this is one order', getOneOrder)
+apiRouter.post("/createproduct", async (req, res, next) => {
+	const { name, description, price, imageURL, inStock, category } = req.body;
+	console.log("The req.body is", req.body);
+	try {
+		const newProduct = await createProduct({
+			name,
+			description,
+			price,
+			imageURL,
+			inStock,
+			category,
+		});
+		res.send(newProduct);
+	} catch (error) {
+		throw error;
+	}
+});
 
-    res.send(getOneOrder)
-  } catch (error) {
-    throw error
-  }
-})
+//this route works - do not edit this code!
+apiRouter.get("/orders/cart", async (req, res, next) => {
+	try {
+		const user = await getUserById(req.body.userId);
 
-apiRouter.post('/orders', async (req, res, next) => {
-  console.log('hitting create order')
+		if (user) {
+			const userOrders = await getCartByUser(user.id);
+			res.send(userOrders);
+		} else {
+			res.send({ message: "there are no orders here" });
+		}
+	} catch (error) {
+		throw error;
+	}
+});
 
-  try {
-    const newOrder = await createOrder(req.body)
-    res.send(newOrder)
-  } catch (error) {
-    next(error)
-  }
-})
+apiRouter.get("/orders/:orderId", async (req, res) => {
+	try {
+		console.log("getting one order");
+		const getOneOrder = await getOrderById(req.params.id);
+		console.log("this is one order", getOneOrder);
+		//From deCha: this worked for me when putting the id in the body as follows
+		// console.log("the request.body.id is", req.body.id);
+		// try {
+		//   console.log("getting one order");
+		//   const getOneOrder = await getOrderById(req.body.id);
+		res.send(getOneOrder);
+	} catch (error) {
+		throw error;
+	}
+});
 
-apiRouter.get('/orders', async (req, res) => {
-  try {
-    const allOrders = await getAllOrders()
-    console.log(allOrders)
-    res.send(allOrders)
-  } catch (error) {
-    throw error
-  }
-})
+apiRouter.post("/orders", async (req, res, next) => {
+	console.log("hitting create order");
 
-apiRouter.get('/users/:userId/orders', async (req, res) => {
-  console.log('inside getting products by id')
-  console.log('this is id', req.params.userId)
-  try {
-    const orders = await getOrdersByProduct(req.params.userId)
-    console.log(orders)
-    res.send(orders)
-  } catch (error) {
-    throw error
-  }
-})
+	try {
+		const newOrder = await createOrder(req.body);
+		res.send(newOrder);
+	} catch (error) {
+		next(error);
+	}
+});
+
+apiRouter.get("/orders", async (req, res) => {
+	try {
+		const allOrders = await getAllOrders();
+		console.log(allOrders);
+		res.send(allOrders);
+	} catch (error) {
+		throw error;
+	}
+});
+
+apiRouter.get("/users/:userId/orders", async (req, res) => {
+	console.log("inside getting products by id");
+	console.log("this is id", req.params.userId);
+	try {
+		const orders = await getOrdersByProduct(req.params.userId);
+		console.log(orders);
+		res.send(orders);
+	} catch (error) {
+		throw error;
+	}
+});
+
+apiRouter.post("/payment", async (req, res) => {
+	console.log(req.body);
+	let error;
+	let status;
+	try {
+		const { product, token } = req.body;
+		console.log("product", product);
+		console.log("this is price", product.price);
+		const customer = await stripe.customers.create({
+			email: token.email,
+			source: token.id,
+		});
+
+		const idempotencyKey = uuid();
+		const charge = await stripe.charges.create(
+			{
+				amount: product.price * 100,
+				currency: "usd",
+				customer: customer.id,
+				receipt_email: token.email,
+				description: `Purchased the ${product.productName}`,
+				shipping: {
+					name: token.card.name,
+					address: {
+						line1: token.card.address_line1,
+						line2: token.card.address_line2,
+						city: token.card.address_city,
+						country: token.card.address_country,
+						postal_code: token.card.address_zip,
+					},
+				},
+			},
+			{
+				idempotencyKey,
+			}
+		);
+		console.log("charge", { charge });
+
+		res.json({
+			status: "success",
+		});
+	} catch (error) {
+		throw error;
+	}
+});
+
 
 apiRouter.post('/payment', async (req, res) => {
   console.log(req.body)
@@ -321,4 +406,4 @@ apiRouter.post('/payment', async (req, res) => {
     throw error
   }
 })
-module.exports = apiRouter
+module.exports = apiRouter;

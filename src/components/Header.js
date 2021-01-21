@@ -28,13 +28,20 @@ const Header = (props) => {
     clearToken,
     activeUser,
     setActiveUser,
+    cartData,
+    isLoggedIn,
   } = props
   const [isNavVisible, setIsNavVisible] = useState(true)
   const [isSmallScreen, setIsSmallScreen] = useState(false)
   const [visible, setVisible] = useState(null)
-
   const handleVisibility = () => {
     setVisible(!visible)
+  }
+
+  const handleSignOut = () => {
+    console.log('hitting signout')
+    clearToken()
+    setIsLoggedIn(false)
   }
 
   useEffect(() => {
@@ -47,12 +54,6 @@ const Header = (props) => {
     }
   }, [])
 
-  const handleSignOut = () => {
-    console.log('hitting signout')
-    clearToken()
-    setIsLoggedIn(false)
-  }
-
   const toggleNav = () => {
     setIsNavVisible(!isNavVisible)
   }
@@ -64,6 +65,11 @@ const Header = (props) => {
     } else {
       setIsSmallScreen(false)
     }
+  }
+
+  const logout = () => {
+    setIsLoggedIn(false)
+    setActiveUser({})
   }
 
   return (
@@ -87,45 +93,27 @@ const Header = (props) => {
             Flowering Plants
           </Link>
           <Link to="/bonsaiplants" className="header-link" style={headerLink}>
-            Bonsai Plants
+            Bonsai and Bamboo
           </Link>
-          <Link to="/" className="header-link" style={headerLink}>
-            <div className="search-bar">
-              <input
-                className={visible ? 'open' : 'close'}
-                className="search-bar_input"
-                placeholder="Enter your query..."
-                aria-label="search"
-                display="none"
-                type="text"
-              />
-
-              <button
-                style={{ outline: 'none' }}
-                id="toggle-search"
-                aria-label="submit search"
-                className="search-bar_submit"
-                onClick={handleVisibility}
-              >
-                <SearchIcon className="search-header" />
-              </button>
-            </div>
+          <Link to="/search" className="header-link" style={headerLink}>
+            <SearchIcon className="header-searchIcon" />
           </Link>
 
-          {!setActiveUser ? (
-            <Link to="/" className="header-link" style={headerLink}>
-              <span onClick={handleSignOut}>
-                Hello {activeUser.username} Signout
-              </span>
-            </Link>
-          ) : (
-            <Link to="/login" className="header-link" style={headerLink}>
+          <Link to="/login" className="header-link" style={headerLink}>
+            {!isLoggedIn ? (
               <PersonOutlineIcon />
-            </Link>
-          )}
-
+            ) : (
+              <>
+                <h6 className="loginMessage">Welcome Back!</h6>
+                <button className="logOut" onClick={logout}>
+                  Log Out
+                </button>
+              </>
+            )}
+          </Link>
           <Link to="/cart" className="header-link" style={headerLink}>
             <ShoppingCartIcon />
+            {cartData !== undefined ? cartData.length : '0'}
           </Link>
         </nav>
       )}

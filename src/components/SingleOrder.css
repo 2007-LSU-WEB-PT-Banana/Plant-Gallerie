@@ -1,0 +1,54 @@
+h1 {
+	font-size: 30px;
+	text-align: center;
+}
+
+.orderOptions button,
+.updateQty,
+.removeItem {
+	background-color: #607848;
+	padding: 10px;
+	text-decoration: none;
+	color: white;
+	border-radius: 0.25rem;
+	text-align: center;
+	transition: all 0.3s;
+	justify-content: center;
+	text-transform: uppercase;
+	margin: 5px 5px 5px 5px;
+	max-width: 200px;
+}
+
+.cartCardWrapper {
+	display: grid;
+	justify-content: center;
+	text-align: center;
+	grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+}
+
+.cartCard {
+	display: grid;
+	justify-content: center;
+	text-align: center;
+	/* grid-template-columns: repeat(auto-fill, minmax(200px)); */
+	grid-template-rows: repeat(auto-fit, minmax(50px));
+	grid-template-columns: 200px;
+	margin: 10px 20px 10px 10px;
+	border: 1px solid #607848;
+	box-shadow: 3px 3px 5px #484848;
+	max-width: 250px;
+}
+
+.cartCard img {
+	grid-column: 1;
+	grid-row: 1/2;
+}
+
+.cartCard p {
+	font-family: "Spinnaker", sans-serif;
+	padding: 5px;
+}
+
+.cartCard h4 {
+	font-family: "Julius Sans One", sans-serif;
+}

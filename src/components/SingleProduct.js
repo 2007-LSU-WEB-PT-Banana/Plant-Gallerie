@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 const SingleProduct = (props) => {
 	const {
@@ -11,9 +11,13 @@ const SingleProduct = (props) => {
 		setCartData,
 	} = props;
 
-	function cancelOption(event) {
+	//deCha will rework the "add to Cart" function so that it sends the cartData to the database for authenticated users
+	const [message, setMessage] = useState("");
+
+	function backToSearch(event) {
 		event.preventDefault();
 		setActiveProduct("");
+		setMessage("");
 		history.goBack();
 	}
 
@@ -29,18 +33,25 @@ const SingleProduct = (props) => {
 
 	function updateCart() {
 		let newCartItem = {
+			productId: activeProduct.id,
 			price: activeProduct.price,
 			productName: activeProduct.name,
 			quantity: count,
+			id: activeProduct.id,
+			image: activeProduct.imageURL,
 		};
+		//going to need to do a fetch here to post the new cart item to the order
+
 		setCartData([...cartData, newCartItem]);
 		setCount(1);
-		setActiveProduct("");
-		history.goBack();
+		setMessage("Added to Cart");
 	}
 
 	return (
 		<>
+			<button className="backButton" onClick={backToSearch}>
+				Back to Search
+			</button>
 			<div className="singleProduct">
 				<img
 					src={activeProduct.imageURL}
@@ -88,9 +99,7 @@ const SingleProduct = (props) => {
 					<button className="addToCart" onClick={updateCart}>
 						Add to Cart
 					</button>
-					<button className="cancel" onClick={cancelOption}>
-						Cancel
-					</button>
+					<p className="addToCartMessage">{message}</p>
 				</div>
 			</div>
 		</>

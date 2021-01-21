@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react'
 import { Switch, Route, useHistory, Link } from 'react-router-dom'
-
 import {
   fetchAPI,
   BASE_URL,
@@ -71,6 +70,18 @@ const App = () => {
 
   console.log('The cart data is', cartData)
 
+  useEffect(() => {
+    fetchAPI(BASE_URL + '/orders/cart', 'GET', activeUser.id)
+      .then((data) => {
+        data.products.map((product) => {
+          let newPrice = product.price / 100
+          product.price = newPrice
+        })
+        setCartData(data.products)
+      })
+      .catch(console.error)
+  }, [activeUser])
+
   return (
     <>
       <Header
@@ -123,7 +134,7 @@ const App = () => {
             />
           </Route>
           <Route exact path="/login">
-            <Login setIsLoggedIn={setIsLoggedIn} />
+            <Login setIsLoggedIn={setIsLoggedIn} setMessage={setMessage} />
           </Route>
           <Route exact path="/register">
             <Register setIsLoggedIn={setIsLoggedIn} />
