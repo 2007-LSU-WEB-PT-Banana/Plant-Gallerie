@@ -29,6 +29,7 @@ const Header = (props) => {
 		setActiveUser,
 		cartData,
 		isLoggedIn,
+		setCartData,
 	} = props;
 	const [isNavVisible, setIsNavVisible] = useState(true);
 	const [isSmallScreen, setIsSmallScreen] = useState(false);
@@ -42,6 +43,7 @@ const Header = (props) => {
 		clearToken();
 		setIsLoggedIn(false);
 		setActiveUser({});
+		setCartData([]);
 		history.push("/");
 	};
 

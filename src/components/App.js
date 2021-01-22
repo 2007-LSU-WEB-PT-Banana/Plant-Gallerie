@@ -33,6 +33,7 @@ const App = () => {
 	const [count, setCount] = useState(1);
 	const [activeUser, setActiveUser] = useState("");
 	const [orderId, setOrderId] = useState("");
+	const [visitorCartData, setVisitorCartData] = useState([]);
 
 	useEffect(() => {
 		fetchAPI(BASE_URL + "/")
@@ -91,6 +92,7 @@ const App = () => {
 				isLoggedIn={isLoggedIn}
 				history={history}
 				clearToken={clearToken}
+				setCartData={setCartData}
 			/>
 			<main className="wrapper">
 				<Switch>
@@ -105,6 +107,7 @@ const App = () => {
 							cartData={cartData}
 							setCartData={setCartData}
 							orderId={orderId}
+							activeUser={activeUser}
 						/>
 					</Route>
 					<Route exact path="/products">
@@ -147,7 +150,12 @@ const App = () => {
 						<Register setIsLoggedIn={setIsLoggedIn} />
 					</Route>
 					<Route path="/cart">
-						<Cart cartData={cartData} setCartData={setCartData} />
+						<Cart
+							cartData={cartData}
+							setCartData={setCartData}
+							visitorCartData={visitorCartData}
+							setVisitorCartData={setVisitorCartData}
+						/>
 					</Route>
 
 					<Route path="/payment">

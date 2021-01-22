@@ -3,7 +3,14 @@ import { BASE_URL, fetchAPI } from "../api";
 import "./SingleOrder.css";
 
 const SingleOrder = (props) => {
-	const { cartData, setCartData, activeUser, history } = props;
+	const {
+		cartData,
+		setCartData,
+		activeUser,
+		history,
+		visitorCartData,
+		setVisitorCartData,
+	} = props;
 	const [grandTotal, setGrandTotal] = useState(0);
 
 	function continueShopping() {
@@ -21,7 +28,7 @@ const SingleOrder = (props) => {
 				"GET",
 				sendData
 			);
-			setCartData(...cartData, orderInfo.products); //this might be product with no "s" depending on how it's returned from the db
+			setCartData(); //something goes here
 		} catch (error) {
 			console.error(error);
 		}

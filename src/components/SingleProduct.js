@@ -11,12 +11,12 @@ const SingleProduct = (props) => {
 		cartData,
 		setCartData,
 		orderId,
+		activeUser,
+		setVisitorCartData,
 	} = props;
 
 	//deCha will rework the "add to Cart" function so that it sends the cartData to the database for authenticated users
 	const [message, setMessage] = useState("");
-
-	console.log("the active product is", activeProduct);
 
 	function backToSearch(event) {
 		event.preventDefault();
@@ -37,11 +37,10 @@ const SingleProduct = (props) => {
 
 	let match = -1;
 	match = cartData.findIndex((x) => x.id === activeProduct.id);
-	console.log("match is set to", match);
 
 	async function updateCart() {
-		//if the current item matches anything in the cart, match will update to the index of that item in the cartData array
-
+		//if the current item matches anything in the cart, "match" will update to be the index of that item
+		//in the cartData array
 		if (match === -1) {
 			try {
 				let newCartItem = {
@@ -66,11 +65,7 @@ const SingleProduct = (props) => {
 			}
 		} else {
 			try {
-				console.log("beginning update try");
-
 				let updatedCount = count + cartData[match].quantity;
-				console.log("the updated count should be", updatedCount);
-
 				let updatedCartItem = {
 					productId: activeProduct.id,
 					price: activeProduct.price,
