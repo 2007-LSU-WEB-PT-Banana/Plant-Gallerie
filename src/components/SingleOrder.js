@@ -65,18 +65,34 @@ const SingleOrder = (props) => {
 		}
 	}
 
-	async function visitorCartUpdate(idx) {
-		let updatedCount = count + cartData[idx].quantity;
+	async function updateQuantity(idx) {
+		if (activeUser) {
+			let updatedCartItem = {
+				productId: cartData[idx].id,
+				quantity: count,
+				price: cartData[idx].price,
+			};
 
-		let updatedCartItem = {
-			quantity: updatedCount,
-		};
-
-		let newCartData = cartData.slice();
-		newCartData.splice(idx, 1, updatedCartItem);
-		setCartData(newCartData);
-		setCount(1);
-		setMessage("Updated Cart");
+			let changedOrder = await fetchAPI(
+				BASE_URL + "/order_products/" + orderId,
+				"PATCH",
+				updatedCartItem
+			);
+			let total = 0;
+			changedOrder.map((product) => {
+				let newPrice = product.price / 100;
+				product.price = newPrice;
+				total = newPrice * product.quantity + total;
+			});
+			setCartData(changedOrder);
+			setMessage("Quantity Updated");
+		} else {
+			let newCartData = cartData.slice();
+			newCartData[idx].quantity = count;
+			setCartData(newCartData);
+			setCount(1);
+			setMessage("Updated Cart");
+		}
 	}
 
 	function findGrandTotal() {
@@ -123,10 +139,28 @@ const SingleOrder = (props) => {
 								width="200"
 							></img>
 							<h4 className="productName">{product.name}</h4>
-							<p className="productQty">Quantity: {product.quantity}</p>
+							<span>
+								<label className="qtyLabel">Quantity:</label>
+								<input
+									className="productQty"
+									type="number"
+									id="qtyvalue"
+									placeholder={product.quantity}
+									defaultValue={product.quantity}
+									onChange={(event) => setCount(event.target.value)}
+								></input>
+							</span>
 							<p className="productPrice">Price: ${product.price}</p>
 							{/* these buttons will need to depend on whether there is an activeUser */}
-							<button className="updateQty">Update Quantity</button>
+							<button
+								className="updateQty"
+								onClick={(event) => {
+									event.preventDefault();
+									updateQuantity(index);
+								}}
+							>
+								Update Quantity
+							</button>
 							<button
 								className="removeItem"
 								onClick={(event) => {

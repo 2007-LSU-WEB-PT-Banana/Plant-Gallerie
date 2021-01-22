@@ -294,7 +294,7 @@ apiRouter.patch("/order_products/:orderId", async (req, res, next) => {
 apiRouter.get("/orders/:orderId", async (req, res) => {
 	try {
 		console.log("getting one order");
-		const getOneOrder = await getOrderById(req.body.id);
+		const getOneOrder = await getOrderById(req.params.orderId);
 		res.send(getOneOrder);
 	} catch (error) {
 		throw error;

@@ -164,6 +164,7 @@ const App = () => {
 							setGrandTotal={setGrandTotal}
 							orderId={orderId}
 							activeUser={activeUser}
+							history={history}
 						/>
 					</Route>
 
