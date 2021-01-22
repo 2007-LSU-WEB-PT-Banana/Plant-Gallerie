@@ -9,6 +9,8 @@ const Cart = (props) => {
 		isLoggedIn,
 		grandTotal,
 		setGrandTotal,
+		orderId,
+		activeUser,
 	} = props;
 
 	return (
@@ -19,6 +21,8 @@ const Cart = (props) => {
 			isLoggedIn={isLoggedIn}
 			grandTotal={grandTotal}
 			setGrandTotal={setGrandTotal}
+			orderId={orderId}
+			activeUser={activeUser}
 		/>
 	);
 };

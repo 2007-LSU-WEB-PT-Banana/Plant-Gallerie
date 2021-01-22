@@ -20,6 +20,7 @@ const {
 	getUser,
 	addProductsToOrder,
 	updateOrderProduct,
+	destroyOrderProduct,
 } = require("../db/index");
 
 require("dotenv").config();
@@ -229,37 +230,12 @@ apiRouter.get("/products/:productId", async (req, res, next) => {
 	}
 });
 
-//this route works (but only from Postman, not from the front-end)
-// apiRouter.get("/orders/cart/", async (req, res, next) => {
-// 	console.log("the params", req.params);
-// 	try {
-// 		const user = await getUserById(req.params.userId);
-// 		console.log("The user is:", user);
-
-// 		if (user) {
-// 			console.log("beginning getCartByUser");
-// 			console.log("the user.id is", user.id);
-// 			const userOrders = await getCartByUser(user.id);
-// 			res.send(userOrders);
-// 		} else {
-// 			res.send({ message: "there are no orders here" });
-// 		}
-// 	} catch (error) {
-// 		throw error;
-// 	}
-// });
-
-//this one works from the front-end.  The other one won't let me put anything in the body since it's a get request
+//this route works - do not edit this code!
 apiRouter.get("/orders/cart/:userId", async (req, res, next) => {
-	console.log("the body is", req.body);
-	console.log("the params are:", req.params);
 	try {
 		const user = await getUserById(req.params.userId);
-		console.log("The user is:", user);
 
 		if (user) {
-			console.log("beginning getCartByUser");
-			console.log("the user.id is", user.id);
 			const userOrders = await getCartByUser(user.id);
 			res.send(userOrders);
 		} else {
@@ -280,6 +256,19 @@ apiRouter.post("/orders/:orderId/products", async (req, res, next) => {
 			productList
 		);
 		console.log("the changed order is", changedOrder);
+		res.send(changedOrder);
+	} catch (error) {
+		throw error;
+	}
+});
+
+apiRouter.delete("/order_products/:orderId", async (req, res, next) => {
+	//this will be written to remove one product from an existing order with status 'created'
+	try {
+		const changedOrder = await destroyOrderProduct(
+			req.body.productId,
+			req.params.orderId
+		);
 		res.send(changedOrder);
 	} catch (error) {
 		throw error;

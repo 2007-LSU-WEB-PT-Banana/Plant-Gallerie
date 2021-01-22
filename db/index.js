@@ -524,24 +524,25 @@ const updateOrderProduct = async (orderId, { productId, price, quantity }) => {
 	}
 };
 
-// const destroyOrderProduct = async (id) => {
-// 	console.log("the id is ", id);
-// 	try {
-// 		const {
-// 			rows: [orderProduct],
-// 		} = await client.query(
-// 			`
-//       DELETE FROM order_products
-//       WHERE id=$1
-//       RETURNING *
-//       `,
-// 			[id]
-// 		);
-// 		return orderProduct;
-// 	} catch (error) {
-// 		throw error;
-// 	}
-// };
+const destroyOrderProduct = async (productId, orderId) => {
+	console.log("the id is ", productId);
+	try {
+		const {
+			rows: [orderProduct],
+		} = await client.query(
+			`
+      DELETE FROM order_products
+      WHERE "productId"=$1 AND "orderId"=$2
+      RETURNING *
+      `,
+			[productId, orderId]
+		);
+
+		return await getOrderById(orderId);
+	} catch (error) {
+		throw error;
+	}
+};
 
 //this function works - do not edit this code!
 async function getOrderProductsByOrderId(orderId) {
@@ -578,4 +579,5 @@ module.exports = {
 	getOrdersByUser,
 	addProductsToOrder,
 	updateOrderProduct,
+	destroyOrderProduct,
 };

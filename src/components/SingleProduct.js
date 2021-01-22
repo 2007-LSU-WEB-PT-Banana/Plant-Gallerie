@@ -55,6 +55,12 @@ const SingleProduct = (props) => {
 					"POST",
 					newCartItem
 				);
+				let total = 0;
+				newCart.map((product) => {
+					let newPrice = product.price / 100;
+					product.price = newPrice;
+					total = newPrice * product.quantity + total;
+				});
 				setCartData(newCart);
 				setCount(1);
 				setMessage("Added to Cart");

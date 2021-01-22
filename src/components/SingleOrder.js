@@ -12,11 +12,17 @@ const SingleOrder = (props) => {
 		isLoggedIn,
 		grandTotal,
 		setGrandTotal,
+		orderId,
 	} = props;
+
+	const [count, setCount] = useState("");
+	const [message, setMessage] = useState("");
 
 	function continueShopping() {
 		history.goBack();
 	}
+	console.log("on the cart page, the active user is", activeUser);
+
 	//	this function will need to be reworked depending on how the backend ends up
 	// async function setOrderData() {
 	// 	try {
@@ -35,13 +41,42 @@ const SingleOrder = (props) => {
 	// 	}
 	// }
 
-	function removeItem(index) {
-		//will need to write this function to send a patch request to the db and then re-render the cart
+	async function removeItem(idx) {
 		if (activeUser) {
-			//fetch will be done here
+			let sendData = { productId: cartData[idx].id };
+			console.log("the sendData is", sendData);
+			let changedOrder = await fetchAPI(
+				BASE_URL + "/order_products/" + orderId,
+				"DELETE",
+				sendData
+			);
+			let total = 0;
+			changedOrder.map((product) => {
+				let newPrice = product.price / 100;
+				product.price = newPrice;
+				total = newPrice * product.quantity + total;
+			});
+			setCartData(changedOrder);
+			return;
 		} else {
-			//slice, splice, and resetCart
+			let newCartData = cartData.slice();
+			newCartData.splice(idx, 1);
+			setCartData(newCartData);
 		}
+	}
+
+	async function visitorCartUpdate(idx) {
+		let updatedCount = count + cartData[idx].quantity;
+
+		let updatedCartItem = {
+			quantity: updatedCount,
+		};
+
+		let newCartData = cartData.slice();
+		newCartData.splice(idx, 1, updatedCartItem);
+		setCartData(newCartData);
+		setCount(1);
+		setMessage("Updated Cart");
 	}
 
 	function findGrandTotal() {
@@ -73,7 +108,7 @@ const SingleOrder = (props) => {
 					}}
 				>
 					<h3>Order Total</h3>
-					<p>${grandTotal}</p>
+					<p>${grandTotal.toFixed(2)}</p>
 				</div>
 			</div>
 
@@ -90,8 +125,15 @@ const SingleOrder = (props) => {
 							<h4 className="productName">{product.name}</h4>
 							<p className="productQty">Quantity: {product.quantity}</p>
 							<p className="productPrice">Price: ${product.price}</p>
+							{/* these buttons will need to depend on whether there is an activeUser */}
 							<button className="updateQty">Update Quantity</button>
-							<button className="removeItem" onClick={removeItem(index)}>
+							<button
+								className="removeItem"
+								onClick={(event) => {
+									event.preventDefault();
+									removeItem(index);
+								}}
+							>
 								Remove Item
 							</button>
 						</div>

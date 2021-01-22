@@ -98,6 +98,7 @@ const App = () => {
 				history={history}
 				clearToken={clearToken}
 				setCartData={setCartData}
+				cartData={cartData}
 			/>
 			<main className="wrapper">
 				<Switch>
@@ -161,6 +162,8 @@ const App = () => {
 							isLoggedIn={isLoggedIn}
 							grandTotal={grandTotal}
 							setGrandTotal={setGrandTotal}
+							orderId={orderId}
+							activeUser={activeUser}
 						/>
 					</Route>
 

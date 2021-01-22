@@ -110,8 +110,7 @@ const Header = (props) => {
 						)}
 					</Link>
 					<Link to="/cart" className="header-link" style={headerLink}>
-						<ShoppingCartIcon />
-						{cartData ? cartData.length : "0"}
+						<ShoppingCartIcon /> ({cartData.length})
 					</Link>
 				</nav>
 			)}
