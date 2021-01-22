@@ -428,4 +428,25 @@ apiRouter.post("/payment", async (req, res) => {
 	}
 });
 
+
+apiRouter.delete('/order_products/:orderProductId', async (req,res,next) =>{
+	const {orderProductId} = req.params.orderProductId;
+
+	try{
+	const user = await getUserById(id);
+	const userOrder = await getCartByUser(user);
+	const orderProduct = await getOrderProductById(orderProductId);
+
+	if (orderProduct.orderId===userOrder.id) {
+		const deletedOrderProduct = await destroyOrderProduct(orderProduct.id)
+		res.send(deletedOrderProduct)
+	  } else {
+		res.send({message:'You must be the owner of this order to delete it'})
+		}
+
+
+	} catch(error){
+		next (error)
+	}
+})
 module.exports = apiRouter;
