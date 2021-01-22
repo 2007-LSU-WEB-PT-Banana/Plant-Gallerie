@@ -15,18 +15,24 @@ function Login(props) {
   const history = useHistory()
   const [username, setUserName] = useState('')
   const [password, setPassword] = useState('')
+  const [errorMessage, setErrorMessage] = useState(null)
 
   const login = async (event) => {
     event.preventDefault()
     console.log('logging in')
     try {
-      console.log('hhhhh')
       const result = await loginUser(username, password)
+      console.log('logoin response', result)
+      if (!result) {
+        setErrorMessage(
+          'User name or password is incorrect/ user not registered',
+        )
+      }
       setIsLoggedIn(true)
       setMessage('Currently Logged In')
       history.push('/')
     } catch (error) {
-      console.error(error)
+      setErrorMessage('User name or password is incorrect/ user not registered')
     }
   }
 
@@ -36,6 +42,7 @@ function Login(props) {
   return (
     <div className="login">
       <div className="login-container">
+        {errorMessage ? <h5 style={{ color: 'red' }}>{errorMessage}</h5> : null}
         <h1>Sign In</h1>
         <form>
           <h5>Username</h5>

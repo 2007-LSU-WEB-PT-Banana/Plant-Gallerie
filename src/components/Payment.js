@@ -23,8 +23,9 @@ function Payment(props) {
       product,
     })
     const { status } = result.data
-    if (status === 'success') {
-      toast('sucess! check email for detail', { type: 'success' })
+    console.log('this is status', status)
+    if (status == 'success') {
+      toast('success! check email for detail', { type: 'success' })
     } else {
       toast('something went wrong', { type: 'error' })
     }

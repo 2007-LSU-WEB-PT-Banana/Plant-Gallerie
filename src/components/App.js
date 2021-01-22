@@ -7,6 +7,7 @@ import {
   getToken,
   clearToken,
   getActiveUser,
+  getOrdersandProducts,
 } from '../api'
 import './Home.css'
 import {
@@ -19,10 +20,10 @@ import {
   HousePlants,
   Home,
   Register,
+  SingleOrder,
+  Payment,
+  CartComponent,
 } from './index'
-import CartComponent from './Cart'
-import SingleOrder from './SingleOrder'
-import Payment from './Payment'
 
 const App = () => {
   const history = useHistory()
@@ -70,17 +71,20 @@ const App = () => {
 
   console.log('The cart data is', cartData)
 
-  useEffect(() => {
-    fetchAPI(BASE_URL + '/orders/cart', 'GET', activeUser.id)
-      .then((data) => {
-        data.products.map((product) => {
-          let newPrice = product.price / 100
-          product.price = newPrice
-        })
-        setCartData(data.products)
-      })
-      .catch(console.error)
-  }, [activeUser])
+  // useEffect(() => {
+  //   if (activeUser) {
+  //     fetchAPI(BASE_URL + '/orders/cart', 'GET')
+  //       .then((data) => {
+  //         console.log('cart orders data >>>>>>>>', data)
+  //         data.products.map((product) => {
+  //           let newPrice = product.price / 100
+  //           product.price = newPrice
+  //         })
+  //         setCartData(data.products)
+  //       })
+  //       .catch(console.error)
+  //   }
+  // }, [activeUser])
 
   return (
     <>

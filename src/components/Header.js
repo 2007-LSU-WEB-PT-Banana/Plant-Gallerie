@@ -69,6 +69,7 @@ const Header = (props) => {
 
   const logout = () => {
     setIsLoggedIn(false)
+    clearToken()
     setActiveUser({})
   }
 
@@ -104,7 +105,9 @@ const Header = (props) => {
               <PersonOutlineIcon />
             ) : (
               <>
-                <h6 className="loginMessage">Welcome Back!</h6>
+                <h6 className="loginMessage">
+                  Welcome Back! {activeUser?.username}
+                </h6>
                 <button className="logOut" onClick={logout}>
                   Log Out
                 </button>
@@ -113,7 +116,7 @@ const Header = (props) => {
           </Link>
           <Link to="/cart" className="header-link" style={headerLink}>
             <ShoppingCartIcon />
-            {cartData !== undefined ? cartData.length : '0'}
+            {cartData ? cartData.length : '0'}
           </Link>
         </nav>
       )}
