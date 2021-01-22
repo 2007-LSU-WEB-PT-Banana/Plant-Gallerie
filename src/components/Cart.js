@@ -8,7 +8,7 @@ const Cart = (props) => {
 		<SingleOrder
 			cartData={cartData}
 			history={history}
-			setCartData={setCartData}
+			// setCartData={setCartData}
 			setVisitorCartData={setVisitorCartData}
 		/>
 	);

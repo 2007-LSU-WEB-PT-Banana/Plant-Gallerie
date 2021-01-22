@@ -20,11 +20,12 @@ import {
 	Register,
 	Payment,
 	Cart,
+	Users,
+	SingleUser
 } from "./index";
 
 const App = () => {
 	const history = useHistory();
-
 	const [isLoggedIn, setIsLoggedIn] = useState(!!getToken());
 	const [message, setMessage] = useState("");
 	const [productList, setProductList] = useState([]);
@@ -34,6 +35,9 @@ const App = () => {
 	const [activeUser, setActiveUser] = useState("");
 	const [orderId, setOrderId] = useState("");
 	const [visitorCartData, setVisitorCartData] = useState([]);
+	const [usersList, setUsersList] = useState([]);
+	const [isAdmin, setIsAdmin] = useState('')
+	
 
 	useEffect(() => {
 		fetchAPI(BASE_URL + "/")
@@ -60,6 +64,7 @@ const App = () => {
 	useEffect(() => {
 		getActiveUser()
 			.then((data) => {
+				console.log("this is singleuser", data);
 				setActiveUser(data);
 			})
 			.catch(console.error);
@@ -67,6 +72,16 @@ const App = () => {
 
 	console.log("The cart data is", cartData);
 	console.log("the order id is:", orderId);
+
+	useEffect(() => {
+			fetchAPI(BASE_URL + "/users")
+				.then((data) => {
+					setUsersList(data);
+					console.log(data);
+				})
+				.catch(console.error);
+		}, []);
+
 
 	// //going to have to make this a function in the api folder and possibly use params for userID instead of body
 	// useEffect(() => {
@@ -148,6 +163,13 @@ const App = () => {
 					</Route>
 					<Route exact path="/register">
 						<Register setIsLoggedIn={setIsLoggedIn} />
+					</Route>
+					<Route exact path="/users">
+						<Users usersList={usersList} />
+					</Route>
+					<Route exact path="/users/me">
+						<SingleUser 
+						activeUser={activeUser}/>
 					</Route>
 					<Route path="/cart">
 						<Cart

@@ -127,6 +127,7 @@ apiRouter.post("/register", async (req, res, next) => {
 			imageURL,
 			username,
 			password,
+			isAdmin,
 		});
 
 		if (user.password < 8) {

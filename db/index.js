@@ -2,7 +2,7 @@
 const { Client } = require("pg");
 const bcrypt = require("bcrypt");
 
-const DB_NAME = "plant-gallery";
+const DB_NAME = "plantgallery";
 const DB_URL =
 	process.env.DATABASE_URL || `postgres://localhost:5432/${DB_NAME}`;
 const client = new Client(DB_URL, { username: "postgres" });
