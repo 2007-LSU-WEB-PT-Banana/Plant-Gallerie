@@ -22,18 +22,18 @@ function Login(props) {
 			const result = await loginUser(username, password);
 			setIsLoggedIn(true);
 
-			let url = `${BASE_URL}/orders/cart/${result.id}`;
-			const fetchOptions = {
-				method: "GET",
-				headers: {
-					"Content-Type": "application.json",
-				},
-			};
-			const response = await fetch(url, fetchOptions);
-			const data = await response.json();
-			console.log("the data from the fetch is", data);
-			setCartData(data[0]);
-			setOrderId(data[0][0].orderId);
+			// let url = `${BASE_URL}/orders/cart/${result.id}`;
+			// const fetchOptions = {
+			// 	method: "GET",
+			// 	headers: {
+			// 		"Content-Type": "application.json",
+			// 	},
+			// };
+			// const response = await fetch(url, fetchOptions);
+			// const data = await response.json();
+			// console.log("the data from the fetch is", data);
+			// setCartData(data[0]);
+			// setOrderId(data[0][0].orderId);
 			history.push("/");
 		} catch (error) {
 			console.error(error);
