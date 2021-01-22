@@ -3,5 +3,6 @@
     "api",
     "fetch"
   ],
-  "editor.formatOnSave": true
+  "editor.formatOnSave": true,
+  "prettier.useTabs": true
 }

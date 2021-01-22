@@ -1,3 +1,5 @@
+// import axios from 'axios'
+
 export const BASE_URL = "/api";
 
 export const getToken = () => {
@@ -35,14 +37,31 @@ export const getActiveUser = async () => {
 	});
 
 	const { error, user } = await response.json();
-	console.log("response from getting single user is ", response);
 
 	if (error) {
 		throw Error(error.message);
 	}
-	console.log("this is user fron end fetcgh", user);
 	return user;
 };
+
+// export const getCartData = async () => {
+// 	const url = `${BASE_URL}/orders/cart`;
+// 	const user = activeUser || null;
+// 	const response = await fetch(url, {
+// 		method: "GET",
+// 		headers: { "Content-Type": "application/json" },
+// 		body: JSON.stringify({ user }),
+// 	});
+// 	console.log("response from getCartData on frontend", response);
+
+// 	const { error, cart } = await response.json();
+
+// 	if (error) {
+// 		throw Error(error.message);
+// 	}
+// 	console.log("this is the cart from the front end request", cart);
+// 	return cart;
+// };
 
 export const loginUser = async (username, password) => {
 	console.log("inside auth");
@@ -57,7 +76,7 @@ export const loginUser = async (username, password) => {
 			password: password,
 		}),
 	});
-	console.log("this is respones", response);
+	console.log("this is response", response);
 	const { error, user, token } = await response.json();
 
 	if (error) {
@@ -65,7 +84,6 @@ export const loginUser = async (username, password) => {
 	}
 
 	if (token) {
-		console.log("this is token in login", token);
 		setToken(token);
 	}
 
@@ -122,11 +140,8 @@ export const fetchAPI = async (url, method = "GET", sendData = null) => {
 		fetchOptions.body = JSON.stringify(sendData);
 	}
 
-	console.log("this is what we are sending in the fetch", fetchOptions);
-
 	const response = await fetch(url, fetchOptions);
 	const data = await response.json();
-	console.log("The response we are receiving in the fetch is", data);
 
 	return data;
 };

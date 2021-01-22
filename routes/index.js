@@ -15,172 +15,168 @@ const {
 	getAllOrders,
 	getOrderById,
 	getCartByUser,
-	getOrderProductsByOrderId,
+	getOrderProductsById,
+	getOrdersByUser,
 	getUser,
+	addProductsToOrder,
+	updateOrderProduct,
 } = require("../db/index");
 
-require('dotenv').config()
-const jwt = require('jsonwebtoken')
-const { token } = require('morgan')
-const stripe = require('stripe')(`${process.env.mySKey}`)
+require("dotenv").config();
+const jwt = require("jsonwebtoken");
+const { token } = require("morgan");
+const stripe = require("stripe")(`${process.env.mySKey}`);
 
 const requireUser = (req, res, next) => {
-  if (!req.user) {
-    next({
-      name: 'MissingUserError',
-      message: 'You must be logged in to perform this action',
-    })
-  }
+	if (!req.user) {
+		next({
+			name: "MissingUserError",
+			message: "You must be logged in to perform this action",
+		});
+	}
 
-  next()
-}
+	next();
+};
 
 const requireActiveUser = (req, res, next) => {
-  if (!req.user.active) {
-    next({
-      name: 'UserNotActive',
-      message: 'You must be active to perform this action',
-    })
-  }
-  next()
-}
+	if (!req.user.active) {
+		next({
+			name: "UserNotActive",
+			message: "You must be active to perform this action",
+		});
+	}
+	next();
+};
 
-apiRouter.get('/', async (req, res, next) => {
-  console.log('hitting api')
-  try {
-    console.log('inside main page try')
-    res.send('Plant Gallerie Main Page')
-  } catch (error) {
-    next(error)
-  }
-})
+apiRouter.get("/", async (req, res, next) => {
+	console.log("hitting api");
+	try {
+		console.log("inside main page try");
+		res.send("Plant Gallerie Main Page");
+	} catch (error) {
+		next(error);
+	}
+});
 
-apiRouter.get('/users', async (req, res, next) => {
-  try {
-    const allUsers = await getAllUsers()
-    console.log('api try users', allUsers)
-    res.send(allUsers)
-  } catch (error) {
-    next(error)
-  }
-})
+apiRouter.get("/users", async (req, res, next) => {
+	try {
+		const allUsers = await getAllUsers();
+		console.log("api try users", allUsers);
+		res.send(allUsers);
+	} catch (error) {
+		next(error);
+	}
+});
 
-apiRouter.post('/login', async (req, res, next) => {
-  const { username, password } = req.body
-  console.log('this is req.body', req.body)
+apiRouter.post("/login", async (req, res, next) => {
+	const { username, password } = req.body;
 
-  if (!username || !password) {
-    throw 'u need user name and password'
-  }
+	if (!username || !password) {
+		throw "Please enter a username and password";
+	}
 
-  try {
-    const user = await getUser(req.body)
+	try {
+		const user = await getUser(req.body);
 
-    console.log('this is users id insdie route', user.id)
+		if (user && user.password == password) {
+			await bcrypt.compare(password, user.password);
 
-    if (user && user.password == password) {
-      await bcrypt.compare(password, user.password)
+			const token = jwt.sign(
+				{
+					id: user.id,
+					username: user.username,
+				},
+				`${process.env.JWT_SECRET}`,
+				{
+					expiresIn: "6w",
+				}
+			);
 
-      const token = jwt.sign(
-        {
-          id: user.id,
-          username: user.username,
-        },
-        `${process.env.JWT_SECRET}`,
-        {
-          expiresIn: '6w',
-        },
-      )
+			delete user.password;
 
-      delete user.password
-      res.send({
-        user: user,
-        token: token,
-      })
-    } else {
-      throw 'u need user name and password again'
-    }
-  } catch (error) {
-    throw error
-  }
-})
+			res.send({
+				user: user,
+				token: token,
+			});
+		} else {
+			throw "Please re-enter your username and password";
+		}
+	} catch (error) {
+		throw error;
+	}
+});
 
-apiRouter.post('/register', async (req, res, next) => {
-  console.log('here in register')
+//this route works - do not edit this code!
+apiRouter.post("/register", async (req, res, next) => {
+	console.log("here in register");
 
-  const { firstName, lastName, email, imageURL, username, password } = req.body
+	const { firstName, lastName, email, imageURL, username, password } = req.body;
 
-  console.log('here in register 1')
-  console.log(req.body, 'this is body')
-  try {
-    console.log('here in register 6')
-    const _user = await getUserByUsername(username)
-    console.log(_user, 'this is user')
-    if (_user) {
-      console.log('inside user try')
-      next({
-        name: 'UserExistsError',
-        message: 'A user by that username already exists',
-      })
-    }
-    console.log('here in register 7')
-    const user = await createUser({
-      firstName,
-      lastName,
-      email,
-      imageURL,
-      username,
-      password,
-    })
+	try {
+		const _user = await getUserByUsername(username);
+		if (_user) {
+			next({
+				name: "UserExistsError",
+				message: "A user by that username already exists",
+			});
+		}
+		const user = await createUser({
+			firstName,
+			lastName,
+			email,
+			imageURL,
+			username,
+			password,
+		});
 
-    if (user.password < 8) {
-      throw 'Password should 8 or more characters'
-    }
+		if (user.password < 8) {
+			throw "Password should 8 or more characters";
+		}
+		delete user.password;
 
-    delete user.password
-    res.send({
-      user: user,
-    })
-  } catch (error) {
-    next(error)
-  }
-})
+		await createOrder({ status: "created", userId: user.id, products: [] });
 
-apiRouter.get('/users/me', async (req, res, next) => {
-  console.log('inside users/me in database')
-  try {
-    const token = req.headers.authorization.split(' ')[1]
-    console.log(token)
+		res.send({
+			user: user,
+		});
+	} catch (error) {
+		next(error);
+	}
+});
 
-    const decoded = jwt.decode(token, `${process.env.JWT_SECRET}`)
+apiRouter.get("/users/me", async (req, res, next) => {
+	console.log("inside users/me in database");
+	try {
+		const token = req.headers.authorization.split(" ")[1];
+		console.log(token);
 
-    req.userData = decoded
-    console.log('this is username', req.userData.username)
-    console.log(req.userData)
-    const userId = req.userData.id
-    console.log(userId)
+		const decoded = jwt.decode(token, `${process.env.JWT_SECRET}`);
 
-    const user = await getUserById(userId)
-    console.log(user)
-    res.send({ user })
-  } catch (error) {
-    next(error)
-  }
-})
+		req.userData = decoded;
+		// console.log("this is username", req.userData.username);
+		// console.log(req.userData);
+		const userId = req.userData.id;
+		// console.log(userId);
 
-apiRouter.get('/users/:id', async (req, res, next) => {
-  console.log('getting user by id')
-  try {
-    console.log('getting user by id inside try')
-    const oneUser = await getUserById(req.params.id)
-    console.log('user is', oneUser)
-    res.send(oneUser)
-  } catch (error) {
-    next(error)
-  }
-})
+		const user = await getUserById(userId);
+		// console.log(user);
+		res.send({ user });
+	} catch (error) {
+		next(error);
+	}
+});
 
-
+apiRouter.get("/users/:id", async (req, res, next) => {
+	console.log("getting user by id");
+	try {
+		console.log("getting user by id inside try");
+		const oneUser = await getUserById(req.params.id);
+		console.log("user is", oneUser);
+		res.send(oneUser);
+	} catch (error) {
+		next(error);
+	}
+});
 
 apiRouter.get("/products/:id", async (req, res, next) => {
 	const id = req.params.id;
@@ -233,30 +229,37 @@ apiRouter.get("/products/:productId", async (req, res, next) => {
 	}
 });
 
-apiRouter.post("/createproduct", async (req, res, next) => {
-	const { name, description, price, imageURL, inStock, category } = req.body;
-	console.log("The req.body is", req.body);
-	try {
-		const newProduct = await createProduct({
-			name,
-			description,
-			price,
-			imageURL,
-			inStock,
-			category,
-		});
-		res.send(newProduct);
-	} catch (error) {
-		throw error;
-	}
-});
+//this route works (but only from Postman, not from the front-end)
+// apiRouter.get("/orders/cart/", async (req, res, next) => {
+// 	console.log("the params", req.params);
+// 	try {
+// 		const user = await getUserById(req.params.userId);
+// 		console.log("The user is:", user);
 
-//this route works - do not edit this code!
-apiRouter.get("/orders/cart", async (req, res, next) => {
+// 		if (user) {
+// 			console.log("beginning getCartByUser");
+// 			console.log("the user.id is", user.id);
+// 			const userOrders = await getCartByUser(user.id);
+// 			res.send(userOrders);
+// 		} else {
+// 			res.send({ message: "there are no orders here" });
+// 		}
+// 	} catch (error) {
+// 		throw error;
+// 	}
+// });
+
+//this one works from the front-end.  The other one won't let me put anything in the body since it's a get request
+apiRouter.get("/orders/cart/:userId", async (req, res, next) => {
+	console.log("the body is", req.body);
+	console.log("the params are:", req.params);
 	try {
-		const user = await getUserById(req.body.userId);
+		const user = await getUserById(req.params.userId);
+		console.log("The user is:", user);
 
 		if (user) {
+			console.log("beginning getCartByUser");
+			console.log("the user.id is", user.id);
 			const userOrders = await getCartByUser(user.id);
 			res.send(userOrders);
 		} else {
@@ -267,16 +270,42 @@ apiRouter.get("/orders/cart", async (req, res, next) => {
 	}
 });
 
+//this route works - do not edit this code!
+apiRouter.post("/orders/:orderId/products", async (req, res, next) => {
+	const productList = [req.body];
+
+	try {
+		const changedOrder = await addProductsToOrder(
+			req.params.orderId,
+			productList
+		);
+		console.log("the changed order is", changedOrder);
+		res.send(changedOrder);
+	} catch (error) {
+		throw error;
+	}
+});
+
+//this route works - do not edit this code!
+apiRouter.patch("/order_products/:orderId", async (req, res, next) => {
+	const { productId, price, quantity } = req.body;
+	try {
+		const updatedOrder = await updateOrderProduct(req.params.orderId, {
+			productId,
+			price,
+			quantity,
+		});
+		console.log("the updated order is", updatedOrder);
+		res.send(updatedOrder);
+	} catch (error) {
+		throw error;
+	}
+});
+
 apiRouter.get("/orders/:orderId", async (req, res) => {
 	try {
 		console.log("getting one order");
-		const getOneOrder = await getOrderById(req.params.id);
-		console.log("this is one order", getOneOrder);
-		//From deCha: this worked for me when putting the id in the body as follows
-		// console.log("the request.body.id is", req.body.id);
-		// try {
-		//   console.log("getting one order");
-		//   const getOneOrder = await getOrderById(req.body.id);
+		const getOneOrder = await getOrderById(req.body.id);
 		res.send(getOneOrder);
 	} catch (error) {
 		throw error;
@@ -308,7 +337,9 @@ apiRouter.get("/users/:userId/orders", async (req, res) => {
 	console.log("inside getting products by id");
 	console.log("this is id", req.params.userId);
 	try {
-		const orders = await getOrdersByProduct(req.params.userId);
+		//I think this should be getOrdersByUserId since you're passing in the UserID here
+		//const orders = await getOrdersByProduct(req.params.userId);
+		const orders = await getOrdersByUser(req.params.userId);
 		console.log(orders);
 		res.send(orders);
 	} catch (error) {
@@ -316,10 +347,56 @@ apiRouter.get("/users/:userId/orders", async (req, res) => {
 	}
 });
 
+//which payment is right?
+// apiRouter.post("/payment", async (req, res) => {
+// 	console.log(req.body);
+// 	let error;
+// 	let status;
+// 	try {
+// 		const { product, token } = req.body;
+// 		console.log("product", product);
+// 		console.log("this is price", product.price);
+// 		const customer = await stripe.customers.create({
+// 			email: token.email,
+// 			source: token.id,
+// 		});
+
+// 		const idempotencyKey = uuid();
+// 		const charge = await stripe.charges.create(
+// 			{
+// 				amount: product.price * 100,
+// 				currency: "usd",
+// 				customer: customer.id,
+// 				receipt_email: token.email,
+// 				description: `Purchased the ${product.productName}`,
+// 				shipping: {
+// 					name: token.card.name,
+// 					address: {
+// 						line1: token.card.address_line1,
+// 						line2: token.card.address_line2,
+// 						city: token.card.address_city,
+// 						country: token.card.address_country,
+// 						postal_code: token.card.address_zip,
+// 					},
+// 				},
+// 			},
+// 			{
+// 				idempotencyKey,
+// 			}
+// 		);
+// 		console.log("charge", { charge });
+
+// 		res.json({
+// 			status: "success",
+// 		});
+// 	} catch (error) {
+// 		throw error;
+// 	}
+// });
+
 apiRouter.post("/payment", async (req, res) => {
 	console.log(req.body);
-	let error;
-	let status;
+
 	try {
 		const { product, token } = req.body;
 		console.log("product", product);
@@ -361,51 +438,5 @@ apiRouter.post("/payment", async (req, res) => {
 		throw error;
 	}
 });
-
-
-apiRouter.post('/payment', async (req, res) => {
-  console.log(req.body)
-
-  try {
-    const { product, token } = req.body
-    console.log('product', product)
-    console.log('this is price', product.price)
-    const customer = await stripe.customers.create({
-      email: token.email,
-      source: token.id,
-    })
-
-    const idempotencyKey = uuid()
-    const charge = await stripe.charges.create(
-      {
-        amount: product.price * 100,
-        currency: 'usd',
-        customer: customer.id,
-        receipt_email: token.email,
-        description: `Purchased the ${product.productName}`,
-        shipping: {
-          name: token.card.name,
-          address: {
-            line1: token.card.address_line1,
-            line2: token.card.address_line2,
-            city: token.card.address_city,
-            country: token.card.address_country,
-            postal_code: token.card.address_zip,
-          },
-        },
-      },
-      {
-        idempotencyKey,
-      },
-    )
-    console.log('charge', { charge })
-
-    res.json({
-      status: 'success',
-    })
-  } catch (error) {
-    throw error
-  }
-})
 
 module.exports = apiRouter;
