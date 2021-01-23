@@ -1,10 +1,7 @@
-<<<<<<< HEAD
 @import url("https://fonts.googleapis.com/css2?family=Alegreya+Sans+SC:wght@100;300&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Julius+Sans+One&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Julius+Sans+One&family=Spinnaker&display=swap");
 
-=======
->>>>>>> origin/main
 * {
 	border: 0;
 	margin: 0;
@@ -12,7 +9,6 @@
 	box-sizing: border-box;
 }
 
-<<<<<<< HEAD
 #root {
 	height: 100%;
 	font-family: sans-serif;
@@ -23,12 +19,6 @@
 
 body {
 	background-color: #f0f0f0;
-=======
-#app {
-  height: 100%;
-  font-family: sans-serif;
-  width: 100vw;
->>>>>>> origin/main
 }
 
 main {
@@ -50,12 +40,8 @@ main {
 }
 
 .productsHeader {
-<<<<<<< HEAD
 	text-align: center;
 	font-family: "Julius Sans One", sans-serif;
-=======
-  text-align: center;
->>>>>>> origin/main
 }
 
 .productCard {
@@ -251,4 +237,3 @@ main {
 		display: block;
 	}
 }
-
