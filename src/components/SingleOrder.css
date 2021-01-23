@@ -44,9 +44,22 @@ h1 {
 	grid-row: 1/2;
 }
 
-.cartCard p {
+.cartCard p,
+.qtyLabel,
+.productQty {
 	font-family: "Spinnaker", sans-serif;
 	padding: 5px;
+}
+
+.productQty {
+	max-width: 60px;
+	display: inline;
+	padding-top: 5px;
+}
+
+.cartCard label {
+	display: inline;
+	padding-top: 5px;
 }
 
 .cartCard h4 {

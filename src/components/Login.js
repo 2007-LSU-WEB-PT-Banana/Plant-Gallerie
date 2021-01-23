@@ -79,4 +79,4 @@ function Login(props) {
   )
 }
 
-export default Login
+export default Login;

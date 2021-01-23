@@ -108,7 +108,7 @@ const getUserByUsername = async ({ username }) => {
     FROM users 
     WHERE username=$1;
     `,
-      [username],
+      [username]
     )
     return user
   } catch (error) {
@@ -253,23 +253,21 @@ const getOrderById = async (orderId) => {
       JOIN products ON products.id=order_products."productId"
       WHERE "orderId"=$1;    
       `,
-      [orderId],
-    )
+			[orderId]
+		);
 
-    console.log('this is order', order.orderId)
-
-    if (!order) {
-      throw {
-        name: 'OrderNotFoundError',
-        message: 'Could not find an order with that order ID',
-      }
-    } else {
-      return order
-    }
-  } catch (error) {
-    throw error
-  }
-}
+		if (!order) {
+			throw {
+				name: "OrderNotFoundError",
+				message: "Could not find an order with that order ID",
+			};
+		} else {
+			return order;
+		}
+	} catch (error) {
+		throw error;
+	}
+};
 
 const getOrderProductsById = async (orderId) => {
   try {
@@ -311,26 +309,26 @@ const getOrderProductsById = async (orderId) => {
 
 //this function works - do not edit code!
 const getCartByUser = async (userId) => {
-  try {
-    const { rows: orders } = await client.query(
-      `
+	try {
+		const { rows: orders } = await client.query(
+			`
     SELECT *
     FROM orders
     WHERE "userId"=$1 AND status='created';
     `,
-      [userId],
-    )
-    console.log('the orders are', orders)
+			[userId]
+		);
+		console.log("the orders are", orders);
 
-    const openOrders = await Promise.all(
-      orders.map((order) => getOrderById(order.id)),
-    )
+		const openOrders = await Promise.all(
+			orders.map((order) => getOrderById(order.id))
+		);
 
-    return openOrders
-  } catch (error) {
-    throw error
-  }
-}
+		return openOrders;
+	} catch (error) {
+		throw error;
+	}
+};
 
 //this function is working - do not edit this code!
 const createOrderProducts = async ({ productId, orderId, price, quantity }) => {
@@ -347,14 +345,14 @@ const createOrderProducts = async ({ productId, orderId, price, quantity }) => {
       VALUES($1,$2,$3,$4)
       RETURNING *;
     `,
-      [productId, orderId, price, quantity],
-    )
-    console.log('order-products are:', orderProduct)
-    return orderProduct
-  } catch (error) {
-    throw error
-  }
-}
+			[productId, orderId, price, quantity]
+		);
+		console.log("order-products are:", orderProduct);
+		return orderProduct;
+	} catch (error) {
+		throw error;
+	}
+};
 
 //this function is working - do not edit this code!
 const addProductsToOrder = async (orderId, productList) => {
@@ -407,13 +405,14 @@ SELECT *
 FROM order_products
 WHERE id=$1;
 `,
-      [id],
-    )
-    return orderProduct
-  } catch (error) {
-    throw error
-  }
-}
+			[id]
+		);
+		return orderProduct;
+	} catch (error) {
+		throw error;
+	}
+};
+
 const getOrderProductByOrderId = async (orderId) => {
   try {
     const {
@@ -474,65 +473,68 @@ const addProductToOrder = async ({ orderId, productId, price, quantity }) => {
           INSERT INTO order_products ("productId", "orderId", price, quantity)
           VALUES ($1, $2, $3, $4)
           RETURNING *`,
-            [productId, orderId, price, quantity],
-          )
-          return productOrder
-        }
-      }
-    }
-  } catch (error) {
-    throw error
-  }
-}
+						[productId, orderId, price, quantity]
+					);
+					return productOrder;
+				}
+			}
+		}
+	} catch (error) {
+		throw error;
+	}
+};
 
 //this function works - do not edit this code!
 const updateOrderProduct = async (orderId, { productId, price, quantity }) => {
-  try {
-    const originalOrderProduct = await getOrderProductsByOrderId(orderId)
+	try {
+		const originalOrderProduct = await getOrderProductsByOrderId(orderId);
 
-    let index = originalOrderProduct.findIndex((x) => x.productId === productId)
-    let itemToUpdate = originalOrderProduct[index]
-    itemToUpdate.price = price
-    itemToUpdate.quantity = quantity
+		let index = originalOrderProduct.findIndex(
+			(x) => x.productId === productId
+		);
+		let itemToUpdate = originalOrderProduct[index];
+		itemToUpdate.price = price;
+		itemToUpdate.quantity = quantity;
 
-    const {
-      rows: [orderProduct],
-    } = await client.query(
-      `
+		const {
+			rows: [orderProduct],
+		} = await client.query(
+			`
       UPDATE order_products
       SET price=$2,
       quantity=$3
       WHERE id=$1
       RETURNING *;
     `,
-      [itemToUpdate.id, itemToUpdate.price, itemToUpdate.quantity],
-    )
+			[itemToUpdate.id, itemToUpdate.price, itemToUpdate.quantity]
+		);
 
-    const updatedOrder = await getOrderById(orderId)
-    return updatedOrder
-  } catch (error) {
-    throw error
-  }
-}
+		const updatedOrder = await getOrderById(orderId);
+		return updatedOrder;
+	} catch (error) {
+		throw error;
+	}
+};
 
-// const destroyOrderProduct = async (id) => {
-// 	console.log("the id is ", id);
-// 	try {
-// 		const {
-// 			rows: [orderProduct],
-// 		} = await client.query(
-// 			`
-//       DELETE FROM order_products
-//       WHERE id=$1
-//       RETURNING *
-//       `,
-// 			[id]
-// 		);
-// 		return orderProduct;
-// 	} catch (error) {
-// 		throw error;
-// 	}
-// };
+const destroyOrderProduct = async (productId, orderId) => {
+	console.log("the id is ", productId);
+	try {
+		const {
+			rows: [orderProduct],
+		} = await client.query(
+			`
+      DELETE FROM order_products
+      WHERE "productId"=$1 AND "orderId"=$2
+      RETURNING *
+      `,
+			[productId, orderId]
+		);
+
+		return await getOrderById(orderId);
+	} catch (error) {
+		throw error;
+	}
+};
 
 //this function works - do not edit this code!
 async function getOrderProductsByOrderId(orderId) {
@@ -642,26 +644,23 @@ const cancelOrder = async (orderId, status) => {
 }
 
 module.exports = {
-  client,
-  createUser,
-  getAllUsers,
-  getUserById,
-  getUserByUsername,
-  createProduct,
-  getProductById,
-  getAllProducts,
-  getCartByUser,
-  createOrder,
-  getOrdersByProduct,
-  getAllOrders,
-  getOrderById,
-  getUser,
-  getOrderProductsById,
-  getOrdersByUser,
-  addProductsToOrder,
-  updateOrderProduct,
-  updateOrder,
-  cancelOrder,
-  completeOrder,
-  getOrderByORDERID,
-}
+	client,
+	createUser,
+	getAllUsers,
+	getUserById,
+	getUserByUsername,
+	createProduct,
+	getProductById,
+	getAllProducts,
+	getCartByUser,
+	createOrder,
+	getOrdersByProduct,
+	getAllOrders,
+	getOrderById,
+	getUser,
+	getOrderProductsById,
+	getOrdersByUser,
+	addProductsToOrder,
+	updateOrderProduct,
+	destroyOrderProduct,
+};
