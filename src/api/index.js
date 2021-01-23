@@ -30,9 +30,9 @@ function buildHeaders() {
 }
 
 export const getActiveUser = async () => {
-	const url = `${BASE_URL}/users/me`;
+	const url = `${BASE_URL}/users/me`
 	const response = await fetch(url, {
-		method: "GET",
+		method: 'GET',
 		headers: buildHeaders(),
 	});
 
