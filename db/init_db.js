@@ -27,7 +27,7 @@ async function buildTables() {
 
     await client.query(`
     CREATE TABLE products(
-      id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+      id SERIAL PRIMARY KEY,
       name VARCHAR(255) NOT NULL,
       description TEXT NOT NULL,
       price INTEGER NOT NULL,
@@ -36,23 +36,27 @@ async function buildTables() {
       category TEXT NOT NULL
     );
       CREATE TABLE users(
-        id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+        id SERIAL PRIMARY KEY,
         "firstName" VARCHAR(255) NOT NULL,
         "lastName" VARCHAR(255) NOT NULL,
         email VARCHAR(255) UNIQUE NOT NULL,
         "imageURL" TEXT DEFAULT 'no picture' NOT NULL,
         username VARCHAR(255) UNIQUE NOT NULL,
+<<<<<<< HEAD
         password VARCHAR(255) NOT NULL CONSTRAINT password_length CHECK(LENGTH(password) > 8),
+=======
+        password VARCHAR(255) UNIQUE NOT NULL,
+>>>>>>> origin/main
         "isAdmin" BOOLEAN NOT NULL DEFAULT false
       );
       CREATE TABLE orders(
-        id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+        id SERIAL PRIMARY KEY,
         status VARCHAR(255) DEFAULT 'created',
         "userId" INTEGER REFERENCES users(id),
         "datePlaced" DATE
       );
       CREATE TABLE order_products(
-        id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+        id SERIAL PRIMARY KEY,
         "productId" INTEGER REFERENCES products(id),
         "orderId" INTEGER REFERENCES orders(id),
         price INTEGER NOT NULL ,

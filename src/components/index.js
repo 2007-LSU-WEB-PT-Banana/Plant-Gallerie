@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 export { default as App } from "./App";
 export { default as AllProducts } from "./AllProducts";
 export { default as SingleProduct } from "./SingleProduct";
@@ -13,3 +14,10 @@ export { default as SingleOrder } from "./SingleOrder";
 export { default as Payment } from "./Payment";
 export { default as Users} from "./Users"
 export { default as SingleUser } from "./SingleUser";
+=======
+export { default as App } from './App'
+export { default as AllProducts } from './AllProducts'
+export { default as SingleProduct } from './SingleProduct'
+export { default as Login } from './Login'
+export { default as Header } from './Header'
+>>>>>>> origin/main
