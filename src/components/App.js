@@ -49,9 +49,10 @@ const App = () => {
 	}, []);
 
 	useEffect(() => {
-		fetchAPI(BASE_URL + "/products")
+		fetchAPI(BASE_URL + '/products')
 			.catch(console.error)
 			.then((data) => {
+				console.log("this is data", data)
 				data.map((product) => {
 					let newPrice = product.price / 100;
 					product.price = newPrice;
