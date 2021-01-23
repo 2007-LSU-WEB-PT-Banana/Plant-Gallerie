@@ -1,38 +1,31 @@
-// code to build and initialize DB goes here
 const {
-
-  client,
-  createProduct,
-  getProductById,
-  getAllProducts,
-  createUser,
-  getAllUsers,
-  getUserById,
-  // other db methods
-} = require('./index')
+	client,
+	createProduct,
+	getProductById,
+	getAllProducts,
+	createUser,
+	getAllUsers,
+	getUserById,
+	// other db methods
+} = require("./index");
 // const { uuid } = require('uuidv4')
-
 // const { v4: uuidv4 } = require('uuid')
-
 async function buildTables() {
-  try {
-    client.connect()
-    await client.query(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp";`)
-    // drop tables in correct order
-    await client.query(`
-
+	try {
+		client.connect();
+		await client.query(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp";`);
+		// drop tables in correct order
+		await client.query(`
     DROP TABLE IF EXISTS order_products CASCADE;
     DROP TABLE IF EXISTS orders CASCADE;
     DROP TABLE IF EXISTS users CASCADE;
     DROP TABLE IF EXISTS products CASCADE;
   `);
-
 		// build tables in correct order
 		console.log("creating tables");
-
 		await client.query(`
     CREATE TABLE products(
-      id SERIAL PRIMARY KEY,
+      id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
       name VARCHAR(255) NOT NULL,
       description TEXT NOT NULL,
       price INTEGER NOT NULL,
@@ -41,7 +34,7 @@ async function buildTables() {
       category TEXT NOT NULL
     );
       CREATE TABLE users(
-        id SERIAL PRIMARY KEY,
+        id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
         "firstName" VARCHAR(255) NOT NULL,
         "lastName" VARCHAR(255) NOT NULL,
         email VARCHAR(255) UNIQUE NOT NULL,
@@ -51,17 +44,15 @@ async function buildTables() {
         "isAdmin" BOOLEAN NOT NULL DEFAULT false
       );
       CREATE TABLE orders(
-        id SERIAL PRIMARY KEY,
+        id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
         status VARCHAR(255) DEFAULT 'created',
         "userId" uuid REFERENCES users(id),
         "datePlaced" DATE
       );
       CREATE TABLE order_products(
-
         id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
         "productId" uuid REFERENCES products(id),
         "orderId" uuid REFERENCES orders(id),
-
         price INTEGER NOT NULL ,
         quantity INTEGER NOT NULL DEFAULT 0
         );
@@ -70,7 +61,6 @@ async function buildTables() {
 		throw error;
 	}
 }
-
 async function populateInitialData() {
 	try {
 		await createUser({
@@ -82,7 +72,6 @@ async function populateInitialData() {
 			password: "abcdefghi1",
 			isAdmin: false,
 		});
-
 		await createUser({
 			firstName: "fkhan",
 			lastName: "khan",
@@ -92,7 +81,6 @@ async function populateInitialData() {
 			password: "abcdefghi123",
 			isAdmin: false,
 		});
-
 		await createProduct({
 			name: "Juniper Bonsai",
 			description:
@@ -103,7 +91,6 @@ async function populateInitialData() {
 			inStock: true,
 			category: "House Plant",
 		});
-
 		await createProduct({
 			name: "Money Tree Plant",
 			description:
@@ -115,13 +102,11 @@ async function populateInitialData() {
 			category: "House Plant",
 		});
 		console.log("getting users");
-
 		// create useful starting data
 	} catch (error) {
 		throw error;
 	}
 }
-
 buildTables()
 	.then(populateInitialData)
 	.catch(console.error)
