@@ -20,11 +20,12 @@ import {
 	Register,
 	Payment,
 	Cart,
+	Users,
+	SingleUser
 } from "./index";
 
 const App = () => {
 	const history = useHistory();
-
 	const [isLoggedIn, setIsLoggedIn] = useState(!!getToken());
 	const [message, setMessage] = useState("");
 	const [productList, setProductList] = useState([]);
@@ -33,6 +34,8 @@ const App = () => {
 	const [count, setCount] = useState(1);
 	const [activeUser, setActiveUser] = useState("");
 	const [orderId, setOrderId] = useState("");
+	const [usersList, setUsersList] = useState([]);
+	const [isAdmin, setIsAdmin] = useState('')
 	const [grandTotal, setGrandTotal] = useState(0);
 
 	useEffect(() => {
@@ -46,9 +49,10 @@ const App = () => {
 	}, []);
 
 	useEffect(() => {
-		fetchAPI(BASE_URL + "/products")
+		fetchAPI(BASE_URL + '/products')
 			.catch(console.error)
 			.then((data) => {
+				console.log("this is data", data)
 				data.map((product) => {
 					let newPrice = product.price / 100;
 					product.price = newPrice;
@@ -60,6 +64,7 @@ const App = () => {
 	useEffect(() => {
 		getActiveUser()
 			.then((data) => {
+				console.log("this is singleuser", data);
 				setActiveUser(data);
 			})
 			.catch(console.error);
@@ -85,6 +90,16 @@ const App = () => {
 
 	console.log("The cart data is", cartData);
 	console.log("the order id is:", orderId);
+
+	useEffect(() => {
+			fetchAPI(BASE_URL + "/users")
+				.then((data) => {
+					setUsersList(data);
+					console.log(data);
+				})
+				.catch(console.error);
+		}, []);
+
 	console.log("the active user is", activeUser);
 	console.log("the active product is", activeProduct);
 
@@ -154,6 +169,13 @@ const App = () => {
 					</Route>
 					<Route exact path="/register">
 						<Register setIsLoggedIn={setIsLoggedIn} />
+					</Route>
+					<Route exact path="/users">
+						<Users usersList={usersList} />
+					</Route>
+					<Route exact path="/users/me">
+						<SingleUser 
+						activeUser={activeUser}/>
 					</Route>
 					<Route path="/cart">
 						<Cart

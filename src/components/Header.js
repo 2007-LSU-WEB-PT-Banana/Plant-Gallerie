@@ -105,12 +105,28 @@ const Header = (props) => {
 					<Link to="/search" className="header-link" style={headerLink}>
 						<SearchIcon className="header-searchIcon" />
 					</Link>
-
+					<Link to="/users" className="header-link" style={headerLink}>
+						All Users(Only Admin)
+					</Link>
 					<Link to="/login" className="header-link" style={headerLink}>
 						{!isLoggedIn ? (
-							<PersonOutlineIcon />
+							<>
+							<div className="log-in">
+								<Link to="/login" className="header-link" style={headerLink}>
+									Login
+								</Link>
+							</div>
+							 <div className="register">
+               					<Link to="/register" className="header-link" style={headerLink}>
+                 					Register
+               					</Link>
+             				</div>
+			 				</>
 						) : (
 							<>
+								<Link to="/users/me" className="header-link" style={headerLink}>
+									My Account
+								</Link>
 								<h6 className="loginMessage">Welcome Back!</h6>
 								<button className="logOut" onClick={handleSignOut}>
 									Log Out
