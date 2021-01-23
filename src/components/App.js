@@ -34,10 +34,9 @@ const App = () => {
 	const [count, setCount] = useState(1);
 	const [activeUser, setActiveUser] = useState("");
 	const [orderId, setOrderId] = useState("");
-	const [visitorCartData, setVisitorCartData] = useState([]);
 	const [usersList, setUsersList] = useState([]);
 	const [isAdmin, setIsAdmin] = useState('')
-	
+	const [grandTotal, setGrandTotal] = useState(0);
 
 	useEffect(() => {
 		fetchAPI(BASE_URL + "/")
@@ -70,6 +69,24 @@ const App = () => {
 			.catch(console.error);
 	}, [isLoggedIn]);
 
+	useEffect(() => {
+		let total = 0;
+		if (activeUser) {
+			fetchAPI(BASE_URL + `/orders/cart/${activeUser.id}`)
+				.then((data) => {
+					data[0].map((product) => {
+						let newPrice = product.price / 100;
+						product.price = newPrice;
+						total = newPrice * product.quantity + total;
+					});
+					setCartData(data[0]);
+					setOrderId(data[0][0].orderId);
+					setGrandTotal(total);
+				})
+				.catch(console.error);
+		}
+	}, [activeUser]);
+
 	console.log("The cart data is", cartData);
 	console.log("the order id is:", orderId);
 
@@ -82,21 +99,8 @@ const App = () => {
 				.catch(console.error);
 		}, []);
 
-
-	// //going to have to make this a function in the api folder and possibly use params for userID instead of body
-	// useEffect(() => {
-	// 	if (activeUser) {
-	// 		fetchAPI(BASE_URL + "/orders/cart", "GET", activeUser.id)
-	// 			.then((data) => {
-	// 				data.products.map((product) => {
-	// 					let newPrice = product.price / 100;
-	// 					product.price = newPrice;
-	// 				});
-	// 				setCartData(data.products);
-	// 			})
-	// 			.catch(console.error);
-	// 	}
-	// }, [activeUser]);
+	console.log("the active user is", activeUser);
+	console.log("the active product is", activeProduct);
 
 	return (
 		<>
@@ -108,6 +112,7 @@ const App = () => {
 				history={history}
 				clearToken={clearToken}
 				setCartData={setCartData}
+				cartData={cartData}
 			/>
 			<main className="wrapper">
 				<Switch>
@@ -175,8 +180,12 @@ const App = () => {
 						<Cart
 							cartData={cartData}
 							setCartData={setCartData}
-							visitorCartData={visitorCartData}
-							setVisitorCartData={setVisitorCartData}
+							isLoggedIn={isLoggedIn}
+							grandTotal={grandTotal}
+							setGrandTotal={setGrandTotal}
+							orderId={orderId}
+							activeUser={activeUser}
+							history={history}
 						/>
 					</Route>
 
