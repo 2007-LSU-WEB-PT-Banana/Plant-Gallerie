@@ -1,10 +1,23 @@
-import React, { useEffect, useState } from "react";
-import SingleOrder from "./SingleOrder";
+import React from 'react'
+import SingleOrder from './SingleOrder'
 
 const Cart = (props) => {
-	const { cartData, history } = props;
+  const {
+    cartData,
+    setCartData,
+    history,
+    visitorCartData,
+    setVisitorCartData,
+  } = props
 
-	return <SingleOrder cartData={cartData} history={history} />;
-};
+  return (
+    <SingleOrder
+      cartData={cartData}
+      history={history}
+      setCartData={setCartData}
+      setVisitorCartData={setVisitorCartData}
+    />
+  )
+}
 
-export default Cart;
+export default Cart

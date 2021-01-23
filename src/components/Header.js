@@ -1,9 +1,10 @@
-import React, { useState, useEffect, Fragment } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import SearchIcon from '@material-ui/icons/Search'
 import PersonOutlineIcon from '@material-ui/icons/PersonOutline'
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart'
 import DehazeIcon from '@material-ui/icons/Dehaze'
+import SearchBar from 'material-ui-search-bar'
 import './Header.css'
 
 const headerLink = {
@@ -26,22 +27,25 @@ const Header = (props) => {
     setIsLoggedIn,
     history,
     clearToken,
-    activeUser,
     setActiveUser,
     cartData,
     isLoggedIn,
+    setCartData,
+    activeUser,
+    searchTerm,
+    setSearchTerm,
+    search,
+    setSearch,
   } = props
   const [isNavVisible, setIsNavVisible] = useState(true)
   const [isSmallScreen, setIsSmallScreen] = useState(false)
-  const [visible, setVisible] = useState(null)
-  const handleVisibility = () => {
-    setVisible(!visible)
-  }
 
   const handleSignOut = () => {
-    console.log('hitting signout')
     clearToken()
     setIsLoggedIn(false)
+    setActiveUser({})
+    setCartData([])
+    history.push('/')
   }
 
   useEffect(() => {
@@ -58,6 +62,11 @@ const Header = (props) => {
     setIsNavVisible(!isNavVisible)
   }
 
+  const logout = () => {
+    setIsLoggedIn(false)
+    clearToken()
+    setActiveUser({})
+  }
   const handleMediaQueryChange = (mediaQuery) => {
     if (mediaQuery.matches) {
       setIsSmallScreen(true)
@@ -65,12 +74,6 @@ const Header = (props) => {
     } else {
       setIsSmallScreen(false)
     }
-  }
-
-  const logout = () => {
-    setIsLoggedIn(false)
-    clearToken()
-    setActiveUser({})
   }
 
   return (
@@ -96,9 +99,23 @@ const Header = (props) => {
           <Link to="/bonsaiplants" className="header-link" style={headerLink}>
             Bonsai and Bamboo
           </Link>
-          <Link to="/search" className="header-link" style={headerLink}>
-            <SearchIcon className="header-searchIcon" />
-          </Link>
+
+          <div className="header-link">
+            <SearchBar
+              className="serach-bar"
+              value={search}
+              onChange={(event) => {
+                setSearch(event.target.value)
+              }}
+              placeholder="filter plants"
+              style={{
+                margin: '0 auto',
+                maxWidth: 500,
+                height: '30px',
+                backgroundColor: 'lightgrey',
+              }}
+            />
+          </div>
 
           <Link to="/login" className="header-link" style={headerLink}>
             {!isLoggedIn ? (

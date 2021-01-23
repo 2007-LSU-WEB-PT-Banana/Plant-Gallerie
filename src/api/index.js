@@ -1,4 +1,6 @@
-export const BASE_URL = '/api'
+// import axios from 'axios'
+
+export const BASE_URL = "/api";
 
 export const getToken = () => {
   if (localStorage.getItem('auth-token')) {
@@ -43,6 +45,25 @@ export const getActiveUser = async () => {
   console.log('this is user fron end fetcgh', user)
   return user
 }
+
+// export const getCartData = async () => {
+// 	const url = `${BASE_URL}/orders/cart`;
+// 	const user = activeUser || null;
+// 	const response = await fetch(url, {
+// 		method: "GET",
+// 		headers: { "Content-Type": "application/json" },
+// 		body: JSON.stringify({ user }),
+// 	});
+// 	console.log("response from getCartData on frontend", response);
+
+// 	const { error, cart } = await response.json();
+
+// 	if (error) {
+// 		throw Error(error.message);
+// 	}
+// 	console.log("this is the cart from the front end request", cart);
+// 	return cart;
+// };
 
 export const loginUser = async (username, password) => {
   console.log('inside auth')

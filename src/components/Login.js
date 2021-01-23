@@ -1,7 +1,15 @@
 import React, { useState } from 'react'
 import './Login.css'
 import { useHistory } from 'react-router-dom'
-import { getToken, setToken, clearToken, loginUser } from '../api/index'
+import {
+  getToken,
+  setToken,
+  clearToken,
+  loginUser,
+  fetchAPI,
+  BASE_URL,
+} from '../api/index'
+import { AirlineSeatIndividualSuiteSharp } from '@material-ui/icons'
 
 function Login(props) {
   const {
@@ -11,6 +19,8 @@ function Login(props) {
     message,
     setMessage,
     setActiveUser,
+    setCartData,
+    setOrderId,
   } = props
   const history = useHistory()
   const [username, setUserName] = useState('')
@@ -23,16 +33,11 @@ function Login(props) {
     try {
       const result = await loginUser(username, password)
       console.log('logoin response', result)
-      if (!result) {
-        setErrorMessage(
-          'User name or password is incorrect/ user not registered',
-        )
-      }
+
       setIsLoggedIn(true)
-      setMessage('Currently Logged In')
       history.push('/')
     } catch (error) {
-      setErrorMessage('User name or password is incorrect/ user not registered')
+      setErrorMessage('userName or password is incorrect')
     }
   }
 
@@ -57,7 +62,6 @@ function Login(props) {
             onChange={(event) => setPassword(event.target.value)}
             type="password"
           />
-
           <button onClick={login} type="submit" className="login-siginbutton">
             Sign In
           </button>

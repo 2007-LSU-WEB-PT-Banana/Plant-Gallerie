@@ -2,7 +2,7 @@
 const { Client } = require('pg')
 const bcrypt = require('bcrypt')
 
-const DB_NAME = 'plant-gallery'
+const DB_NAME = 'plantgallery'
 const DB_URL =
   process.env.DATABASE_URL || `postgres://localhost:5432/${DB_NAME}`
 const client = new Client(DB_URL, { username: 'postgres' })
@@ -97,9 +97,8 @@ const getUserById = async (id) => {
   }
 }
 
+//this function is working - do not edit this code!
 const getUserByUsername = async ({ username }) => {
-  console.log('inside db')
-  console.log('this is insdide db usrername ', username)
   try {
     const {
       rows: [user],
@@ -111,11 +110,6 @@ const getUserByUsername = async ({ username }) => {
     `,
       [username],
     )
-
-    console.log('username', username)
-    console.log('required user is ', user)
-
-    console.log('existing user by user function')
     return user
   } catch (error) {
     throw error
@@ -142,8 +136,6 @@ const createProduct = async ({
   `,
       [name, description, price, imageURL, inStock, category],
     )
-
-    await createOrderProducts({ product })
     return product
   } catch (error) {
     throw error
@@ -205,7 +197,7 @@ const createOrder = async ({ status, userId, products }) => {
     `,
       [status, userId, datePlaced],
     )
-
+    console.log('this is order id', order.id)
     const newOrder = await addProductsToOrder(order.id, products)
 
     return newOrder
@@ -250,37 +242,30 @@ const getOrdersByUser = async (userId) => {
 
 //this function is working - do not edit this code!
 const getOrderById = async (orderId) => {
+  console.log('hitting this route')
+  console.log('id in db', orderId)
   try {
-    const {
-      rows: [order],
-    } = await client.query(
+    const { rows: order } = await client.query(
       `
       SELECT *
       FROM orders
-      WHERE id=$1; 
-    `,
+      JOIN order_products ON order_products."orderId"=orders.id
+      JOIN products ON products.id=order_products."productId"
+      WHERE "orderId"=$1;    
+      `,
       [orderId],
     )
+
+    console.log('this is order', order.orderId)
 
     if (!order) {
       throw {
         name: 'OrderNotFoundError',
         message: 'Could not find an order with that order ID',
       }
+    } else {
+      return order
     }
-
-    const { rows: products } = await client.query(
-      `
-      SELECT *
-      FROM order_products
-      WHERE "orderId"=$1;    
-    `,
-      [orderId],
-    )
-
-    order.products = products
-
-    return order
   } catch (error) {
     throw error
   }
@@ -304,21 +289,44 @@ const getOrderProductsById = async (orderId) => {
 }
 
 //this function works - do not edit this code!
+// const getCartByUser = async (userId) => {
+// 	try {
+// 		const { rows: userCart } = await client.query(
+// 			`
+//     SELECT *
+//     FROM orders
+//     JOIN products ON
+//     WHERE "userId"=$1 AND status='created';
+//     `,
+// 			[userId]
+// 		);
+// 		const orders = await Promise.all(
+// 			userCart.map((order) => getOrderById(order.id))
+// 		);
+// 		return orders;
+// 	} catch (error) {
+// 		throw error;
+// 	}
+// };
+
+//this function works - do not edit code!
 const getCartByUser = async (userId) => {
   try {
-    const { rows: userCart } = await client.query(
+    const { rows: orders } = await client.query(
       `
     SELECT *
     FROM orders
-    JOIN products ON 
     WHERE "userId"=$1 AND status='created';
     `,
       [userId],
     )
-    const orders = await Promise.all(
-      userCart.map((order) => getOrderById(order.id)),
+    console.log('the orders are', orders)
+
+    const openOrders = await Promise.all(
+      orders.map((order) => getOrderById(order.id)),
     )
-    return orders
+
+    return openOrders
   } catch (error) {
     throw error
   }
@@ -341,7 +349,7 @@ const createOrderProducts = async ({ productId, orderId, price, quantity }) => {
     `,
       [productId, orderId, price, quantity],
     )
-
+    console.log('order-products are:', orderProduct)
     return orderProduct
   } catch (error) {
     throw error
@@ -350,6 +358,7 @@ const createOrderProducts = async ({ productId, orderId, price, quantity }) => {
 
 //this function is working - do not edit this code!
 const addProductsToOrder = async (orderId, productList) => {
+  console.log('i isde addProduvts to order')
   try {
     const createOrderProductsPromises = productList.map((product) =>
       createOrderProducts({
@@ -369,26 +378,25 @@ const addProductsToOrder = async (orderId, productList) => {
 
 const getOrdersByProduct = async (id) => {
   try {
-    const { rows: order } = await client.query(
+    const { rows: orders } = await client.query(
       `
-
       SELECT *
-      FROM order_products
-      JOIN orders ON order_products."orderId" = orders.id
-      JOIN products ON order_products."productId"=$1;
+      FROM orders
+      JOIN order_products ON order_products."orderId"=orders.id
+      JOIN products ON products.id=order_products."productId"
+      WHERE "orderId"=$1; 
     `,
       [id],
     )
-    console.log('this is product id', ordersIds.productId)
-    const allProducts = ordersIds.map((order) => {
-      return getOrdersByUser(order.id)
-    })
-    return allProducts
+
+    return orders
   } catch (error) {
     throw error
   }
 }
 
+//i don't think this is going to work because this is selecting from
+//order_products not orders.
 const getOrderByProductId = async (id) => {
   try {
     const {
@@ -477,55 +485,56 @@ const addProductToOrder = async ({ orderId, productId, price, quantity }) => {
   }
 }
 
-const updateOrderProduct = async ({ id, price, quantity }) => {
+//this function works - do not edit this code!
+const updateOrderProduct = async (orderId, { productId, price, quantity }) => {
   try {
-    const originalOrderProduct = await getOrderByProductId(id)
+    const originalOrderProduct = await getOrderProductsByOrderId(orderId)
 
-    if (!price) {
-      originalOrderProduct.price = price
-    }
-    if (!quantity) {
-      originalOrderProduct.quantity = quantity
-    }
+    let index = originalOrderProduct.findIndex((x) => x.productId === productId)
+    let itemToUpdate = originalOrderProduct[index]
+    itemToUpdate.price = price
+    itemToUpdate.quantity = quantity
 
     const {
       rows: [orderProduct],
     } = await client.query(
       `
-
-    UPDATE order_products original
-    SET price=$2,
-    quantity=$3
-    WHERE original.id=$1
-    RETRUNING *;
-    `,
-      [id, price, quantity],
-    )
-    console.log('update order produc', orderProduct)
-    return orderProduct
-  } catch (error) {
-    throw error
-  }
-}
-const destroyOrderProduct = async (id) => {
-  console.log('the id is ', id)
-  try {
-    const {
-      rows: [orderProduct],
-    } = await client.query(
-      `
-      DELETE FROM order_products
+      UPDATE order_products
+      SET price=$2,
+      quantity=$3
       WHERE id=$1
-      RETURNING *
-      `,
-      [id],
+      RETURNING *;
+    `,
+      [itemToUpdate.id, itemToUpdate.price, itemToUpdate.quantity],
     )
-    return orderProduct
+
+    const updatedOrder = await getOrderById(orderId)
+    return updatedOrder
   } catch (error) {
     throw error
   }
 }
 
+// const destroyOrderProduct = async (id) => {
+// 	console.log("the id is ", id);
+// 	try {
+// 		const {
+// 			rows: [orderProduct],
+// 		} = await client.query(
+// 			`
+//       DELETE FROM order_products
+//       WHERE id=$1
+//       RETURNING *
+//       `,
+// 			[id]
+// 		);
+// 		return orderProduct;
+// 	} catch (error) {
+// 		throw error;
+// 	}
+// };
+
+//this function works - do not edit this code!
 async function getOrderProductsByOrderId(orderId) {
   try {
     const { rows: orderProducts } = await client.query(
@@ -538,6 +547,97 @@ async function getOrderProductsByOrderId(orderId) {
     return orderProducts
   } catch (error) {
     console.error(error)
+  }
+}
+
+const getOrderByORDERID = async (orderId) => {
+  try {
+    const { rows: order } = await client.query(
+      `
+     SELECT *
+     FROM order_products
+     JOIN orders ON orders.id=${orderId};   
+      `,
+    )
+    return order
+  } catch (error) {
+    throw error
+  }
+}
+
+const updateOrder = async (orderId, { status, userId }) => {
+  console.log('inisde update order')
+  console.log('this is orderId', orderId)
+  console.log('this is status', status)
+  console.log('this is userId', userId)
+
+  const orderToBeUpdtaed = getOrderByORDERID(orderId)
+  orderToBeUpdtaed.status = status
+  orderToBeUpdtaed.userId = userId
+  console.log('this is status to be updatted', orderToBeUpdtaed.status)
+  console.log('this is userId to be updated', orderToBeUpdtaed.userId)
+  try {
+    const {
+      rows: [updatedOrder],
+    } = await client.query(
+      `
+    UPDATE orders
+    SET status=$2,
+    "userId"=$3
+    WHERE id=$1
+    RETURNING *;
+  `,
+      [orderId, orderToBeUpdtaed.status, orderToBeUpdtaed.userId],
+    )
+    console.log('this is updateOrder', updatedOrder)
+    return updatedOrder
+  } catch (error) {
+    throw error
+  }
+}
+
+const completeOrder = async (orderId, status) => {
+  const orderToBeCompleted = await getOrderById(orderId)
+  orderId = orderToBeCompleted.orderId
+  console.log('this is order to be completd', orderToBeCompleted)
+  try {
+    const {
+      rows: [completeOrder1],
+    } = await client.query(
+      `
+  UPDATE orders
+  SET status=$2
+  WHERE id=$1;
+  `,
+      [orderId, orderToBeCompleted.status],
+    )
+    return completeOrder1
+  } catch (error) {
+    throw error
+  }
+}
+
+const cancelOrder = async (orderId, status) => {
+  const orderToBeCancelled = await getOrderByORDERID(orderId)
+  console.log('this is order required', orderToBeCancelled)
+  orderId = orderToBeCancelled.orderId
+  status = orderToBeCancelled.status
+
+  try {
+    const {
+      rows: [cancelOrder],
+    } = await client.query(
+      `
+    UPDATE orders
+    SET status=$2
+    where id=$1;
+    `,
+      [orderId, orderToBeCancelled.status],
+    )
+
+    return cancelOrder
+  } catch (error) {
+    throw error
   }
 }
 
@@ -557,4 +657,11 @@ module.exports = {
   getOrderById,
   getUser,
   getOrderProductsById,
+  getOrdersByUser,
+  addProductsToOrder,
+  updateOrderProduct,
+  updateOrder,
+  cancelOrder,
+  completeOrder,
+  getOrderByORDERID,
 }
