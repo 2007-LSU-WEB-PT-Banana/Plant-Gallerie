@@ -30,7 +30,6 @@ function Register(props) {
         username,
         password,
       )
-      setIsLoggedIn(true)
       history.push('/login')
     } catch (error) {
       console.error(error)

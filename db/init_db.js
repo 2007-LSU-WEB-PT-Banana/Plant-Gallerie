@@ -1,21 +1,26 @@
 // code to build and initialize DB goes here
 const {
-	client,
-	createProduct,
-	getProductById,
-	getAllProducts,
-	createUser,
-	getAllUsers,
-	getUserById,
-	// other db methods
-} = require("./index");
+
+  client,
+  createProduct,
+  getProductById,
+  getAllProducts,
+  createUser,
+  getAllUsers,
+  getUserById,
+  // other db methods
+} = require('./index')
+// const { uuid } = require('uuidv4')
+
+// const { v4: uuidv4 } = require('uuid')
 
 async function buildTables() {
-	try {
-		client.connect();
+  try {
+    client.connect()
+    await client.query(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp";`)
+    // drop tables in correct order
+    await client.query(`
 
-		// drop tables in correct order
-		await client.query(`
     DROP TABLE IF EXISTS order_products CASCADE;
     DROP TABLE IF EXISTS orders CASCADE;
     DROP TABLE IF EXISTS users CASCADE;
@@ -42,21 +47,23 @@ async function buildTables() {
         email VARCHAR(255) UNIQUE NOT NULL,
         "imageURL" TEXT DEFAULT 'no picture' NOT NULL,
         username VARCHAR(255) UNIQUE NOT NULL,
-        password VARCHAR(255) NOT NULL CONSTRAINT password_length CHECK(LENGTH(password) > 8),
+        password VARCHAR(255) NOT NULL,
         "isAdmin" BOOLEAN NOT NULL DEFAULT false
       );
       CREATE TABLE orders(
         id SERIAL PRIMARY KEY,
         status VARCHAR(255) DEFAULT 'created',
-        "userId" INTEGER REFERENCES users(id),
+        "userId" uuid REFERENCES users(id),
         "datePlaced" DATE
       );
       CREATE TABLE order_products(
-        id SERIAL PRIMARY KEY,
-        "productId" INTEGER REFERENCES products(id),
-        "orderId" INTEGER REFERENCES orders(id),
+
+        id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+        "productId" uuid REFERENCES products(id),
+        "orderId" uuid REFERENCES orders(id),
+
         price INTEGER NOT NULL ,
-        quantity INTEGER DEFAULT 1
+        quantity INTEGER NOT NULL DEFAULT 0
         );
     `);
 	} catch (error) {

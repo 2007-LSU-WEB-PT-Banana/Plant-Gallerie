@@ -105,9 +105,9 @@ const SingleOrder = (props) => {
 		setGrandTotal(newGrandTotal);
 	}
 
-	useEffect(() => {
-		findGrandTotal();
-	}, [cartData]);
+  useEffect(() => {
+    findGrandTotal()
+  }, [cartData])
 
 	return (
 		<div>

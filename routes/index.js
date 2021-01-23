@@ -1,32 +1,35 @@
-const apiRouter = require("express").Router();
-const bcrypt = require("bcrypt");
-const uuid = require("uuid/v4");
+const apiRouter = require('express').Router()
+const bcrypt = require('bcrypt')
+const { uuid } = require('uuidv4')
 
 const {
-	createProduct,
-	getProductById,
-	getAllProducts,
-	createUser,
-	getAllUsers,
-	getUserById,
-	getUserByUsername,
-	createOrder,
-	getOrdersByProduct,
-	getAllOrders,
-	getOrderById,
-	getCartByUser,
-	getOrderProductsById,
-	getOrdersByUser,
-	getUser,
-	addProductsToOrder,
-	updateOrderProduct,
-	destroyOrderProduct,
-} = require("../db/index");
+  createProduct,
+  getProductById,
+  getAllProducts,
+  createUser,
+  getAllUsers,
+  getUserById,
+  getUserByUsername,
+  createOrder,
+  getOrdersByProduct,
+  getAllOrders,
+  getOrderById,
+  getCartByUser,
+  getOrderProductsById,
+  getOrdersByUser,
+  getUser,
+  addProductsToOrder,
+  updateOrderProduct,
+  updateOrder,
+  cancelOrder,
+  completeOrder,
+  getOrderByORDERID,
+} = require('../db/index')
 
-require("dotenv").config();
-const jwt = require("jsonwebtoken");
-const { token } = require("morgan");
-const stripe = require("stripe")(`${process.env.mySKey}`);
+require('dotenv').config()
+const jwt = require('jsonwebtoken')
+const { token } = require('morgan')
+const stripe = require('stripe')(`${process.env.REACT_APP_MYSKEY}`)
 
 const requireUser = (req, res, next) => {
 	if (!req.user) {

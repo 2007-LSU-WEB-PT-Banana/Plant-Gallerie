@@ -44,7 +44,12 @@
 	background-color: #c0c0c0;
 }
 
-.search-bar {
+.serach-bar {
+	height: 10px;
+	width: 150px;
+}
+
+/* .search-bar {
 	width: 100%;
 	border: 0.2px solid rgb(172, 170, 170);
 	display: flex;
@@ -56,7 +61,7 @@
 	padding: 3px;
 	background: transparent;
 	color: rgb(230, 224, 224);
-}
+} */
 
 #toggle-search {
 	float: right;

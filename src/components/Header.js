@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import SearchIcon from "@material-ui/icons/Search";
-import PersonOutlineIcon from "@material-ui/icons/PersonOutline";
-import ShoppingCartIcon from "@material-ui/icons/ShoppingCart";
-import DehazeIcon from "@material-ui/icons/Dehaze";
-import "./Header.css";
+import React, { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
+import SearchIcon from '@material-ui/icons/Search'
+import PersonOutlineIcon from '@material-ui/icons/PersonOutline'
+import ShoppingCartIcon from '@material-ui/icons/ShoppingCart'
+import DehazeIcon from '@material-ui/icons/Dehaze'
+import SearchBar from 'material-ui-search-bar'
+import './Header.css'
 
 const headerLink = {
 	marginRight: "35px",
@@ -22,22 +23,30 @@ const headerLink = {
 };
 
 const Header = (props) => {
-	const {
-		setIsLoggedIn,
-		history,
-		clearToken,
-		setActiveUser,
-		cartData,
-		isLoggedIn,
-		setCartData,
-	} = props;
-	const [isNavVisible, setIsNavVisible] = useState(true);
-	const [isSmallScreen, setIsSmallScreen] = useState(false);
-	// const [visible, setVisible] = useState(null);
+  const {
+    setIsLoggedIn,
+    history,
+    clearToken,
+    setActiveUser,
+    cartData,
+    isLoggedIn,
+    setCartData,
+    activeUser,
+    searchTerm,
+    setSearchTerm,
+    search,
+    setSearch,
+  } = props
+  const [isNavVisible, setIsNavVisible] = useState(true)
+  const [isSmallScreen, setIsSmallScreen] = useState(false)
 
-	// const handleVisibility = () => {
-	// 	setVisible(!visible);
-	// };
+  const handleSignOut = () => {
+    clearToken()
+    setIsLoggedIn(false)
+    setActiveUser({})
+    setCartData([])
+    history.push('/')
+  }
 
 	const handleSignOut = () => {
 		clearToken();
