@@ -11,22 +11,16 @@ const AdminPortal = (props) => {
 				<h1 className="productsHeader">Admin Portal</h1>
 				<div className="adminWrapper">
 					<Link to="/users" className="adminLink">
-						Get All Users
+						User Maintenance
 					</Link>
 					<Link to="/addnewproduct" className="adminLink">
 						Add New Product
-					</Link>
-					<Link to="/deleteproduct" className="adminLink">
-						Delete A Product
 					</Link>
 					<Link to="/updateproduct" className="adminLink">
 						Update Product Details
 					</Link>
 					<Link to="/getordersbyproduct" className="adminLink">
 						Get Orders By Product Number
-					</Link>
-					<Link to="/updateuser" className="adminLink">
-						User Maintenance
 					</Link>
 				</div>
 			</>

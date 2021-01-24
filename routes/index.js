@@ -21,6 +21,7 @@ const {
 	addProductsToOrder,
 	updateOrderProduct,
 	findOrderProductsToDelete,
+	updateUser,
 	updateOrder,
 	cancelOrder,
 	completeOrder,
@@ -180,6 +181,33 @@ apiRouter.get("/users/:id", async (req, res, next) => {
 		res.send(oneUser);
 	} catch (error) {
 		next(error);
+	}
+});
+
+apiRouter.patch("/users/:userId", async (req, res, next) => {
+	const { firstName, lastName, email, username, imageURL, isAdmin } = req.body;
+	try {
+		console.log("hit the update user route, getting userbyID");
+
+		const userToUpdate = await getUserById(req.params.id);
+		console.log("the user to update is", userToUpdate);
+
+		if (userToUpdate) {
+			const completedUpdate = await updateUser(
+				userToUpdate.id,
+				firstName,
+				lastName,
+				email,
+				username,
+				imageURL,
+				isAdmin
+			);
+			res.send(completedUpdate);
+		} else {
+			res.send({ message: "A user does not exist with that id" });
+		}
+	} catch (error) {
+		throw error;
 	}
 });
 

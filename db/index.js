@@ -108,6 +108,39 @@ const getUserById = async (id) => {
 	}
 };
 
+const updateUser = async (
+	userId,
+	firstName,
+	lastName,
+	email,
+	username,
+	imageURL,
+	isAdmin
+) => {
+	try {
+		const {
+			rows: [updatedUser],
+		} = await client.query(
+			`
+    UPDATE users
+    SET "firstName"=$1,
+    "lastName"=$2,
+    email=$3,
+    username=$4,
+    "imageURL"=$5,
+    "isAdmin"=$6
+    WHERE id=$7
+    RETURNING *;
+    `,
+			[firstName, lastName, email, username, imageURL, isAdmin, userId]
+		);
+
+		return updatedUser;
+	} catch (error) {
+		throw error;
+	}
+};
+
 //this function is working - do not edit this code!
 const getUserByUsername = async ({ username }) => {
 	try {
@@ -645,4 +678,5 @@ module.exports = {
 	updateOrderProduct,
 	destroyOrderProduct,
 	findOrderProductsToDelete,
+	updateUser,
 };

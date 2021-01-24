@@ -217,6 +217,32 @@ main {
 	margin-bottom: 5px;
 }
 
+.deleteProduct {
+	background-color: maroon;
+	padding: 5px;
+	text-decoration: none;
+	color: white;
+	border-radius: 0.25rem;
+	text-align: center;
+	transition: all 0.3s;
+	justify-content: center;
+	text-transform: uppercase;
+	margin-bottom: 5px;
+	align-self: center;
+	margin-top: 10px;
+}
+
+.deleteWarning {
+	margin: auto;
+	margin-top: 15px;
+	padding: 15px;
+	align-content: center;
+	justify-content: center;
+	text-align: center;
+	width: 50%;
+	border: 2px solid maroon;
+}
+
 .backToAdmin {
 	background-color: #607848;
 	padding: 10px;

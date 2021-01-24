@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import "./Users.css";
 import { Avatar } from "@material-ui/core";
 const Users = (props) => {
-	const { usersList, history, activeUser } = props;
+	const { usersList, history, activeUser, setUserToUpdate } = props;
 
 	function backToAdminPortal() {
 		history.push("/adminportal");
@@ -14,9 +15,9 @@ const Users = (props) => {
 				<button className="backToAdmin" onClick={backToAdminPortal}>
 					Back to Admin Portal
 				</button>
-				<h1 className="productsHeader">All Users</h1>
+				<h1 className="productsHeader">User Maintenance</h1>
 				<div className="users">
-					{usersList.map((users) => {
+					{usersList.map((users, index) => {
 						const {
 							id,
 							firstName,
@@ -27,18 +28,37 @@ const Users = (props) => {
 							isAdmin,
 						} = users;
 						return (
-							<div id="modal" className="usersCard" key={id}>
-								<p>
+							<div id="modal" className="usersCard" key={id} value={index}>
+								<div>
 									<Avatar alt="avatar" src={imageURL}>
 										{firstName.charAt(0) + " " + lastName.charAt(0)}
 									</Avatar>
-								</p>
+								</div>
 								<p>Id: {id}</p>
+								<p
+									className="usernameLink"
+									onClick={(event) => {
+										event.preventDefault();
+										setUserToUpdate(usersList[index]);
+										history.push(`/users/${id}`);
+									}}
+								>
+									Username: {username}
+								</p>
 								<p>First Name: {firstName}</p>
 								<p>Last Name: {lastName}</p>
 								<p>Email: {email}</p>
-								<p>User Name: {username}</p>
-								<p>Administrator: {isAdmin}</p>
+								<p>Site Admin? {isAdmin ? "Yes" : "No"}</p>
+								<button
+									className="backToAdmin"
+									onClick={(event) => {
+										event.preventDefault();
+										setUserToUpdate(usersList[index]);
+										history.push(`/users/${id}`);
+									}}
+								>
+									Update User Info
+								</button>
 							</div>
 						);
 					})}
