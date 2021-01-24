@@ -1,0 +1,20 @@
+.addProductForm {
+	display: grid;
+	grid-template-rows: repeat(auto-fill, minmax(50px, 1fr));
+	grid-template-columns: repeat(auto-fit, minmax(75%, 1fr));
+	margin: 20px 50px 0px 50px;
+	grid-gap: 25px;
+}
+
+.addProductForm * {
+	font-family: sans-serif;
+	padding: 10px;
+}
+
+.addProductMessage {
+	text-align: center;
+	font-family: sans-serif;
+	color: #607848;
+	font-size: 20px;
+	padding-top: 10px;
+}
