@@ -6,6 +6,7 @@ import ShoppingCartIcon from "@material-ui/icons/ShoppingCart";
 import DehazeIcon from "@material-ui/icons/Dehaze";
 import SearchBar from "material-ui-search-bar";
 import "./Header.css";
+import { AdminPortal } from "./index";
 
 const headerLink = {
 	justifyContent: "space-between",
@@ -97,8 +98,8 @@ const Header = (props) => {
 						<SearchIcon className="header-searchIcon" />
 					</Link>
 					{activeUser.isAdmin ? (
-						<Link to="/users" className="header-link" style={headerLink}>
-							All Users(Only Admin)
+						<Link to="/adminportal" className="header-link" style={headerLink}>
+							Admin Portal
 						</Link>
 					) : (
 						""
@@ -113,12 +114,14 @@ const Header = (props) => {
 						</>
 					) : (
 						<>
-							<h6 className="logOut" style={headerLink}>
-								Not {activeUser.firstName}?
-							</h6>
-							<button className="logOut" onClick={handleSignOut}>
-								Log Out
-							</button>
+							<div className="logOut">
+								<h6 className="logOut" style={headerLink}>
+									Not {activeUser.firstName}?
+								</h6>
+								<button className="logOut" onClick={handleSignOut}>
+									Log Out
+								</button>
+							</div>
 						</>
 					)}
 					{isLoggedIn ? (

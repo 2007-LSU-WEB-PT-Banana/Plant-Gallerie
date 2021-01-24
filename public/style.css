@@ -203,9 +203,9 @@ main {
 	outline: none;
 }
 
-.logOut {
+.logOut button {
 	background-color: #303018;
-	padding: 3px;
+	padding: 5px;
 	text-decoration: none;
 	color: white;
 	border-radius: 0.25rem;
@@ -213,6 +213,21 @@ main {
 	transition: all 0.3s;
 	justify-content: center;
 	text-transform: uppercase;
+	width: 100%;
+	margin-bottom: 5px;
+}
+
+.backToAdmin {
+	background-color: #607848;
+	padding: 10px;
+	text-decoration: none;
+	color: white;
+	border-radius: 0.25rem;
+	text-align: center;
+	transition: all 0.3s;
+	justify-content: center;
+	text-transform: uppercase;
+	margin: 10px 10px 0px 10px;
 }
 
 @media (max-width: 1171px) {

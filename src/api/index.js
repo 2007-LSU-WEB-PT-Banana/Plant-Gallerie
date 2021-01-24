@@ -3,30 +3,30 @@
 export const BASE_URL = "/api";
 
 export const getToken = () => {
-  if (localStorage.getItem('auth-token')) {
-    return localStorage.getItem('auth-token')
-  } else {
-    localStorage.removeItem('auth-token')
-  }
-}
+	if (localStorage.getItem("auth-token")) {
+		return localStorage.getItem("auth-token");
+	} else {
+		localStorage.removeItem("auth-token");
+	}
+};
 
 export const clearToken = () => {
-  localStorage.removeItem('auth-token')
-}
+	localStorage.removeItem("auth-token");
+};
 
 const setToken = (token) => {
-  localStorage.setItem('auth-token', token)
-}
+	localStorage.setItem("auth-token", token);
+};
 
 function buildHeaders() {
-  let base = {
-    'Content-Type': 'application/json',
-  }
+	let base = {
+		"Content-Type": "application/json",
+	};
 
-  if (getToken()) {
-    base['Authorization'] = `Bearer ${getToken()}`
-  }
-  return base
+	if (getToken()) {
+		base["Authorization"] = `Bearer ${getToken()}`;
+	}
+	return base;
 }
 
 export const getActiveUser = async () => {
@@ -91,12 +91,12 @@ export const loginUser = async (username, password) => {
 };
 
 export const NewUser = async (
-  firstName,
-  lastName,
-  email,
-  imageURL,
-  username,
-  password,
+	firstName,
+	lastName,
+	email,
+	imageURL,
+	username,
+	password
 ) => {
 	const url = `${BASE_URL}/register`;
 	const response = await fetch(url, {
@@ -135,7 +135,8 @@ export const fetchAPI = async (url, method = "GET", sendData = null) => {
 	if (sendData) {
 		if (sendData.price) {
 			let newPrice = sendData.price * 100;
-			sendData.price = newPrice;
+			sendData.price = newPrice.toFixed(0);
+			console.log("the price conversion in the fetch", sendData.price);
 		}
 		fetchOptions.body = JSON.stringify(sendData);
 	}

@@ -1,11 +1,18 @@
 import React from "react";
-import "./Users.css"
-import {Avatar} from '@material-ui/core';
+import "./Users.css";
+import { Avatar } from "@material-ui/core";
 const Users = (props) => {
-const { usersList } = props;
+	const { usersList, history } = props;
+
+	function backToAdminPortal() {
+		history.push("/adminportal");
+	}
 
 	return (
 		<>
+			<button className="backToAdmin" onClick={backToAdminPortal}>
+				Back to Admin Portal
+			</button>
 			<h1 className="productsHeader">All Users</h1>
 			<div className="users">
 				{usersList.map((users) => {
@@ -21,13 +28,8 @@ const { usersList } = props;
 					return (
 						<div id="modal" className="usersCard" key={id}>
 							<p>
-								<Avatar
-									alt="avatar"
-									src={imageURL}
-								>
-									{firstName.charAt(0) +
-										" " +
-										lastName.charAt(0)}
+								<Avatar alt="avatar" src={imageURL}>
+									{firstName.charAt(0) + " " + lastName.charAt(0)}
 								</Avatar>
 							</p>
 							<p>Id: {id}</p>

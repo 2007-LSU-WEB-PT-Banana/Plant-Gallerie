@@ -22,6 +22,7 @@ import {
 	Cart,
 	Users,
 	SingleUser,
+	AdminPortal,
 } from "./index";
 
 const App = () => {
@@ -172,7 +173,7 @@ const App = () => {
 						<Register setIsLoggedIn={setIsLoggedIn} />
 					</Route>
 					<Route exact path="/users">
-						<Users usersList={usersList} />
+						<Users usersList={usersList} history={history} />
 					</Route>
 					<Route exact path="/users/me">
 						<SingleUser activeUser={activeUser} />
@@ -189,7 +190,9 @@ const App = () => {
 							history={history}
 						/>
 					</Route>
-
+					<Route exact path="/adminportal">
+						<AdminPortal activeUser={activeUser} />
+					</Route>
 					<Route path="/payment">
 						<Payment
 							productList={productList}

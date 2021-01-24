@@ -13,3 +13,4 @@ export { default as SingleOrder } from "./SingleOrder";
 export { default as Payment } from "./Payment";
 export { default as Users } from "./Users";
 export { default as SingleUser } from "./SingleUser";
+export { default as AdminPortal } from "./AdminPortal";
