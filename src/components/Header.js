@@ -71,6 +71,7 @@ const Header = (props) => {
     setIsLoggedIn(false)
     clearToken()
     setActiveUser({})
+    history.push('/login')
   }
 
   return (

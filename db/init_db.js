@@ -48,13 +48,13 @@ async function buildTables() {
       CREATE TABLE orders(
         id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
         status VARCHAR(255) DEFAULT 'created',
-        "userId" INTEGER REFERENCES users(id),
+        "userId" uuid REFERENCES users(id),
         "datePlaced" DATE
       );
       CREATE TABLE order_products(
         id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
-        "productId" INTEGER REFERENCES products(id),
-        "orderId" INTEGER REFERENCES orders(id),
+        "productId" uuid REFERENCES products(id),
+        "orderId" uuid REFERENCES orders(id),
         price INTEGER NOT NULL ,
         quantity INTEGER DEFAULT 1
         );

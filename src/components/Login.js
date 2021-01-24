@@ -29,7 +29,7 @@ function Login(props) {
         )
       }
       setIsLoggedIn(true)
-      setMessage('Currently Logged In')
+      // setMessage('Currently Logged In')
       history.push('/')
     } catch (error) {
       setErrorMessage('User name or password is incorrect/ user not registered')
