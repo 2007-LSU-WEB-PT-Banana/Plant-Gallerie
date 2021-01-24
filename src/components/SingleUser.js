@@ -1,24 +1,19 @@
 import React from "react";
+import "./Users.css";
 import { Avatar } from "@material-ui/core";
 
-const SingleUser = (props) => {
+const Users = (props) => {
 	const { activeUser } = props;
-
-	let firstInitial = activeUser.firstName.substring(0, 1) || "J";
-	let lastInitial = activeUser.lastName.substring(0, 1) || "D";
-
 	return (
 		<>
-			<h1 className="productsHeader">Account Details</h1>
+			<h1 className="productsHeader">Account</h1>
 			<div className="user">
 				<div id="modal" className="usersCard" key={activeUser.id}>
-					{activeUser ? (
-						<Avatar alt="avatar" src={activeUser.imageURL}>
-							{firstInitial + " " + lastInitial}
-						</Avatar>
-					) : (
-						""
-					)}
+					<Avatar alt="avatar" src={activeUser.imageURL}>
+						{activeUser.firstName.charAt(0) +
+							" " +
+							activeUser.lastName.charAt(0)}
+					</Avatar>
 					<p>First Name: {activeUser.firstName}</p>
 					<p>Last Name: {activeUser.lastName}</p>
 					<p>Email: {activeUser.email}</p>
@@ -30,4 +25,4 @@ const SingleUser = (props) => {
 	);
 };
 
-export default SingleUser;
+export default Users;
