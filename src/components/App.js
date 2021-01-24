@@ -21,7 +21,7 @@ import {
 	Payment,
 	Cart,
 	Users,
-	SingleUser
+	SingleUser,
 } from "./index";
 
 const App = () => {
@@ -35,7 +35,7 @@ const App = () => {
 	const [activeUser, setActiveUser] = useState("");
 	const [orderId, setOrderId] = useState("");
 	const [usersList, setUsersList] = useState([]);
-	const [isAdmin, setIsAdmin] = useState('')
+	const [isAdmin, setIsAdmin] = useState("");
 	const [grandTotal, setGrandTotal] = useState(0);
 
 	useEffect(() => {
@@ -49,10 +49,10 @@ const App = () => {
 	}, []);
 
 	useEffect(() => {
-		fetchAPI(BASE_URL + '/products')
+		fetchAPI(BASE_URL + "/products")
 			.catch(console.error)
 			.then((data) => {
-				console.log("this is data", data)
+				console.log("this is data", data);
 				data.map((product) => {
 					let newPrice = product.price / 100;
 					product.price = newPrice;
@@ -75,13 +75,14 @@ const App = () => {
 		if (activeUser) {
 			fetchAPI(BASE_URL + `/orders/cart/${activeUser.id}`)
 				.then((data) => {
-					data[0].map((product) => {
+					console.log("the data from the UseEffect is", data);
+					data.openOrdersWithProduct[0].map((product) => {
 						let newPrice = product.price / 100;
 						product.price = newPrice;
 						total = newPrice * product.quantity + total;
 					});
-					setCartData(data[0]);
-					setOrderId(data[0][0].orderId);
+					setCartData(data.openOrdersWithProduct[0]);
+					setOrderId(data.openOrders[0].id);
 					setGrandTotal(total);
 				})
 				.catch(console.error);
@@ -92,13 +93,13 @@ const App = () => {
 	console.log("the order id is:", orderId);
 
 	useEffect(() => {
-			fetchAPI(BASE_URL + "/users")
-				.then((data) => {
-					setUsersList(data);
-					console.log(data);
-				})
-				.catch(console.error);
-		}, []);
+		fetchAPI(BASE_URL + "/users")
+			.then((data) => {
+				setUsersList(data);
+				console.log(data);
+			})
+			.catch(console.error);
+	}, []);
 
 	console.log("the active user is", activeUser);
 	console.log("the active product is", activeProduct);
@@ -174,8 +175,7 @@ const App = () => {
 						<Users usersList={usersList} />
 					</Route>
 					<Route exact path="/users/me">
-						<SingleUser 
-						activeUser={activeUser}/>
+						<SingleUser activeUser={activeUser} />
 					</Route>
 					<Route path="/cart">
 						<Cart
