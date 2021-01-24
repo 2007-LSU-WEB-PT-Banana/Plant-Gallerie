@@ -4,7 +4,7 @@ const bcrypt = require("bcrypt");
 const { isUuid, uuid } = require("uuidv4");
 
 const DB_NAME = "plantgallery";
-//const DB_NAME = "plantgallery";
+
 const DB_URL =
 	process.env.DATABASE_URL || `postgres://localhost:5432/${DB_NAME}`;
 const client = new Client(DB_URL, { username: "postgres" });
@@ -542,6 +542,52 @@ const updateOrderProduct = async (orderId, { productId, price, quantity }) => {
 	}
 };
 
+const findOrderProductsToDelete = async (productId) => {
+	console.log("beginning findOrderProductToDelete");
+	try {
+		const {
+			rows: [orderProducts],
+		} = await client.query(
+			`
+      SELECT order_products.id, "productId", "orderId", status
+      FROM order_products, orders
+      WHERE "productId"=$1
+      RETURNING *;
+    `,
+			[productId]
+		);
+		console.log("the order_products are", orderProducts);
+		const orders = await Promise.all(
+			orderProducts.map((orderProduct) => {
+				if (orderProduct.status !== completed) {
+					destroyAllOrderProductsById(orderProduct.id);
+				}
+			})
+		);
+		return orders;
+	} catch (error) {
+		throw error;
+	}
+};
+
+const destroyAllOrderProductsById = async (orderProductId) => {
+	try {
+		const {
+			rows: [orderProduct],
+		} = await client.query(
+			`
+      DELETE FROM order_products
+      WHERE id=$1
+      RETURNING *; 
+    `,
+			[orderProductId]
+		);
+		return { message: "Order Products have been deleted" };
+	} catch (error) {
+		throw error;
+	}
+};
+
 const destroyOrderProduct = async (productId, orderId) => {
 	console.log("the id is ", productId);
 	try {
@@ -598,4 +644,5 @@ module.exports = {
 	addProductsToOrder,
 	updateOrderProduct,
 	destroyOrderProduct,
+	findOrderProductsToDelete,
 };

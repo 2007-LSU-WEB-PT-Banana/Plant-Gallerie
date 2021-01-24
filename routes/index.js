@@ -20,6 +20,7 @@ const {
 	getUser,
 	addProductsToOrder,
 	updateOrderProduct,
+	findOrderProductsToDelete,
 	updateOrder,
 	cancelOrder,
 	completeOrder,
@@ -264,6 +265,21 @@ apiRouter.post("/orders/:orderId/products", async (req, res, next) => {
 		);
 		console.log("the changed order is", changedOrder);
 		res.send(changedOrder);
+	} catch (error) {
+		throw error;
+	}
+});
+
+apiRouter.delete("/products/:productId", async (req, res, next) => {
+	try {
+		const user = await getUserById(req.body.id);
+
+		if (user.isAdmin) {
+			const deletedProducts = await findOrderProductsToDelete(req.params.id);
+			res.send(deletedProducts);
+		} else {
+			res.send({ message: "You must be an admin to delete products" });
+		}
 	} catch (error) {
 		throw error;
 	}
