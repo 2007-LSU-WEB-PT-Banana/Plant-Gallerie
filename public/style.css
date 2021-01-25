@@ -243,6 +243,11 @@ main {
 	border: 2px solid maroon;
 }
 
+.adminError {
+	font-size: 30px;
+	text-align: center;
+}
+
 .backToAdmin {
 	background-color: #607848;
 	padding: 10px;

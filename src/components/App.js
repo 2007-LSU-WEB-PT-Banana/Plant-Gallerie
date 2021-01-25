@@ -25,6 +25,7 @@ import {
 	AdminPortal,
 	AddProduct,
 	SingleUserAdmin,
+	AddSingleUser,
 } from "./index";
 
 const App = () => {
@@ -56,7 +57,6 @@ const App = () => {
 		fetchAPI(BASE_URL + "/products")
 			.catch(console.error)
 			.then((data) => {
-				console.log("this is data", data);
 				data.map((product) => {
 					let newPrice = product.price / 100;
 					product.price = newPrice;
@@ -68,7 +68,6 @@ const App = () => {
 	useEffect(() => {
 		getActiveUser()
 			.then((data) => {
-				console.log("this is singleuser", data);
 				setActiveUser(data);
 			})
 			.catch(console.error);
@@ -92,21 +91,13 @@ const App = () => {
 		}
 	}, [activeUser]);
 
-	console.log("The cart data is", cartData);
-	console.log("the order id is:", orderId);
-	console.log("the user to update is", userToUpdate);
-
 	useEffect(() => {
 		fetchAPI(BASE_URL + "/users")
 			.then((data) => {
 				setUsersList(data);
-				console.log(data);
 			})
 			.catch(console.error);
 	}, []);
-
-	console.log("the active user is", activeUser);
-	console.log("the active product is", activeProduct);
 
 	return (
 		<>
@@ -208,6 +199,13 @@ const App = () => {
 							setProductList={setProductList}
 						/>
 					</Route>
+					<Route exact path="/users/add">
+						<AddSingleUser
+							history={history}
+							setUsersList={setUsersList}
+							activeUser={activeUser}
+						/>
+					</Route>
 					<Route exact path={`/users/:userId`}>
 						<SingleUserAdmin
 							userToUpdate={userToUpdate}
@@ -216,6 +214,7 @@ const App = () => {
 							setUsersList={setUsersList}
 						/>
 					</Route>
+
 					<Route path="/payment">
 						<Payment
 							productList={productList}

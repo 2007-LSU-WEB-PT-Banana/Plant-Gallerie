@@ -1,50 +1,52 @@
 import React, { useState } from "react";
-import "./SingleUserAdmin.css";
+// import "./SingleUserAdmin.css";
 import { fetchAPI, BASE_URL } from "../api";
 
-const SingleUserAdmin = (props) => {
-	const { userToUpdate, activeUser, history, setUsersList } = props;
+const AddSingleUser = (props) => {
+	const { activeUser, history, setUsersList } = props;
 
 	const [firstName, setFirstName] = useState("");
 	const [lastName, setLastName] = useState("");
-	const [imageURL, setImageURL] = useState("");
 	const [username, setUsername] = useState("");
 	const [isAdmin, setIsAdmin] = useState(false);
 	const [email, setEmail] = useState("");
+	const [password, setPassword] = useState("");
 	const [message, setMessage] = useState("");
 
 	function backToAdminPortal() {
 		history.push("/adminportal");
 	}
 
-	async function updateUserProfile(event) {
+	async function addNewUser(event) {
 		event.preventDefault();
 
 		const sendData = {
-			userId: userToUpdate.id,
 			firstName: firstName,
 			lastName: lastName,
 			username: username,
 			email: email,
-			imageURL: imageURL,
 			isAdmin: isAdmin,
+			password: password,
+			imageURL: "text",
 		};
+		console.log("the sendData is", sendData);
 
-		console.log("the udpated user info being sent is", sendData);
-		if (firstName && lastName && email && username && isAdmin) {
+		if (firstName && lastName && email && username && password) {
 			try {
+				console.log("inside the register user try");
 				const updatedUser = await fetchAPI(
-					BASE_URL + "/users/" + userToUpdate.id,
-					"PATCH",
+					BASE_URL + "/register",
+					"POST",
 					sendData
 				);
-				if (updatedUser.id) {
-					setMessage("Successfully updated");
+				console.log("the updatedUser is", updatedUser);
+				if (updatedUser.user.id) {
+					setMessage("Successfully added");
 					setFirstName("");
 					setLastName("");
 					setEmail("");
 					setUsername("");
-					setImageURL("");
+					setPassword("");
 					setIsAdmin(false);
 				}
 
@@ -54,7 +56,7 @@ const SingleUserAdmin = (props) => {
 				setMessage(error);
 			}
 		} else {
-			setMessage("Please fill in all fields to submit a new product");
+			setMessage("Please fill in all fields to add a new user");
 		}
 	}
 
@@ -65,42 +67,37 @@ const SingleUserAdmin = (props) => {
 					<button className="backToAdmin" onClick={backToAdminPortal}>
 						Back to Admin Portal
 					</button>
-					<h1 className="updateUserProfile">Update User Profile</h1>
+					<h1 className="updateUserProfile">Add New User</h1>
 					<h5 className="updateUserMessage">{message}</h5>
 					<form className="updateUserForm" id="updateUserForm">
 						<label>First Name</label>
 						<input
 							type="text"
-							placeholder={userToUpdate.firstName}
 							value={firstName}
 							onChange={(event) => setFirstName(event.target.value)}
 						></input>
 						<label>Last Name</label>
 						<input
 							type="text"
-							placeholder={userToUpdate.lastName}
 							value={lastName}
 							onChange={(event) => setLastName(event.target.value)}
 						></input>
 						<label>Username</label>
 						<input
 							type="text"
-							placeholder={userToUpdate.username}
 							value={username}
 							onChange={(event) => setUsername(event.target.value)}
+						></input>
+						<label>Password</label>
+						<input
+							type="text"
+							value={password}
+							onChange={(event) => setPassword(event.target.value)}
 						></input>
 						<label>Email Address</label>
 						<input
 							type="text"
-							placeholder={userToUpdate.email}
 							value={email}
-							onChange={(event) => setEmail(event.target.value)}
-						></input>
-						<label>User Picture</label>
-						<input
-							type="text"
-							placeholder="Enter imageURL - include https://www. at the beginning"
-							value={imageURL}
 							onChange={(event) => setEmail(event.target.value)}
 						></input>
 						<label>Set User as Site Administrator?</label>
@@ -115,20 +112,16 @@ const SingleUserAdmin = (props) => {
 								No, do not set as site administrator
 							</option>
 						</select>
-						<button className="backToAdmin" onClick={updateUserProfile}>
-							Submit Changes
+						<button className="backToAdmin" onClick={addNewUser}>
+							Add New User
 						</button>
 					</form>
 				</>
 			) : (
-				<>
-					<div className="adminError">
-						<h1>You must be an administrator to access this page</h1>;
-					</div>
-				</>
+				<h1>You must be an administrator to access this page</h1>
 			)}
 		</>
 	);
 };
 
-export default SingleUserAdmin;
+export default AddSingleUser;
