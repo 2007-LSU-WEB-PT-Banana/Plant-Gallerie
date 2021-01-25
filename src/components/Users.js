@@ -21,7 +21,13 @@ const { usersList } = props;
 					return (
 						<div id="modal" className="users" key={id}>
 							<div className="usersCard">
-								<img alt="profile-image" className="users" src={imageURL}></img>
+								{imageURL ? (
+									<img alt="profile-image" className="users" src={imageURL} />
+								) : (
+									<Avatar alt="avatar" src={imageURL}>
+										{firstName.charAt(0) + " " + lastName.charAt(0)}
+									</Avatar>
+								)}
 								<p>Id: {id}</p>
 								<p>First Name: {firstName}</p>
 								<p>Last Name: {lastName}</p>

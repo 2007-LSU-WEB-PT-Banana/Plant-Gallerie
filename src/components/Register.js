@@ -2,6 +2,7 @@ import Axios from 'axios'
 import React, { useState } from 'react'
 import { Link, useHistory } from 'react-router-dom'
 import { NewUser } from '../api/index'
+import { Avatar } from "@material-ui/core";
 
 
 function Register(props) {
@@ -16,7 +17,6 @@ function Register(props) {
   	const [email, setEmail] = useState('')
   	const [password, setPassword] = useState('')
    	const [loading, setLoading] = useState(false);
-	// const [image, setImage] = useState("");
 
 
 
