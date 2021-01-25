@@ -35,7 +35,6 @@ const App = () => {
 	const [activeUser, setActiveUser] = useState("");
 	const [orderId, setOrderId] = useState("");
 	const [usersList, setUsersList] = useState([]);
-	const [isAdmin, setIsAdmin] = useState('')
 	const [grandTotal, setGrandTotal] = useState(0);
 
 	useEffect(() => {
@@ -168,7 +167,8 @@ const App = () => {
 						/>
 					</Route>
 					<Route exact path="/register">
-						<Register setIsLoggedIn={setIsLoggedIn} />
+						<Register 
+						setIsLoggedIn={setIsLoggedIn} />
 					</Route>
 					<Route exact path="/users">
 						<Users usersList={usersList} />

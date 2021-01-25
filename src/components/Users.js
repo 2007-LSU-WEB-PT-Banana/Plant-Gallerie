@@ -19,23 +19,16 @@ const { usersList } = props;
 						isAdmin,
 					} = users;
 					return (
-						<div id="modal" className="usersCard" key={id}>
-							<p>
-								<Avatar
-									alt="avatar"
-									src={imageURL}
-								>
-									{firstName.charAt(0) +
-										" " +
-										lastName.charAt(0)}
-								</Avatar>
-							</p>
-							<p>Id: {id}</p>
-							<p>First Name: {firstName}</p>
-							<p>Last Name: {lastName}</p>
-							<p>Email: {email}</p>
-							<p>User Name: {username}</p>
-							<p>Administrator: {isAdmin}</p>
+						<div id="modal" className="users" key={id}>
+							<div className="usersCard">
+								<img alt="profile-image" className="users" src={imageURL}></img>
+								<p>Id: {id}</p>
+								<p>First Name: {firstName}</p>
+								<p>Last Name: {lastName}</p>
+								<p>Email: {email}</p>
+								<p>User Name: {username}</p>
+								<p>Administrator: {isAdmin}</p>
+							</div>
 						</div>
 					);
 				})}

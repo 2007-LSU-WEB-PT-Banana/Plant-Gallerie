@@ -48,13 +48,6 @@ const Header = (props) => {
     history.push('/')
   }
 
-	const handleSignOut = () => {
-		clearToken();
-		setIsLoggedIn(false);
-		setActiveUser({});
-		setCartData([]);
-		history.push("/");
-	};
 
 	useEffect(() => {
 		const mediaQuery = window.matchMedia("(max-width: 812px)");

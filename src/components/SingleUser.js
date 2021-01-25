@@ -9,9 +9,8 @@ const Users = (props) => {
 			<h1 className="productsHeader">Account</h1>
 			<div className="user">
 				<div id="modal" className="usersCard" key={activeUser.id}>
-					<Avatar alt="avatar" src={activeUser.imageURL}>
-						{activeUser.firstName.charAt(0) + " " + activeUser.lastName.charAt(0)}
-					</Avatar>
+					<img alt="profile-image" src={activeUser.imageURL}>
+					</img>
 					<p>First Name: {activeUser.firstName}</p>
 					<p>Last Name: {activeUser.lastName}</p>
 					<p>Email: {activeUser.email}</p>

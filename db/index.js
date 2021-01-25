@@ -11,37 +11,37 @@ const client = new Client(DB_URL, { username: 'postgres' })
 
 //this function is working - do not edit this code!
 const createUser = async ({
-  firstName,
-  lastName,
-  email,
-  imageURL,
-  username,
-  password,
+	firstName,
+	lastName,
+	imageURL,
+	email,
+	username,
+	password,
 }) => {
-  try {
-    console.log('creating users')
+	try {
+		console.log("creating users");
 
-    const {
-      rows: [user],
-    } = await client.query(
-      `
+		const {
+			rows: [user],
+		} = await client.query(
+			`
     INSERT INTO users("firstName","lastName" ,email,"imageURL", username , password )
     VALUES($1,$2,$3,$4,$5,$6)
     RETURNING *; 
     `,
-      [firstName, lastName, email, imageURL, username, password],
-    )
+			[firstName, lastName, imageURL, email, username, password]
+		);
 
-    const hashPassword = await bcrypt.hash(user.password, 5)
+		const hashPassword = await bcrypt.hash(user.password, 5);
 
-    user.password = hashPassword
+		user.password = hashPassword;
 
-    return user
-  } catch (error) {
-    console.log('cant create user')
-    throw error
-  }
-}
+		return user;
+	} catch (error) {
+		console.log("cant create user");
+		throw error;
+	}
+};
 
 //this function is working - do not edit this code!
 const getAllUsers = async () => {
