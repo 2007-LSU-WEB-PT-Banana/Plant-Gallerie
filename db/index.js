@@ -117,6 +117,16 @@ const updateUser = async (
 	imageURL,
 	isAdmin
 ) => {
+	console.log(
+		"the passed in info is:",
+		userId,
+		firstName,
+		lastName,
+		email,
+		username,
+		imageURL,
+		isAdmin
+	);
 	try {
 		const {
 			rows: [updatedUser],

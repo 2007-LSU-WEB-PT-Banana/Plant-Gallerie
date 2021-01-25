@@ -33,6 +33,10 @@ const SingleProduct = (props) => {
 		setCount(newCount);
 	}
 
+	async function deleteProduct() {
+		history.goBack();
+	}
+
 	let match = -1;
 	match = cartData.findIndex((x) => x.id === activeProduct.id);
 
@@ -188,7 +192,7 @@ const SingleProduct = (props) => {
 						<h4>Administrator Actions</h4>
 						<p className="deleteMessage">
 							Warning: Clicking the button below will remove this item from the
-							website and cannot be undone!
+							website and any associated open orders and cannot be undone!
 						</p>
 						<button className="deleteProduct">Delete this Product</button>
 					</div>

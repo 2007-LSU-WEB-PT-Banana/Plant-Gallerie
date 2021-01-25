@@ -31,6 +31,7 @@ const {
 require("dotenv").config();
 const jwt = require("jsonwebtoken");
 const { token } = require("morgan");
+const { request } = require("express");
 const stripe = require("stripe")(`${process.env.REACT_APP_MYSKEY}`);
 
 const requireUser = (req, res, next) => {
@@ -185,16 +186,28 @@ apiRouter.get("/users/:id", async (req, res, next) => {
 });
 
 apiRouter.patch("/users/:userId", async (req, res, next) => {
-	const { firstName, lastName, email, username, imageURL, isAdmin } = req.body;
+	const {
+		adminId,
+		firstName,
+		lastName,
+		email,
+		username,
+		imageURL,
+		isAdmin,
+	} = req.body;
+	console.log("the req.body is", req.body);
+
+	//userID is who needs to get patched
+	//the adminID needs to be in the body so we can ensure the updater is an admin
 	try {
 		console.log("hit the update user route, getting userbyID");
 
-		const userToUpdate = await getUserById(req.params.id);
-		console.log("the user to update is", userToUpdate);
+		const requestor = await getUserById(adminId);
+		console.log("checking to see if user is admin", userToUpdate);
 
-		if (userToUpdate) {
+		if (requestor.isAdmin) {
 			const completedUpdate = await updateUser(
-				userToUpdate.id,
+				req.params.userId,
 				firstName,
 				lastName,
 				email,
@@ -203,9 +216,12 @@ apiRouter.patch("/users/:userId", async (req, res, next) => {
 				isAdmin
 			);
 			res.send(completedUpdate);
-		} else {
-			res.send({ message: "A user does not exist with that id" });
 		}
+		// } else {
+		// 	res.send({
+		// 		message: "You must be an administrator to perform this function",
+		// 	});
+		// }
 	} catch (error) {
 		throw error;
 	}
@@ -299,11 +315,18 @@ apiRouter.post("/orders/:orderId/products", async (req, res, next) => {
 });
 
 apiRouter.delete("/products/:productId", async (req, res, next) => {
+	console.log("the body is", req.body);
+	console.log("the product to delete is", req.params.productId);
 	try {
+		console.log("beginning get userbyID");
 		const user = await getUserById(req.body.id);
+		console.log("the user returned was", user);
 
 		if (user.isAdmin) {
-			const deletedProducts = await findOrderProductsToDelete(req.params.id);
+			const deletedProducts = await findOrderProductsToDelete(
+				req.params.productId
+			);
+			console.log("the deleted products are", deletedProducts);
 			res.send(deletedProducts);
 		} else {
 			res.send({ message: "You must be an admin to delete products" });
