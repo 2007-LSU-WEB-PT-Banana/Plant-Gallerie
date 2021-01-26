@@ -1,27 +1,45 @@
 import React, { useState } from 'react'
-import Chekout from './Chekout'
+
 import StripeCheckout from 'react-stripe-checkout'
 import axios from 'axios'
 import { toast } from 'react-toastify'
+import SingleOrder from './SingleOrder'
+import './Payment.css'
 
 toast.configure()
 
 function Payment(props) {
-  const [product, setProduct] = useState({
-    name: 'plant name',
-    price: 10,
-    productBy: 'arman',
-  })
+  const {
+    cartData,
+    history,
+    setCartData,
+    isLoggedIn,
+    grandTotal,
+    setGrandTotal,
+    orderId,
+    activeUser,
+  } = props
 
-  async function handleToken(token, adresses) {
+  const completeOrder = () => {
+    console.log('hello')
+  }
+
+  const cancelOrder = () => {
+    console.log('cancelling', cartData)
+  }
+
+  async function handleToken(token, adresses, grandTotal) {
+    console.log(grandTotal)
     console.log({
       token,
       adresses,
+      cartData,
     })
     const result = await axios.post('/api/payment', {
       token,
-      product,
+      grandTotal,
     })
+    console.log(';this is result', result)
     const { status } = result.data
     console.log('this is status', status)
     if (status == 'success') {
@@ -33,17 +51,31 @@ function Payment(props) {
   }
 
   return (
-    <div>
+    <div className="stripe-header">
+      <SingleOrder
+        cartData={cartData}
+        history={history}
+        setCartData={setCartData}
+        isLoggedIn={isLoggedIn}
+        grandTotal={grandTotal}
+        setGrandTotal={setGrandTotal}
+        orderId={orderId}
+        activeUser={activeUser}
+      />
       <StripeCheckout
         stripeKey={process.env.REACT_APP_MYPKEY}
         token={handleToken}
         billingAddress
         shippingAddress
-        amount={product.price * 100}
-        name={product.name}
+        amount={grandTotal * 100}
       >
-        <button>BUY product for {product.price}</button>
+        <button onClick={completeOrder} className="button-pay">
+          BUY product for {grandTotal}
+        </button>
       </StripeCheckout>
+      <button onClick={cancelOrder} className="button-pay">
+        Cancel Order
+      </button>
     </div>
   )
 }

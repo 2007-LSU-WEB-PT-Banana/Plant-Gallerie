@@ -25,7 +25,6 @@ const {
   updateOrder,
   cancelOrder,
   completeOrder,
-  getOrderByORDERID,
 } = require('../db/index')
 
 require('dotenv').config()
@@ -77,17 +76,13 @@ apiRouter.get('/users', async (req, res, next) => {
 
 apiRouter.post('/login', async (req, res, next) => {
   const { username, password } = req.body
-
-  if (!username || !password) {
-    throw 'Please enter a username and password'
-  }
+  const user = await getUserByUsername(req.body.username)
+  console.log('user', user)
+  await bcrypt.compare(user.password, req.body.password)
+  console.log(password)
 
   try {
-    const user = await getUser(req.body)
-
-    if (user && user.password == password) {
-      await bcrypt.compare(password, user.password)
-
+    if (user && user.password && req.body.password == password) {
       const token = jwt.sign(
         {
           id: user.id,
@@ -101,10 +96,7 @@ apiRouter.post('/login', async (req, res, next) => {
 
       delete user.password
 
-      res.send({
-        user: user,
-        token: token,
-      })
+      res.send({ token })
     } else {
       throw 'Please re-enter your username and password'
     }
@@ -126,7 +118,7 @@ apiRouter.post('/register', async (req, res, next) => {
     password,
     isAdmin,
   } = req.body
-
+  const hashPassword = await bcrypt.hash(password, 5)
   try {
     const _user = await getUserByUsername(username)
     if (_user) {
@@ -141,19 +133,12 @@ apiRouter.post('/register', async (req, res, next) => {
       imageURL,
       email,
       username,
-      password,
+      password: hashPassword,
     })
-
-    if (user.password < 8) {
-      throw 'Password should 8 or more characters'
-    }
-    delete user.password
 
     await createOrder({ status: 'created', userId: user.id, products: [] })
 
-    res.send({
-      user: user,
-    })
+    res.send(user)
   } catch (error) {
     next(error)
   }
@@ -398,9 +383,10 @@ apiRouter.post('/payment', async (req, res) => {
   console.log(req.body)
 
   try {
-    const { product, token } = req.body
-    console.log('product', product)
-    console.log('this is price', product.price)
+    const { grandtotal, token } = req.body
+    console.log('this is req.body', req.body)
+    console.log('this is total', grandtotal)
+
     const customer = await stripe.customers.create({
       email: token.email,
       source: token.id,
@@ -409,11 +395,11 @@ apiRouter.post('/payment', async (req, res) => {
     const idempotencyKey = uuid()
     const charge = await stripe.charges.create(
       {
-        amount: product.price * 100,
+        amount: grandtotal * 100,
         currency: 'usd',
         customer: customer.id,
         receipt_email: token.email,
-        description: `Purchased the ${product.productName}`,
+        description: `Purchased the  products for ${grandtotal}`,
         shipping: {
           name: token.card.name,
           address: {

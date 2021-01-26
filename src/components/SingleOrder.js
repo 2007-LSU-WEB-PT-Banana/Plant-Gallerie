@@ -22,24 +22,6 @@ const SingleOrder = (props) => {
   }
   console.log('on the cart page, the active user is', activeUser)
 
-  //	this function will need to be reworked depending on how the backend ends up
-  // async function setOrderData() {
-  // 	try {
-  // 		let sendData = {
-  // 			userId: activeUser,
-  // 		};
-
-  // 		let orderInfo = await fetchAPI(
-  // 			BASE_URL + "/orders/cart",
-  // 			"GET",
-  // 			sendData
-  // 		);
-  // 		setCartData(); //something goes here
-  // 	} catch (error) {
-  // 		console.error(error);
-  // 	}
-  // }
-
   async function removeItem(idx) {
     if (activeUser) {
       let sendData = { productId: cartData[idx].id }
@@ -128,7 +110,7 @@ const SingleOrder = (props) => {
       </div>
 
       <div className="cartCardWrapper">
-        {cartData.map((product, index) => {
+        { cartData.map((product, index) => {
           return (
             <div className="cartCard" key={index}>
               <img
@@ -150,7 +132,6 @@ const SingleOrder = (props) => {
                 ></input>
               </span>
               <p className="productPrice">Price: ${product.price}</p>
-              {/* these buttons will need to depend on whether there is an activeUser */}
               <button
                 className="updateQty"
                 onClick={(event) => {
@@ -172,7 +153,7 @@ const SingleOrder = (props) => {
             </div>
           )
         })}
-      </div>
+      </div> 
     </div>
   )
 }
