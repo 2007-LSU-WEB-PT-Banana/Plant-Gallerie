@@ -622,6 +622,75 @@ async function getOrderProductsByOrderId(orderId) {
   }
 }
 
+const updateOrder = async (orderId, { status, userId = null }) => {
+  console.log('inisde update order')
+  console.log('this is orderId', orderId)
+  console.log('this is status', status)
+  console.log('this is userId', userId)
+
+  const orderToBeUpdtaed = getOrderById(orderId)
+  orderToBeUpdtaed.status = status
+  orderToBeUpdtaed.userId = userId
+  console.log('this is status to be updatted', orderToBeUpdtaed.status)
+  console.log('this is userId to be updated', orderToBeUpdtaed.userId)
+  try {
+    const {
+      rows: [updatedOrder],
+    } = await client.query(
+      `
+    UPDATE orders
+    SET status=$2,
+    "userId"=$3
+    WHERE id=$1
+    RETURNING *;
+  `,
+      [orderId, orderToBeUpdtaed.status, orderToBeUpdtaed.userId],
+    )
+    console.log('this is updateOrder', updatedOrder)
+    return updatedOrder
+  } catch (error) {
+    throw error
+  }
+}
+
+const completeOrder = async (orderId) => {
+  try {
+    const orderToBeCompleted = await getOrderById(orderId)
+    console.log('this is order to be complete id', orderToBeCompleted.id)
+    const complete = updateOrder(orderId, {
+      status: 'completed',
+    })
+    console.log('complete', complete)
+    return complete
+  } catch (error) {
+    throw error
+  }
+}
+
+const cancelOrder = async (orderId) => {
+  console.log()
+  const orderToBeCancelled = await getOrderById(orderId)
+  console.log('this is order required', orderToBeCancelled)
+  const orderTocan = await updateOrder(orderId, { status: 'cancelled' })
+  console.log('updated order', orderTocan)
+
+  try {
+    const {
+      rows: [cancel],
+    } = await client.query(
+      `
+    DELETE FROM orders
+    WHERE id=$1;
+    `,
+      [orderTocan.orderId],
+    )
+
+    return 'order is Cancelled'
+  } catch (error) {
+    throw error
+  }
+}
+
 module.exports = {
   client,
   createUser,
