@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./SingleUserAdmin.css";
 import { fetchAPI, BASE_URL } from "../api";
 
@@ -7,11 +7,18 @@ const SingleUserAdmin = (props) => {
 
 	const [firstName, setFirstName] = useState("");
 	const [lastName, setLastName] = useState("");
-	const [imageURL, setImageURL] = useState("");
 	const [username, setUsername] = useState("");
 	const [isAdmin, setIsAdmin] = useState(false);
 	const [email, setEmail] = useState("");
 	const [message, setMessage] = useState("");
+
+	useEffect(() => {
+		setFirstName(userToUpdate.firstName || "");
+		setLastName(userToUpdate.lastName || "");
+		setUsername(userToUpdate.username || "");
+		setIsAdmin(userToUpdate.isAdmin || false);
+		setEmail(userToUpdate.email || "");
+	}, []);
 
 	function backToAdminPortal() {
 		history.push("/adminportal");
@@ -21,17 +28,16 @@ const SingleUserAdmin = (props) => {
 		event.preventDefault();
 
 		const sendData = {
-			userId: userToUpdate.id,
+			adminId: activeUser.id,
 			firstName: firstName,
 			lastName: lastName,
 			username: username,
 			email: email,
-			imageURL: imageURL,
 			isAdmin: isAdmin,
 		};
 
 		console.log("the udpated user info being sent is", sendData);
-		if (firstName && lastName && email && username && isAdmin) {
+		if (firstName && lastName && email && username) {
 			try {
 				const updatedUser = await fetchAPI(
 					BASE_URL + "/users/" + userToUpdate.id,
@@ -44,7 +50,6 @@ const SingleUserAdmin = (props) => {
 					setLastName("");
 					setEmail("");
 					setUsername("");
-					setImageURL("");
 					setIsAdmin(false);
 				}
 
@@ -96,13 +101,7 @@ const SingleUserAdmin = (props) => {
 							value={email}
 							onChange={(event) => setEmail(event.target.value)}
 						></input>
-						<label>User Picture</label>
-						<input
-							type="text"
-							placeholder="Enter imageURL - include https://www. at the beginning"
-							value={imageURL}
-							onChange={(event) => setEmail(event.target.value)}
-						></input>
+
 						<label>Set User as Site Administrator?</label>
 						<select
 							id="isAdmin"

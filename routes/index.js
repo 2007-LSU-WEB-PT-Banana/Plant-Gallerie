@@ -186,15 +186,7 @@ apiRouter.get("/users/:id", async (req, res, next) => {
 });
 
 apiRouter.patch("/users/:userId", async (req, res, next) => {
-	const {
-		adminId,
-		firstName,
-		lastName,
-		email,
-		username,
-		imageURL,
-		isAdmin,
-	} = req.body;
+	const { adminId, firstName, lastName, email, username, isAdmin } = req.body;
 	console.log("the req.body is", req.body);
 
 	//userID is who needs to get patched
@@ -203,7 +195,6 @@ apiRouter.patch("/users/:userId", async (req, res, next) => {
 		console.log("hit the update user route, getting userbyID");
 
 		const requestor = await getUserById(adminId);
-		console.log("checking to see if user is admin", userToUpdate);
 
 		if (requestor.isAdmin) {
 			const completedUpdate = await updateUser(
@@ -212,16 +203,14 @@ apiRouter.patch("/users/:userId", async (req, res, next) => {
 				lastName,
 				email,
 				username,
-				imageURL,
 				isAdmin
 			);
 			res.send(completedUpdate);
+		} else {
+			res.send({
+				message: "You must be an administrator to perform this function",
+			});
 		}
-		// } else {
-		// 	res.send({
-		// 		message: "You must be an administrator to perform this function",
-		// 	});
-		// }
 	} catch (error) {
 		throw error;
 	}
