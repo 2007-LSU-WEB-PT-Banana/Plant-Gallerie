@@ -1,35 +1,38 @@
-const apiRouter = require('express').Router()
-const bcrypt = require('bcrypt')
-const { uuid } = require('uuidv4')
+const apiRouter = require("express").Router();
+const bcrypt = require("bcrypt");
+const { uuid } = require("uuidv4");
 
 const {
-  createProduct,
-  getProductById,
-  getAllProducts,
-  createUser,
-  getAllUsers,
-  getUserById,
-  getUserByUsername,
-  createOrder,
-  getOrdersByProduct,
-  getAllOrders,
-  getOrderById,
-  getCartByUser,
-  getOrderProductsById,
-  getOrdersByUser,
-  getUser,
-  addProductsToOrder,
-  updateOrderProduct,
-  updateOrder,
-  cancelOrder,
-  completeOrder,
-  getOrderByORDERID,
-} = require('../db/index')
+	createProduct,
+	getProductById,
+	getAllProducts,
+	createUser,
+	getAllUsers,
+	getUserById,
+	getUserByUsername,
+	createOrder,
+	getOrdersByProduct,
+	getAllOrders,
+	getOrderById,
+	getCartByUser,
+	getOrderProductsById,
+	getOrdersByUser,
+	getUser,
+	addProductsToOrder,
+	updateOrderProduct,
+	findOrderProductsToDelete,
+	updateUser,
+	updateOrder,
+	cancelOrder,
+	completeOrder,
+	getOrderByORDERID,
+} = require("../db/index");
 
-require('dotenv').config()
-const jwt = require('jsonwebtoken')
-const { token } = require('morgan')
-const stripe = require('stripe')(`${process.env.REACT_APP_MYSKEY}`)
+require("dotenv").config();
+const jwt = require("jsonwebtoken");
+const { token } = require("morgan");
+const { request } = require("express");
+const stripe = require("stripe")(`${process.env.REACT_APP_MYSKEY}`);
 
 const requireUser = (req, res, next) => {
 	if (!req.user) {
@@ -131,7 +134,6 @@ apiRouter.post("/register", async (req, res, next) => {
 			email,
 			username,
 			password,
-			isAdmin,
 		});
 
 		if (user.password < 8) {
@@ -180,6 +182,37 @@ apiRouter.get("/users/:id", async (req, res, next) => {
 		res.send(oneUser);
 	} catch (error) {
 		next(error);
+	}
+});
+
+apiRouter.patch("/users/:userId", async (req, res, next) => {
+	const { adminId, firstName, lastName, email, username, isAdmin } = req.body;
+	console.log("the req.body is", req.body);
+
+	//userID is who needs to get patched
+	//the adminID needs to be in the body so we can ensure the updater is an admin
+	try {
+		console.log("hit the update user route, getting userbyID");
+
+		const requestor = await getUserById(adminId);
+
+		if (requestor.isAdmin) {
+			const completedUpdate = await updateUser(
+				req.params.userId,
+				firstName,
+				lastName,
+				email,
+				username,
+				isAdmin
+			);
+			res.send(completedUpdate);
+		} else {
+			res.send({
+				message: "You must be an administrator to perform this function",
+			});
+		}
+	} catch (error) {
+		throw error;
 	}
 });
 
@@ -236,11 +269,15 @@ apiRouter.get("/products/:productId", async (req, res, next) => {
 
 //this route works - do not edit this code!
 apiRouter.get("/orders/cart/:userId", async (req, res, next) => {
-	try {
-		const user = await getUserById(req.params.userId);
+	console.log("the userID is", req.params.userId);
 
+	try {
+		console.log("beginning get UserById");
+		const user = await getUserById(req.params.userId);
+		console.log("finished getting user.  the result is", user);
 		if (user) {
 			const userOrders = await getCartByUser(user.id);
+			console.log("the userOrders are", userOrders);
 			res.send(userOrders);
 		} else {
 			res.send({ message: "there are no orders here" });
@@ -261,6 +298,28 @@ apiRouter.post("/orders/:orderId/products", async (req, res, next) => {
 		);
 		console.log("the changed order is", changedOrder);
 		res.send(changedOrder);
+	} catch (error) {
+		throw error;
+	}
+});
+
+apiRouter.delete("/products/:productId", async (req, res, next) => {
+	console.log("the body is", req.body);
+	console.log("the product to delete is", req.params.productId);
+	try {
+		console.log("beginning get userbyID");
+		const user = await getUserById(req.body.id);
+		console.log("the user returned was", user);
+
+		if (user.isAdmin) {
+			const deletedProducts = await findOrderProductsToDelete(
+				req.params.productId
+			);
+			console.log("the deleted products are", deletedProducts);
+			res.send(deletedProducts);
+		} else {
+			res.send({ message: "You must be an admin to delete products" });
+		}
 	} catch (error) {
 		throw error;
 	}
@@ -432,25 +491,22 @@ apiRouter.post("/payment", async (req, res) => {
 	}
 });
 
+apiRouter.delete("/order_products/:orderProductId", async (req, res, next) => {
+	const { orderProductId } = req.params.orderProductId;
 
-apiRouter.delete('/order_products/:orderProductId', async (req,res,next) =>{
-	const {orderProductId} = req.params.orderProductId;
+	try {
+		const user = await getUserById(id);
+		const userOrder = await getCartByUser(user);
+		const orderProduct = await getOrderProductById(orderProductId);
 
-	try{
-	const user = await getUserById(id);
-	const userOrder = await getCartByUser(user);
-	const orderProduct = await getOrderProductById(orderProductId);
-
-	if (orderProduct.orderId===userOrder.id) {
-		const deletedOrderProduct = await destroyOrderProduct(orderProduct.id)
-		res.send(deletedOrderProduct)
-	  } else {
-		res.send({message:'You must be the owner of this order to delete it'})
+		if (orderProduct.orderId === userOrder.id) {
+			const deletedOrderProduct = await destroyOrderProduct(orderProduct.id);
+			res.send(deletedOrderProduct);
+		} else {
+			res.send({ message: "You must be the owner of this order to delete it" });
 		}
-
-
-	} catch(error){
-		next (error)
+	} catch (error) {
+		next(error);
 	}
-})
+});
 module.exports = apiRouter;

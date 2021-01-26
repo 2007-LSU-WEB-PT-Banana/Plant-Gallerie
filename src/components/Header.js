@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
-import SearchIcon from '@material-ui/icons/Search'
-import PersonOutlineIcon from '@material-ui/icons/PersonOutline'
-import ShoppingCartIcon from '@material-ui/icons/ShoppingCart'
-import DehazeIcon from '@material-ui/icons/Dehaze'
-import SearchBar from 'material-ui-search-bar'
-import './Header.css'
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import SearchIcon from "@material-ui/icons/Search";
+import PersonOutlineIcon from "@material-ui/icons/PersonOutline";
+import ShoppingCartIcon from "@material-ui/icons/ShoppingCart";
+import DehazeIcon from "@material-ui/icons/Dehaze";
+import SearchBar from "material-ui-search-bar";
+import "./Header.css";
+import { AdminPortal } from "./index";
 
 const headerLink = {
-	marginRight: "35px",
 	justifyContent: "space-between",
 	fontWeight: "normal",
 	backgroundColor: "#c0c0c0",
@@ -23,31 +23,22 @@ const headerLink = {
 };
 
 const Header = (props) => {
-  const {
-    setIsLoggedIn,
-    history,
-    clearToken,
-    setActiveUser,
-    cartData,
-    isLoggedIn,
-    setCartData,
-    activeUser,
-    searchTerm,
-    setSearchTerm,
-    search,
-    setSearch,
-  } = props
-  const [isNavVisible, setIsNavVisible] = useState(true)
-  const [isSmallScreen, setIsSmallScreen] = useState(false)
-
-  const handleSignOut = () => {
-    clearToken()
-    setIsLoggedIn(false)
-    setActiveUser({})
-    setCartData([])
-    history.push('/')
-  }
-
+	const {
+		setIsLoggedIn,
+		history,
+		clearToken,
+		setActiveUser,
+		cartData,
+		isLoggedIn,
+		setCartData,
+		activeUser,
+		searchTerm,
+		setSearchTerm,
+		search,
+		setSearch,
+	} = props;
+	const [isNavVisible, setIsNavVisible] = useState(true);
+	const [isSmallScreen, setIsSmallScreen] = useState(false);
 
 	useEffect(() => {
 		const mediaQuery = window.matchMedia("(max-width: 812px)");
@@ -70,6 +61,14 @@ const Header = (props) => {
 		} else {
 			setIsSmallScreen(false);
 		}
+	};
+
+	const handleSignOut = () => {
+		clearToken();
+		setIsLoggedIn(false);
+		setActiveUser({});
+		setCartData([]);
+		history.push("/");
 	};
 
 	return (
@@ -98,35 +97,41 @@ const Header = (props) => {
 					<Link to="/search" className="header-link" style={headerLink}>
 						<SearchIcon className="header-searchIcon" />
 					</Link>
-					<Link to="/users" className="header-link" style={headerLink}>
-						All Users(Only Admin)
-					</Link>
-					<Link to="/login" className="header-link" style={headerLink}>
-						{!isLoggedIn ? (
-							<>
+					{activeUser.isAdmin ? (
+						<Link to="/adminportal" className="header-link" style={headerLink}>
+							Admin Portal
+						</Link>
+					) : (
+						""
+					)}
+					{!isLoggedIn ? (
+						<>
 							<div className="log-in">
 								<Link to="/login" className="header-link" style={headerLink}>
-									Login
+									Login/Register
 								</Link>
 							</div>
-							 <div className="register">
-               					<Link to="/register" className="header-link" style={headerLink}>
-                 					Register
-               					</Link>
-             				</div>
-			 				</>
-						) : (
-							<>
-								<Link to="/users/me" className="header-link" style={headerLink}>
-									My Account
-								</Link>
-								<h6 className="loginMessage">Welcome Back!</h6>
+						</>
+					) : (
+						<>
+							<div className="logOut">
+								<h6 className="logOut" style={headerLink}>
+									Not {activeUser.firstName}?
+								</h6>
 								<button className="logOut" onClick={handleSignOut}>
 									Log Out
 								</button>
-							</>
-						)}
-					</Link>
+							</div>
+						</>
+					)}
+					{isLoggedIn ? (
+						<Link to="/users/me" className="header-link" style={headerLink}>
+							My Account
+						</Link>
+					) : (
+						""
+					)}
+
 					<Link to="/cart" className="header-link" style={headerLink}>
 						<ShoppingCartIcon /> ({cartData.length})
 					</Link>

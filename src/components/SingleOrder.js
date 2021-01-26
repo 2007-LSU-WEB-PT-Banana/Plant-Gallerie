@@ -1,4 +1,3 @@
-import { SignalCellularNoSimOutlined } from "@material-ui/icons";
 import React, { useState, useEffect } from "react";
 import { BASE_URL, fetchAPI } from "../api";
 import "./SingleOrder.css";
@@ -105,9 +104,9 @@ const SingleOrder = (props) => {
 		setGrandTotal(newGrandTotal);
 	}
 
-  useEffect(() => {
-    findGrandTotal()
-  }, [cartData])
+	useEffect(() => {
+		findGrandTotal();
+	}, [cartData]);
 
 	return (
 		<div>
