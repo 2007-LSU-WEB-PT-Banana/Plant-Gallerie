@@ -1,7 +1,8 @@
 import React from 'react';
 
 const HousePlants = (props) => {
-  const { productList, setActiveProduct, history } = props;
+  const { productList, setActiveProduct, history, search,
+    setSearch, } = props;
 
 return (
   <>

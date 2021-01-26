@@ -25,6 +25,7 @@ function Payment(props) {
     const { status } = result.data
     console.log('this is status', status)
     if (status == 'success') {
+      console.log('problem us toast')
       toast('success! check email for detail', { type: 'success' })
     } else {
       toast('something went wrong', { type: 'error' })

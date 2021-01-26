@@ -1,6 +1,6 @@
 const apiRouter = require('express').Router()
 const bcrypt = require('bcrypt')
-const uuid = require('uuid/v4')
+const { uuid } = require('uuidv4')
 
 const {
   createProduct,
@@ -15,13 +15,23 @@ const {
   getAllOrders,
   getOrderById,
   getCartByUser,
-  getOrderProductsByOrderId,
+  getOrderProductsById,
+  getOrdersByUser,
   getUser,
+  addProductsToOrder,
+  updateOrderProduct,
+  findOrderProductsToDelete,
+  updateUser,
+  updateOrder,
+  cancelOrder,
+  completeOrder,
+  getOrderByORDERID,
 } = require('../db/index')
 
 require('dotenv').config()
 const jwt = require('jsonwebtoken')
 const { token } = require('morgan')
+const { request } = require('express')
 const stripe = require('stripe')(`${process.env.REACT_APP_MYSKEY}`)
 
 const requireUser = (req, res, next) => {
@@ -67,10 +77,9 @@ apiRouter.get('/users', async (req, res, next) => {
 
 apiRouter.post('/login', async (req, res, next) => {
   const { username, password } = req.body
-  console.log('this is req.body', req.body)
 
   if (!username || !password) {
-    throw 'u need user name and password'
+    throw 'Please enter a username and password'
   }
 
   try {
@@ -91,53 +100,59 @@ apiRouter.post('/login', async (req, res, next) => {
       )
 
       delete user.password
+
       res.send({
-        user,
-        token,
+        user: user,
+        token: token,
       })
     } else {
-      throw 'user required'
+      throw 'Please re-enter your username and password'
     }
   } catch (error) {
     throw error
   }
 })
 
+//this route works - do not edit this code!
 apiRouter.post('/register', async (req, res, next) => {
   console.log('here in register')
 
-  const { firstName, lastName, email, imageURL, username, password } = req.body
+  const {
+    firstName,
+    lastName,
+    email,
+    imageURL,
+    username,
+    password,
+    isAdmin,
+  } = req.body
 
-  console.log('here in register 1')
-  console.log(req.body, 'this is body')
   try {
-    console.log('here in register 6')
     const _user = await getUserByUsername(username)
-    console.log(_user, 'this is user')
     if (_user) {
-      console.log('inside user try')
       next({
         name: 'UserExistsError',
         message: 'A user by that username already exists',
       })
     }
-    console.log('here in register 7')
     const user = await createUser({
       firstName,
       lastName,
-      email,
       imageURL,
+      email,
       username,
       password,
     })
 
     if (user.password < 8) {
-      alert('Password should 8 or more characters')
+      throw 'Password should 8 or more characters'
     }
-
     delete user.password
+
+    await createOrder({ status: 'created', userId: user.id, products: [] })
+
     res.send({
-      user,
+      user: user,
     })
   } catch (error) {
     next(error)
@@ -153,13 +168,11 @@ apiRouter.get('/users/me', async (req, res, next) => {
     const decoded = jwt.decode(token, `${process.env.JWT_SECRET}`)
 
     req.userData = decoded
-    console.log('this is username', req.userData.username)
-    console.log(req.userData)
+
     const userId = req.userData.id
-    console.log(userId)
 
     const user = await getUserById(userId)
-    console.log(user)
+
     res.send({ user })
   } catch (error) {
     next(error)
@@ -175,6 +188,37 @@ apiRouter.get('/users/:id', async (req, res, next) => {
     res.send(oneUser)
   } catch (error) {
     next(error)
+  }
+})
+
+apiRouter.patch('/users/:userId', async (req, res, next) => {
+  const { adminId, firstName, lastName, email, username, isAdmin } = req.body
+  console.log('the req.body is', req.body)
+
+  //userID is who needs to get patched
+  //the adminID needs to be in the body so we can ensure the updater is an admin
+  try {
+    console.log('hit the update user route, getting userbyID')
+
+    const requestor = await getUserById(adminId)
+
+    if (requestor.isAdmin) {
+      const completedUpdate = await updateUser(
+        req.params.userId,
+        firstName,
+        lastName,
+        email,
+        username,
+        isAdmin,
+      )
+      res.send(completedUpdate)
+    } else {
+      res.send({
+        message: 'You must be an administrator to perform this function',
+      })
+    }
+  } catch (error) {
+    throw error
   }
 })
 
@@ -229,31 +273,16 @@ apiRouter.get('/products/:productId', async (req, res, next) => {
   }
 })
 
-apiRouter.post('/createproduct', async (req, res, next) => {
-  const { name, description, price, imageURL, inStock, category } = req.body
-  console.log('The req.body is', req.body)
-  try {
-    const newProduct = await createProduct({
-      name,
-      description,
-      price,
-      imageURL,
-      inStock,
-      category,
-    })
-    res.send(newProduct)
-  } catch (error) {
-    throw error
-  }
-})
+apiRouter.get('/orders/cart/:userId', async (req, res, next) => {
+  console.log('the userID is', req.params.userId)
 
-//this route works - do not edit this code!
-apiRouter.get('/orders/cart', async (req, res, next) => {
   try {
-    const user = await getUserById(req.body.userId)
-
+    console.log('beginning get UserById')
+    const user = await getUserById(req.params.userId)
+    console.log('finished getting user.  the result is', user)
     if (user) {
       const userOrders = await getCartByUser(user.id)
+      console.log('the userOrders are', userOrders)
       res.send(userOrders)
     } else {
       res.send({ message: 'there are no orders here' })
@@ -263,16 +292,72 @@ apiRouter.get('/orders/cart', async (req, res, next) => {
   }
 })
 
+//this route works - do not edit this code!
+apiRouter.post('/orders/:orderId/products', async (req, res, next) => {
+  const productList = [req.body]
+
+  try {
+    const changedOrder = await addProductsToOrder(
+      req.params.orderId,
+      productList,
+    )
+    console.log('the changed order is', changedOrder)
+    res.send(changedOrder)
+  } catch (error) {
+    throw error
+  }
+})
+
+apiRouter.delete('/products/:productId', async (req, res, next) => {
+  try {
+    console.log('beginning get userbyID')
+    const user = await getUserById(req.body.id)
+    console.log('the user returned was', user)
+
+    if (user.isAdmin) {
+      const deletedProducts = await findOrderProductsToDelete(
+        req.params.productId,
+      )
+      console.log('the deleted products are', deletedProducts)
+      res.send(deletedProducts)
+    } else {
+      res.send({ message: 'You must be an admin to delete products' })
+    }
+  } catch (error) {
+    throw error
+  }
+})
+
+apiRouter.delete('/order_products/:orderId', async (req, res, next) => {
+  try {
+    const changedOrder = await destroyOrderProduct(
+      req.body.productId,
+      req.params.orderId,
+    )
+    res.send(changedOrder)
+  } catch (error) {
+    throw error
+  }
+})
+
+apiRouter.patch('/order_products/:orderId', async (req, res, next) => {
+  const { productId, price, quantity } = req.body
+  try {
+    const updatedOrder = await updateOrderProduct(req.params.orderId, {
+      productId,
+      price,
+      quantity,
+    })
+    console.log('the updated order is', updatedOrder)
+    res.send(updatedOrder)
+  } catch (error) {
+    throw error
+  }
+})
+
 apiRouter.get('/orders/:orderId', async (req, res) => {
   try {
-    console.log('getting one order')
-    const getOneOrder = await getOrderById(req.params.id)
-    console.log('this is one order', getOneOrder)
-    //From deCha: this worked for me when putting the id in the body as follows
-    // console.log("the request.body.id is", req.body.id);
-    // try {
-    //   console.log("getting one order");
-    //   const getOneOrder = await getOrderById(req.body.id);
+    const getOneOrder = await getOrderById(req.params.orderId)
     res.send(getOneOrder)
   } catch (error) {
     throw error
@@ -280,8 +365,6 @@ apiRouter.get('/orders/:orderId', async (req, res) => {
 })
 
 apiRouter.post('/orders', async (req, res, next) => {
-  console.log('hitting create order')
-
   try {
     const newOrder = await createOrder(req.body)
     res.send(newOrder)
@@ -304,57 +387,8 @@ apiRouter.get('/users/:userId/orders', async (req, res) => {
   console.log('inside getting products by id')
   console.log('this is id', req.params.userId)
   try {
-    const orders = await getOrdersByProduct(req.params.userId)
-    console.log(orders)
+    const orders = await getOrdersByUser(req.params.userId)
     res.send(orders)
-  } catch (error) {
-    throw error
-  }
-})
-
-apiRouter.post('/payment', async (req, res) => {
-  console.log(req.body)
-  let error
-  let status
-  try {
-    const { product, token } = req.body
-    console.log('product', product)
-    console.log('this is price', product.price)
-    const customer = await stripe.customers.create({
-      email: token.email,
-      source: token.id,
-    })
-
-    const idempotencyKey = uuid()
-    const charge = await stripe.charges.create(
-      {
-        amount: product.price * 100,
-        currency: 'usd',
-        customer: customer.id,
-        receipt_email: token.email,
-        description: `Purchased the ${product.productName}`,
-        shipping: {
-          name: token.card.name,
-          address: {
-            line1: token.card.address_line1,
-            line2: token.card.address_line2,
-            city: token.card.address_city,
-            country: token.card.address_country,
-            postal_code: token.card.address_zip,
-          },
-        },
-      },
-      {
-        idempotencyKey,
-      },
-    )
-    console.log('charge', { charge })
-
-    status = 'success'
-
-    res.json({
-      status,
-    })
   } catch (error) {
     throw error
   }
@@ -405,4 +439,22 @@ apiRouter.post('/payment', async (req, res) => {
   }
 })
 
+apiRouter.delete('/order_products/:orderProductId', async (req, res, next) => {
+  const { orderProductId } = req.params.orderProductId
+
+  try {
+    const user = await getUserById(id)
+    const userOrder = await getCartByUser(user)
+    const orderProduct = await getOrderProductById(orderProductId)
+
+    if (orderProduct.orderId === userOrder.id) {
+      const deletedOrderProduct = await destroyOrderProduct(orderProduct.id)
+      res.send(deletedOrderProduct)
+    } else {
+      res.send({ message: 'You must be the owner of this order to delete it' })
+    }
+  } catch (error) {
+    next(error)
+  }
+})
 module.exports = apiRouter
