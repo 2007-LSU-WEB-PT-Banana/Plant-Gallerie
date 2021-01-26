@@ -16,6 +16,7 @@ async function buildTables() {
 		await client.query(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp";`);
 		// drop tables in correct order
 		await client.query(`
+
     DROP TABLE IF EXISTS order_products CASCADE;
     DROP TABLE IF EXISTS orders CASCADE;
     DROP TABLE IF EXISTS users CASCADE;
@@ -37,8 +38,8 @@ async function buildTables() {
         id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
         "firstName" VARCHAR(255) NOT NULL,
         "lastName" VARCHAR(255) NOT NULL,
-        email VARCHAR(255) UNIQUE NOT NULL,
         "imageURL" TEXT DEFAULT 'no picture' NOT NULL,
+        email VARCHAR(255) UNIQUE NOT NULL,
         username VARCHAR(255) UNIQUE NOT NULL,
         password VARCHAR(255) NOT NULL,
         "isAdmin" BOOLEAN NOT NULL DEFAULT false
@@ -57,9 +58,9 @@ async function buildTables() {
         quantity INTEGER NOT NULL DEFAULT 0
         );
     `);
-	} catch (error) {
-		throw error;
-	}
+  } catch (error) {
+    throw error
+  }
 }
 async function populateInitialData() {
 	try {
@@ -108,6 +109,23 @@ async function populateInitialData() {
 	}
 }
 buildTables()
-	.then(populateInitialData)
-	.catch(console.error)
-	.finally(() => client.end());
+  .then(populateInitialData)
+  .catch(console.error)
+  .finally(() => client.end())
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
