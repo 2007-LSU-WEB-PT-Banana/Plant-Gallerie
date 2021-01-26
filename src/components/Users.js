@@ -36,13 +36,15 @@ const Users = (props) => {
 								isAdmin,
 							} = users;
 							return (
-								<div id="modal" className="usersCard" key={id} value={index}>
-									<div>
-										<Avatar alt="avatar" src={imageURL}>
-											{firstName.charAt(0) + " " + lastName.charAt(0)}
-										</Avatar>
-									</div>
-									<p>Id: {id}</p>
+								<div className="usersCard">
+								{imageURL ? (
+									<img alt="profile-image" className="users" src={imageURL} />
+								) : (
+									<Avatar alt="avatar" src={imageURL}>
+										{firstName.charAt(0) + " " + lastName.charAt(0)}
+									</Avatar>
+								)}
+								<p>Id: {id}</p>
 									<p
 										className="usernameLink"
 										onClick={(event) => {

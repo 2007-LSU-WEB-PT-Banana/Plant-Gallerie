@@ -2,20 +2,46 @@ import Axios from 'axios'
 import React, { useState } from 'react'
 import { Link, useHistory } from 'react-router-dom'
 import { NewUser } from '../api/index'
+import { Avatar } from "@material-ui/core";
 
 
 function Register(props) {
 
-  const { setIsLoggedIn } = props
-  const history = useHistory()
-  const [firstName, setFirstName] = useState('')
-  const [lastName, setLastName] = useState('')
-  const [imageURL, setImageURL] = useState('')
-  const [username, setusername] = useState('')
-  const [isAdmin, setIsAdmin] = useState(false)
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [selectedFile] = ('null')
+  	const { setIsLoggedIn } = props
+  	const history = useHistory()
+  	const [firstName, setFirstName] = useState('')
+  	const [lastName, setLastName] = useState('')
+  	const [imageURL, setImageURL] = useState('')
+  	const [username, setusername] = useState('')
+  	const [isAdmin, setIsAdmin] = useState(false)
+  	const [email, setEmail] = useState('')
+  	const [password, setPassword] = useState('')
+   	const [loading, setLoading] = useState(false);
+
+
+
+	const uploadImage = async (e) => {
+		const files = e.target.files;
+		const data = new FormData();
+		data.append("file", files[0]);
+		data.append("upload_preset", "Great-Shopper");
+		setLoading(true);
+
+		const res = await fetch(
+			"https://api.cloudinary.com/v1_1/upimages/image/upload",
+			{
+				method: "POST",
+				body: data,
+			}
+		);
+
+		const file = await res.json();
+		console.log("my image", file);
+
+		setImageURL(file.url);
+		setLoading(false);
+	};
+
 
   const register = async (event) => {
     event.preventDefault()
@@ -26,7 +52,6 @@ function Register(props) {
         lastName,
         imageURL,
         email,
-        isAdmin,
         username,
         password,
       )
@@ -54,6 +79,18 @@ function Register(props) {
 						value={lastName}
 						onChange={(event) => setLastName(event.target.value)}
 					/>
+
+					<div>
+						<h5>Image</h5>
+						<input
+							onChange={uploadImage}
+							type="file"
+							name="file"
+							placeholder="Upload an image"
+						/>
+						{loading ? <h3>Loading...</h3> : <img src={imageURL} />}
+					</div>
+
 					<h5>Email</h5>
 					<input
 						type="btext"

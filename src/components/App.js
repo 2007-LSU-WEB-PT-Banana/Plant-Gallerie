@@ -39,9 +39,9 @@ const App = () => {
 	const [activeUser, setActiveUser] = useState("");
 	const [orderId, setOrderId] = useState("");
 	const [usersList, setUsersList] = useState([]);
-	const [isAdmin, setIsAdmin] = useState("");
 	const [grandTotal, setGrandTotal] = useState(0);
-	const [userToUpdate, setUserToUpdate] = useState({});
+  const [userToUpdate, setUserToUpdate] = useState({});
+  const [isAdmin, setIsAdmin] = useState("");
 
 	useEffect(() => {
 		fetchAPI(BASE_URL + "/")
@@ -164,7 +164,8 @@ const App = () => {
 						/>
 					</Route>
 					<Route exact path="/register">
-						<Register setIsLoggedIn={setIsLoggedIn} />
+						<Register 
+						setIsLoggedIn={setIsLoggedIn} />
 					</Route>
 					<Route exact path="/users">
 						<Users

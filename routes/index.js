@@ -117,7 +117,7 @@ apiRouter.post("/login", async (req, res, next) => {
 apiRouter.post("/register", async (req, res, next) => {
 	console.log("here in register");
 
-	const { firstName, lastName, email, imageURL, username, password } = req.body;
+	const { firstName, lastName, email, imageURL, username, password, isAdmin } = req.body;
 
 	try {
 		const _user = await getUserByUsername(username);
@@ -130,8 +130,8 @@ apiRouter.post("/register", async (req, res, next) => {
 		const user = await createUser({
 			firstName,
 			lastName,
-			email,
 			imageURL,
+			email,
 			username,
 			password,
 		});
