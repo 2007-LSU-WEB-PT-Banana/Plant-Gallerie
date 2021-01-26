@@ -40,7 +40,6 @@ const Header = (props) => {
 	const [isNavVisible, setIsNavVisible] = useState(true);
 	const [isSmallScreen, setIsSmallScreen] = useState(false);
 
-
 	useEffect(() => {
 		const mediaQuery = window.matchMedia("(max-width: 812px)");
 		mediaQuery.addEventListener("change", handleMediaQueryChange);
@@ -62,6 +61,14 @@ const Header = (props) => {
 		} else {
 			setIsSmallScreen(false);
 		}
+	};
+
+	const handleSignOut = () => {
+		clearToken();
+		setIsLoggedIn(false);
+		setActiveUser({});
+		setCartData([]);
+		history.push("/");
 	};
 
 	return (
