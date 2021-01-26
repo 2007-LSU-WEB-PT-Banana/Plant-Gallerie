@@ -203,7 +203,7 @@ main {
 	outline: none;
 }
 
-.logOut {
+.logOut button {
 	background-color: #303018;
 	padding: 5px;
 	text-decoration: none;
@@ -213,7 +213,52 @@ main {
 	transition: all 0.3s;
 	justify-content: center;
 	text-transform: uppercase;
-	margin-top: 5px;
+	width: 100%;
+	margin-bottom: 5px;
+}
+
+.deleteProduct {
+	background-color: maroon;
+	padding: 5px;
+	text-decoration: none;
+	color: white;
+	border-radius: 0.25rem;
+	text-align: center;
+	transition: all 0.3s;
+	justify-content: center;
+	text-transform: uppercase;
+	margin-bottom: 5px;
+	align-self: center;
+	margin-top: 10px;
+}
+
+.deleteWarning {
+	margin: auto;
+	margin-top: 15px;
+	padding: 15px;
+	align-content: center;
+	justify-content: center;
+	text-align: center;
+	width: 50%;
+	border: 2px solid maroon;
+}
+
+.adminError {
+	font-size: 30px;
+	text-align: center;
+}
+
+.backToAdmin {
+	background-color: #607848;
+	padding: 10px;
+	text-decoration: none;
+	color: white;
+	border-radius: 0.25rem;
+	text-align: center;
+	transition: all 0.3s;
+	justify-content: center;
+	text-transform: uppercase;
+	margin: 10px 10px 0px 10px;
 }
 
 @media (max-width: 1171px) {

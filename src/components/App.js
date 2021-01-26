@@ -21,7 +21,11 @@ import {
 	Payment,
 	Cart,
 	Users,
-	SingleUser
+	SingleUser,
+	AdminPortal,
+	AddProduct,
+	SingleUserAdmin,
+	AddSingleUser,
 } from "./index";
 
 const App = () => {
@@ -35,8 +39,9 @@ const App = () => {
 	const [activeUser, setActiveUser] = useState("");
 	const [orderId, setOrderId] = useState("");
 	const [usersList, setUsersList] = useState([]);
-	const [isAdmin, setIsAdmin] = useState('')
 	const [grandTotal, setGrandTotal] = useState(0);
+  const [userToUpdate, setUserToUpdate] = useState({});
+  const [isAdmin, setIsAdmin] = useState("");
 
 	useEffect(() => {
 		fetchAPI(BASE_URL + "/")
@@ -49,10 +54,9 @@ const App = () => {
 	}, []);
 
 	useEffect(() => {
-		fetchAPI(BASE_URL + '/products')
+		fetchAPI(BASE_URL + "/products")
 			.catch(console.error)
 			.then((data) => {
-				console.log("this is data", data)
 				data.map((product) => {
 					let newPrice = product.price / 100;
 					product.price = newPrice;
@@ -64,7 +68,6 @@ const App = () => {
 	useEffect(() => {
 		getActiveUser()
 			.then((data) => {
-				console.log("this is singleuser", data);
 				setActiveUser(data);
 			})
 			.catch(console.error);
@@ -75,33 +78,26 @@ const App = () => {
 		if (activeUser) {
 			fetchAPI(BASE_URL + `/orders/cart/${activeUser.id}`)
 				.then((data) => {
-					data[0].map((product) => {
+					data.openOrdersWithProduct[0].map((product) => {
 						let newPrice = product.price / 100;
 						product.price = newPrice;
 						total = newPrice * product.quantity + total;
 					});
-					setCartData(data[0]);
-					setOrderId(data[0][0].orderId);
+					setCartData(data.openOrdersWithProduct[0]);
+					setOrderId(data.openOrders[0].id);
 					setGrandTotal(total);
 				})
 				.catch(console.error);
 		}
 	}, [activeUser]);
 
-	console.log("The cart data is", cartData);
-	console.log("the order id is:", orderId);
-
 	useEffect(() => {
-			fetchAPI(BASE_URL + "/users")
-				.then((data) => {
-					setUsersList(data);
-					console.log(data);
-				})
-				.catch(console.error);
-		}, []);
-
-	console.log("the active user is", activeUser);
-	console.log("the active product is", activeProduct);
+		fetchAPI(BASE_URL + "/users")
+			.then((data) => {
+				setUsersList(data);
+			})
+			.catch(console.error);
+	}, []);
 
 	return (
 		<>
@@ -168,14 +164,19 @@ const App = () => {
 						/>
 					</Route>
 					<Route exact path="/register">
-						<Register setIsLoggedIn={setIsLoggedIn} />
+						<Register 
+						setIsLoggedIn={setIsLoggedIn} />
 					</Route>
 					<Route exact path="/users">
-						<Users usersList={usersList} />
+						<Users
+							usersList={usersList}
+							history={history}
+							activeUser={activeUser}
+							setUserToUpdate={setUserToUpdate}
+						/>
 					</Route>
 					<Route exact path="/users/me">
-						<SingleUser 
-						activeUser={activeUser}/>
+						<SingleUser activeUser={activeUser} />
 					</Route>
 					<Route path="/cart">
 						<Cart
@@ -187,6 +188,31 @@ const App = () => {
 							orderId={orderId}
 							activeUser={activeUser}
 							history={history}
+						/>
+					</Route>
+					<Route exact path="/adminportal">
+						<AdminPortal activeUser={activeUser} />
+					</Route>
+					<Route exact path="/addnewproduct">
+						<AddProduct
+							activeUser={activeUser}
+							history={history}
+							setProductList={setProductList}
+						/>
+					</Route>
+					<Route exact path="/users/add">
+						<AddSingleUser
+							history={history}
+							setUsersList={setUsersList}
+							activeUser={activeUser}
+						/>
+					</Route>
+					<Route exact path={`/users/:userId`}>
+						<SingleUserAdmin
+							userToUpdate={userToUpdate}
+							activeUser={activeUser}
+							history={history}
+							setUsersList={setUsersList}
 						/>
 					</Route>
 
