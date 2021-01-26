@@ -368,6 +368,25 @@ apiRouter.get('/orders', async (req, res) => {
   }
 })
 
+
+apiRouter.patch('/orders/:orderId', async (req, res, next) => {
+  try {
+    const updatedOrder = await updatedOrder(req.params.orderId)
+    res.send(updatedOrder)
+  } catch (error) {
+    throw error
+  }
+})
+
+apiRouter.delete('/orders/:orderId', async (req, res, next) => {
+  try {
+    const cancel = await cancelOrder(req.params.orderId)
+    res.send(cancel)
+  } catch (error) {
+    throw error
+  }
+})
+
 apiRouter.get('/users/:userId/orders', async (req, res) => {
   console.log('inside getting products by id')
   console.log('this is id', req.params.userId)
