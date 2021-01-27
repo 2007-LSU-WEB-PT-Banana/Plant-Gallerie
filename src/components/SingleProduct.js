@@ -45,7 +45,6 @@ const SingleProduct = (props) => {
 				BASE_URL + "/products/" + activeProduct.id,
 				sendData
 			);
-			console.log("the deleted product message is", deletedProduct);
 			if (deletedProduct.message) {
 				const data = await fetchAPI(BASE_URL + "/products");
 				data.map((product) => {

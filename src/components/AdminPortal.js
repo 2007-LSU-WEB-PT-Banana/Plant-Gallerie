@@ -16,8 +16,8 @@ const AdminPortal = (props) => {
 					<Link to="/addnewproduct" className="adminLink">
 						Add New Product
 					</Link>
-					<Link to="/getordersbyproduct" className="adminLink">
-						Get Orders By Product Number
+					<Link to="/findorders" className="adminLink">
+						Find Orders by Product Id, User Id, or Order Id
 					</Link>
 				</div>
 				<br></br>

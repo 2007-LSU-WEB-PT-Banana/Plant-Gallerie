@@ -97,7 +97,7 @@ const Header = (props) => {
 					<Link to="/search" className="header-link" style={headerLink}>
 						<SearchIcon className="header-searchIcon" />
 					</Link>
-					{activeUser.isAdmin ? (
+					{activeUser && activeUser.isAdmin ? (
 						<Link to="/adminportal" className="header-link" style={headerLink}>
 							Admin Portal
 						</Link>

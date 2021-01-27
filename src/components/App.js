@@ -1,5 +1,6 @@
+import { DomainDisabledTwoTone } from "@material-ui/icons";
 import React, { useState, useEffect } from "react";
-import { Switch, Route, useHistory, Link } from "react-router-dom";
+import { Switch, Route, useHistory } from "react-router-dom";
 import {
 	fetchAPI,
 	BASE_URL,
@@ -27,6 +28,7 @@ import {
 	SingleUserAdmin,
 	AddSingleUser,
 	UpdateProduct,
+	MultipleOrders,
 } from "./index";
 
 const App = () => {
@@ -66,11 +68,13 @@ const App = () => {
 	}, []);
 
 	useEffect(() => {
-		getActiveUser()
-			.then((data) => {
-				setActiveUser(data);
-			})
-			.catch(console.error);
+		if (isLoggedIn) {
+			getActiveUser()
+				.then((data) => {
+					setActiveUser(data);
+				})
+				.catch(console.error);
+		}
 	}, [isLoggedIn]);
 
 	useEffect(() => {
@@ -78,6 +82,10 @@ const App = () => {
 		if (activeUser) {
 			fetchAPI(BASE_URL + `/orders/cart/${activeUser.id}`)
 				.then((data) => {
+					if (data.message) {
+						return;
+					}
+					console.log("this is data for products", data);
 					data.openOrdersWithProduct[0].map((product) => {
 						let newPrice = product.price / 100;
 						product.price = newPrice;
@@ -100,7 +108,7 @@ const App = () => {
 	}, []);
 
 	console.log("the active product is:", activeProduct);
-
+	console.log("the active user is", activeUser);
 	return (
 		<>
 			<Header
@@ -136,6 +144,17 @@ const App = () => {
 							history={history}
 							setActiveProduct={setActiveProduct}
 						/>
+					</Route>
+					<Route exact path="/updateProduct">
+						<UpdateProduct
+							activeUser={activeUser}
+							activeProduct={activeProduct}
+							history={history}
+							setProductList={setProductList}
+						/>
+					</Route>
+					<Route exact path="/findorders">
+						<MultipleOrders activeUser={activeUser} history={history} />
 					</Route>
 					<Route exact path="/houseplants">
 						<HousePlants
@@ -201,15 +220,6 @@ const App = () => {
 							history={history}
 							setProductList={setProductList}
 						/>
-						<Route exact path="/updateProduct">
-							<h1>Hello World</h1>
-							<UpdateProduct
-								activeUser={activeUser}
-								activeProduct={activeProduct}
-								history={history}
-								setProductList={setProductList}
-							/>
-						</Route>
 					</Route>
 					<Route exact path="/users/add">
 						<AddSingleUser
@@ -226,7 +236,6 @@ const App = () => {
 							setUsersList={setUsersList}
 						/>
 					</Route>
-
 					<Route path="/payment">
 						<Payment
 							productList={productList}

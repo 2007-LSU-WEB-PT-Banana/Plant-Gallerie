@@ -30,7 +30,7 @@ const UpdateProduct = (props) => {
 		event.preventDefault();
 
 		const sendData = {
-			productId: activeProduct.id,
+			adminId: activeUser.id,
 			category: plantCategory,
 			price: price,
 			inStock: inStock,
@@ -45,13 +45,12 @@ const UpdateProduct = (props) => {
 			price &&
 			description &&
 			imageURL &&
-			inStock &&
 			activeProduct.id
 		) {
 			try {
 				const productToUpdate = await fetchAPI(
-					BASE_URL + "/createproduct",
-					"POST",
+					BASE_URL + "/products/" + activeProduct.id,
+					"PATCH",
 					sendData
 				);
 				if (productToUpdate.id) {
@@ -81,10 +80,10 @@ const UpdateProduct = (props) => {
 	if (activeUser.isAdmin) {
 		return (
 			<>
-				<button className="backToProduct" onClick={backToProductPage}>
-					Back to Admin Portal
+				<button className="backToAdmin" onClick={backToProductPage}>
+					Back to Product Details
 				</button>
-				<h1 className="productsHeader">Add New Product Form</h1>
+				<h1 className="productsHeader">Edit Product Details Form</h1>
 				<h5 className="addProductMessage">{message}</h5>
 				<form className="updateProductForm" id="updateProductForm">
 					<select

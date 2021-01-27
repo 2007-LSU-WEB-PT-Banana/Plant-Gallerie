@@ -11,7 +11,6 @@ function Register(props) {
 	const [lastName, setLastName] = useState("");
 	const [imageURL, setImageURL] = useState("");
 	const [username, setusername] = useState("");
-	const [isAdmin, setIsAdmin] = useState(false);
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [loading, setLoading] = useState(false);

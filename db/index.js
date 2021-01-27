@@ -239,15 +239,16 @@ const getAllOrders = async () => {
 	try {
 		const { rows: allOrders } = await client.query(`
     SELECT *
-    FROM orders;
+    FROM orders
     `);
-		const orders = await Promise.all(
-			allOrders.map((order) => {
-				return getOrdersByProduct(order.id);
+
+		const products = await Promise.all(
+			allOrders.map(async (order) => {
+				order.products = await getOrderProductsByOrderId(order.id);
 			})
 		);
 
-		return orders;
+		return allOrders;
 	} catch (error) {
 		throw error;
 	}
@@ -328,8 +329,12 @@ const getCartByUser = async (userId) => {
 		const openOrders = await Promise.all(
 			orders.map((order) => getOrderById(order.id))
 		);
-
-		return { openOrders: orders, openOrdersWithProduct: openOrders };
+		console.log("the open orders are:", openOrders);
+		if (openOrders[0][0]) {
+			return { openOrders: orders, openOrdersWithProduct: openOrders };
+		} else {
+			return { message: "there were no open orders with products." };
+		}
 	} catch (error) {
 		throw error;
 	}
@@ -394,23 +399,23 @@ const getOrdersByProduct = async (id) => {
 	}
 };
 
-const getOrderProductByOrderId = async (orderId) => {
-	try {
-		const {
-			rows: [orderProduct],
-		} = await client.query(
-			`
-SELECT * 
-FROM order_products
-WHERE "orderId"=$1;
-`,
-			[orderId]
-		);
-		return orderProduct;
-	} catch (error) {
-		throw error;
-	}
-};
+// const getOrderProductByOrderId = async (orderId) => {
+// 	try {
+// 		const {
+// 			rows: [orderProduct],
+// 		} = await client.query(
+// 			`
+// SELECT *
+// FROM order_products
+// WHERE "orderId"=$1;
+// `,
+// 			[orderId]
+// 		);
+// 		return orderProduct;
+// 	} catch (error) {
+// 		throw error;
+// 	}
+// };
 
 //this function works - do not edit this code!
 const updateOrderProduct = async (orderId, { productId, price, quantity }) => {
@@ -552,7 +557,7 @@ async function updateProduct(productId, fields = {}) {
 			`
       UPDATE products
       SET ${setString}
-      WHERE products.id=${productId}
+      WHERE id=${productId};
     `,
 			Object.values(fields)
 		);
