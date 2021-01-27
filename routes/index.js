@@ -23,6 +23,7 @@ const {
 	deleteOrderProductsAndProduct,
 	updateUser,
 	updateProduct,
+	destroyOrderProduct,
 	updateOrder,
 	cancelOrder,
 	completeOrder,

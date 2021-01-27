@@ -85,7 +85,6 @@ const App = () => {
 					if (data.message) {
 						return;
 					}
-					console.log("this is data for products", data);
 					data.openOrdersWithProduct[0].map((product) => {
 						let newPrice = product.price / 100;
 						product.price = newPrice;
@@ -107,8 +106,6 @@ const App = () => {
 			.catch(console.error);
 	}, []);
 
-	console.log("the active product is:", activeProduct);
-	console.log("the active user is", activeUser);
 	return (
 		<>
 			<Header
@@ -151,6 +148,7 @@ const App = () => {
 							activeProduct={activeProduct}
 							history={history}
 							setProductList={setProductList}
+							setActiveProduct={setActiveProduct}
 						/>
 					</Route>
 					<Route exact path="/findorders">

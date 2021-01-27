@@ -3,7 +3,13 @@ import "./UpdateProduct.css";
 import { fetchAPI, BASE_URL } from "../api";
 
 const UpdateProduct = (props) => {
-	const { activeUser, history, setProductList, activeProduct } = props;
+	const {
+		activeUser,
+		history,
+		setProductList,
+		activeProduct,
+		setActiveProduct,
+	} = props;
 
 	const [plantCategory, setPlantCategory] = useState("");
 	const [name, setName] = useState("");
@@ -61,6 +67,8 @@ const UpdateProduct = (props) => {
 					setPrice("");
 					setImageURL("");
 					setInStock(true);
+					productToUpdate.price = productToUpdate.price / 100;
+					setActiveProduct(productToUpdate);
 				}
 
 				const updatedProductList = await fetchAPI(BASE_URL + "/products");
@@ -84,7 +92,7 @@ const UpdateProduct = (props) => {
 					Back to Product Details
 				</button>
 				<h1 className="productsHeader">Edit Product Details Form</h1>
-				<h5 className="addProductMessage">{message}</h5>
+				<h5 className="updateProductMessage">{message}</h5>
 				<form className="updateProductForm" id="updateProductForm">
 					<select
 						id="plantCategory"

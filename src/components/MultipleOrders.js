@@ -16,7 +16,6 @@ const MultipleOrders = (props) => {
 			.catch(console.error);
 	}, []);
 
-	console.log("the orderlist is", orderList);
 	function backToAdminPortal() {
 		history.push("/adminportal");
 	}

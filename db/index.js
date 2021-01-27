@@ -329,7 +329,7 @@ const getCartByUser = async (userId) => {
 		const openOrders = await Promise.all(
 			orders.map((order) => getOrderById(order.id))
 		);
-		console.log("the open orders are:", openOrders);
+
 		if (openOrders[0][0]) {
 			return { openOrders: orders, openOrdersWithProduct: openOrders };
 		} else {
@@ -546,23 +546,26 @@ async function getOrderProductsByOrderId(orderId) {
 }
 
 async function updateProduct(productId, fields = {}) {
-	console.log("beginning update product");
 	const setString = Object.keys(fields)
 		.map((key, index) => `"${key}"=$${index + 1}`)
 		.join(", ");
 
-	console.log("the set string is", setString);
 	try {
-		const { rows: product } = await client.query(
+		const { rows: productToUpdate } = await client.query(
 			`
       UPDATE products
       SET ${setString}
-      WHERE id=${productId};
+      WHERE id='${productId}';
     `,
 			Object.values(fields)
 		);
 
-		return product;
+		const { rows: updatedProduct } = await client.query(`
+      SELECT *
+      FROM products
+      WHERE id='${productId}';
+    `);
+		return updatedProduct[0];
 	} catch (error) {
 		throw error;
 	}
