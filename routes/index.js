@@ -20,8 +20,9 @@ const {
 	getUser,
 	addProductsToOrder,
 	updateOrderProduct,
-	findOrderProductsToDelete,
+	deleteOrderProductsAndProduct,
 	updateUser,
+	updateProduct,
 	updateOrder,
 	cancelOrder,
 	completeOrder,
@@ -56,9 +57,7 @@ const requireActiveUser = (req, res, next) => {
 };
 
 apiRouter.get("/", async (req, res, next) => {
-	console.log("hitting api");
 	try {
-		console.log("inside main page try");
 		res.send("Plant Gallerie Main Page");
 	} catch (error) {
 		next(error);
@@ -68,7 +67,6 @@ apiRouter.get("/", async (req, res, next) => {
 apiRouter.get("/users", async (req, res, next) => {
 	try {
 		const allUsers = await getAllUsers();
-		console.log("api try users", allUsers);
 		res.send(allUsers);
 	} catch (error) {
 		next(error);
@@ -115,9 +113,15 @@ apiRouter.post("/login", async (req, res, next) => {
 
 //this route works - do not edit this code!
 apiRouter.post("/register", async (req, res, next) => {
-	console.log("here in register");
-
-	const { firstName, lastName, email, imageURL, username, password, isAdmin } = req.body;
+	const {
+		firstName,
+		lastName,
+		email,
+		imageURL,
+		username,
+		password,
+		isAdmin,
+	} = req.body;
 
 	try {
 		const _user = await getUserByUsername(username);
@@ -152,21 +156,12 @@ apiRouter.post("/register", async (req, res, next) => {
 });
 
 apiRouter.get("/users/me", async (req, res, next) => {
-	console.log("inside users/me in database");
 	try {
 		const token = req.headers.authorization.split(" ")[1];
-		console.log(token);
-
 		const decoded = jwt.decode(token, `${process.env.JWT_SECRET}`);
-
 		req.userData = decoded;
-		// console.log("this is username", req.userData.username);
-		// console.log(req.userData);
 		const userId = req.userData.id;
-		// console.log(userId);
-
 		const user = await getUserById(userId);
-		// console.log(user);
 		res.send({ user });
 	} catch (error) {
 		next(error);
@@ -174,11 +169,8 @@ apiRouter.get("/users/me", async (req, res, next) => {
 });
 
 apiRouter.get("/users/:id", async (req, res, next) => {
-	console.log("getting user by id");
 	try {
-		console.log("getting user by id inside try");
 		const oneUser = await getUserById(req.params.id);
-		console.log("user is", oneUser);
 		res.send(oneUser);
 	} catch (error) {
 		next(error);
@@ -187,13 +179,8 @@ apiRouter.get("/users/:id", async (req, res, next) => {
 
 apiRouter.patch("/users/:userId", async (req, res, next) => {
 	const { adminId, firstName, lastName, email, username, isAdmin } = req.body;
-	console.log("the req.body is", req.body);
-
-	//userID is who needs to get patched
 	//the adminID needs to be in the body so we can ensure the updater is an admin
 	try {
-		console.log("hit the update user route, getting userbyID");
-
 		const requestor = await getUserById(adminId);
 
 		if (requestor.isAdmin) {
@@ -219,7 +206,6 @@ apiRouter.patch("/users/:userId", async (req, res, next) => {
 apiRouter.get("/products/:id", async (req, res, next) => {
 	const id = req.params.id;
 	try {
-		console.log("inside the try for getting product by ID");
 		const requestedProduct = await getProductById(id);
 		res.send(requestedProduct);
 	} catch (error) {
@@ -229,7 +215,6 @@ apiRouter.get("/products/:id", async (req, res, next) => {
 
 apiRouter.post("/createproduct", async (req, res, next) => {
 	const { name, description, price, imageURL, inStock, category } = req.body;
-	console.log("The req.body is", req.body);
 	try {
 		const newProduct = await createProduct({
 			name,
@@ -247,7 +232,6 @@ apiRouter.post("/createproduct", async (req, res, next) => {
 
 apiRouter.get("/products", async (req, res, next) => {
 	try {
-		console.log("inside try for getting all products");
 		const allProducts = await getAllProducts();
 		res.send(allProducts);
 	} catch (error) {
@@ -257,9 +241,7 @@ apiRouter.get("/products", async (req, res, next) => {
 
 apiRouter.get("/products/:productId", async (req, res, next) => {
 	const id = req.body.productId;
-	console.log("the product id is", id);
 	try {
-		console.log("inside the try for getting product by ID");
 		const requestedProduct = await getProductById(id);
 		res.send(requestedProduct);
 	} catch (error) {
@@ -269,15 +251,10 @@ apiRouter.get("/products/:productId", async (req, res, next) => {
 
 //this route works - do not edit this code!
 apiRouter.get("/orders/cart/:userId", async (req, res, next) => {
-	console.log("the userID is", req.params.userId);
-
 	try {
-		console.log("beginning get UserById");
 		const user = await getUserById(req.params.userId);
-		console.log("finished getting user.  the result is", user);
 		if (user) {
 			const userOrders = await getCartByUser(user.id);
-			console.log("the userOrders are", userOrders);
 			res.send(userOrders);
 		} else {
 			res.send({ message: "there are no orders here" });
@@ -296,29 +273,65 @@ apiRouter.post("/orders/:orderId/products", async (req, res, next) => {
 			req.params.orderId,
 			productList
 		);
-		console.log("the changed order is", changedOrder);
 		res.send(changedOrder);
 	} catch (error) {
 		throw error;
 	}
 });
 
+apiRouter.patch("/products/:productId", async (req, res, next) => {
+	const product = req.params.productId;
+
+	const {
+		adminId,
+		name,
+		description,
+		price,
+		inStock,
+		category,
+		imageURL,
+	} = req.body;
+
+	const fields = {
+		name: name,
+		description: description,
+		price: price,
+		inStock: inStock,
+		category: category,
+		imageURL: imageURL,
+	};
+
+	if (adminId && name && description && price && category && imageURL) {
+		try {
+			const user = await getUserById(adminId);
+
+			if (user.isAdmin) {
+				const updatedProduct = await updateProduct(product, fields);
+
+				res.send(updatedProduct);
+			} else {
+				res.send({ message: "You must be an admin to perform this function." });
+			}
+		} catch (error) {
+			throw error;
+		}
+	} else {
+		res.send({ message: "You must supply all the required fields." });
+	}
+});
+
 apiRouter.delete("/products/:productId", async (req, res, next) => {
-	console.log("the body is", req.body);
-	console.log("the product to delete is", req.params.productId);
 	try {
-		console.log("beginning get userbyID");
 		const user = await getUserById(req.body.id);
-		console.log("the user returned was", user);
 
 		if (user.isAdmin) {
-			const deletedProducts = await findOrderProductsToDelete(
+			const deletedConfirmation = await deleteOrderProductsAndProduct(
 				req.params.productId
 			);
-			console.log("the deleted products are", deletedProducts);
-			res.send(deletedProducts);
+
+			res.send(deletedConfirmation);
 		} else {
-			res.send({ message: "You must be an admin to delete products" });
+			res.send({ message: "You must be an admin to perform this function." });
 		}
 	} catch (error) {
 		throw error;
@@ -347,7 +360,6 @@ apiRouter.patch("/order_products/:orderId", async (req, res, next) => {
 			price,
 			quantity,
 		});
-		console.log("the updated order is", updatedOrder);
 		res.send(updatedOrder);
 	} catch (error) {
 		throw error;
@@ -356,7 +368,6 @@ apiRouter.patch("/order_products/:orderId", async (req, res, next) => {
 
 apiRouter.get("/orders/:orderId", async (req, res) => {
 	try {
-		console.log("getting one order");
 		const getOneOrder = await getOrderById(req.params.orderId);
 		res.send(getOneOrder);
 	} catch (error) {
@@ -365,8 +376,6 @@ apiRouter.get("/orders/:orderId", async (req, res) => {
 });
 
 apiRouter.post("/orders", async (req, res, next) => {
-	console.log("hitting create order");
-
 	try {
 		const newOrder = await createOrder(req.body);
 		res.send(newOrder);
@@ -378,7 +387,6 @@ apiRouter.post("/orders", async (req, res, next) => {
 apiRouter.get("/orders", async (req, res) => {
 	try {
 		const allOrders = await getAllOrders();
-		console.log(allOrders);
 		res.send(allOrders);
 	} catch (error) {
 		throw error;
@@ -386,73 +394,19 @@ apiRouter.get("/orders", async (req, res) => {
 });
 
 apiRouter.get("/users/:userId/orders", async (req, res) => {
-	console.log("inside getting products by id");
-	console.log("this is id", req.params.userId);
 	try {
 		//I think this should be getOrdersByUserId since you're passing in the UserID here
 		//const orders = await getOrdersByProduct(req.params.userId);
 		const orders = await getOrdersByUser(req.params.userId);
-		console.log(orders);
 		res.send(orders);
 	} catch (error) {
 		throw error;
 	}
 });
 
-//which payment is right?
-// apiRouter.post("/payment", async (req, res) => {
-// 	console.log(req.body);
-// 	let error;
-// 	let status;
-// 	try {
-// 		const { product, token } = req.body;
-// 		console.log("product", product);
-// 		console.log("this is price", product.price);
-// 		const customer = await stripe.customers.create({
-// 			email: token.email,
-// 			source: token.id,
-// 		});
-
-// 		const idempotencyKey = uuid();
-// 		const charge = await stripe.charges.create(
-// 			{
-// 				amount: product.price * 100,
-// 				currency: "usd",
-// 				customer: customer.id,
-// 				receipt_email: token.email,
-// 				description: `Purchased the ${product.productName}`,
-// 				shipping: {
-// 					name: token.card.name,
-// 					address: {
-// 						line1: token.card.address_line1,
-// 						line2: token.card.address_line2,
-// 						city: token.card.address_city,
-// 						country: token.card.address_country,
-// 						postal_code: token.card.address_zip,
-// 					},
-// 				},
-// 			},
-// 			{
-// 				idempotencyKey,
-// 			}
-// 		);
-// 		console.log("charge", { charge });
-
-// 		res.json({
-// 			status: "success",
-// 		});
-// 	} catch (error) {
-// 		throw error;
-// 	}
-// });
-
 apiRouter.post("/payment", async (req, res) => {
-	console.log(req.body);
-
 	try {
 		const { product, token } = req.body;
-		console.log("product", product);
-		console.log("this is price", product.price);
 		const customer = await stripe.customers.create({
 			email: token.email,
 			source: token.id,
@@ -481,7 +435,6 @@ apiRouter.post("/payment", async (req, res) => {
 				idempotencyKey,
 			}
 		);
-		console.log("charge", { charge });
 
 		res.json({
 			status: "success",

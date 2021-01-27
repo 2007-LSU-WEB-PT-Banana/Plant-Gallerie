@@ -217,7 +217,8 @@ main {
 	margin-bottom: 5px;
 }
 
-.deleteProduct {
+.deleteProduct,
+.updateProduct {
 	background-color: maroon;
 	padding: 5px;
 	text-decoration: none;

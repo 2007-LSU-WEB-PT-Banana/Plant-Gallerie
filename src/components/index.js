@@ -17,3 +17,4 @@ export { default as AdminPortal } from "./AdminPortal";
 export { default as AddProduct } from "./AddProduct";
 export { default as SingleUserAdmin } from "./SingleUserAdmin";
 export { default as AddSingleUser } from "./AddSingleUser";
+export { default as UpdateProduct } from "./UpdateProduct";

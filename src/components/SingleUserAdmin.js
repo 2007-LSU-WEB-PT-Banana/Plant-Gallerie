@@ -36,7 +36,6 @@ const SingleUserAdmin = (props) => {
 			isAdmin: isAdmin,
 		};
 
-		console.log("the udpated user info being sent is", sendData);
 		if (firstName && lastName && email && username) {
 			try {
 				const updatedUser = await fetchAPI(

@@ -16,13 +16,15 @@ const AdminPortal = (props) => {
 					<Link to="/addnewproduct" className="adminLink">
 						Add New Product
 					</Link>
-					<Link to="/updateproduct" className="adminLink">
-						Update Product Details
-					</Link>
 					<Link to="/getordersbyproduct" className="adminLink">
 						Get Orders By Product Number
 					</Link>
 				</div>
+				<br></br>
+				<p className="productsHeader">
+					To update or delete a product, navigate to that product's page and
+					utilize the administrator controls there.
+				</p>
 			</>
 		);
 	} else {

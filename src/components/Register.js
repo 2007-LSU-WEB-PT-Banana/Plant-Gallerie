@@ -1,24 +1,20 @@
-import Axios from 'axios'
-import React, { useState } from 'react'
-import { Link, useHistory } from 'react-router-dom'
-import { NewUser } from '../api/index'
+import Axios from "axios";
+import React, { useState } from "react";
+import { Link, useHistory } from "react-router-dom";
+import { NewUser } from "../api/index";
 import { Avatar } from "@material-ui/core";
 
-
 function Register(props) {
-
-  	const { setIsLoggedIn } = props
-  	const history = useHistory()
-  	const [firstName, setFirstName] = useState('')
-  	const [lastName, setLastName] = useState('')
-  	const [imageURL, setImageURL] = useState('')
-  	const [username, setusername] = useState('')
-  	const [isAdmin, setIsAdmin] = useState(false)
-  	const [email, setEmail] = useState('')
-  	const [password, setPassword] = useState('')
-   	const [loading, setLoading] = useState(false);
-
-
+	const { setIsLoggedIn } = props;
+	const history = useHistory();
+	const [firstName, setFirstName] = useState("");
+	const [lastName, setLastName] = useState("");
+	const [imageURL, setImageURL] = useState("");
+	const [username, setusername] = useState("");
+	const [isAdmin, setIsAdmin] = useState(false);
+	const [email, setEmail] = useState("");
+	const [password, setPassword] = useState("");
+	const [loading, setLoading] = useState(false);
 
 	const uploadImage = async (e) => {
 		const files = e.target.files;
@@ -36,33 +32,29 @@ function Register(props) {
 		);
 
 		const file = await res.json();
-		console.log("my image", file);
 
 		setImageURL(file.url);
 		setLoading(false);
 	};
 
+	const register = async (event) => {
+		event.preventDefault();
+		try {
+			const result = await NewUser(
+				firstName,
+				lastName,
+				imageURL,
+				email,
+				username,
+				password
+			);
+			history.push("/login");
+		} catch (error) {
+			console.error(error);
+		}
+	};
 
-  const register = async (event) => {
-    event.preventDefault()
-    console.log('registering')
-    try {
-      const result = await NewUser(
-        firstName,
-        lastName,
-        imageURL,
-        email,
-        username,
-        password,
-      )
-      history.push('/login')
-    } catch (error) {
-      console.error(error)
-    }
-
-  }
-
-  return (
+	return (
 		<div className="login">
 			<div className="login-container">
 				<h1>Register</h1>
@@ -128,4 +120,4 @@ function Register(props) {
 	);
 }
 
-export default Register
+export default Register;

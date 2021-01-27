@@ -26,6 +26,7 @@ import {
 	AddProduct,
 	SingleUserAdmin,
 	AddSingleUser,
+	UpdateProduct,
 } from "./index";
 
 const App = () => {
@@ -40,8 +41,7 @@ const App = () => {
 	const [orderId, setOrderId] = useState("");
 	const [usersList, setUsersList] = useState([]);
 	const [grandTotal, setGrandTotal] = useState(0);
-  const [userToUpdate, setUserToUpdate] = useState({});
-  const [isAdmin, setIsAdmin] = useState("");
+	const [userToUpdate, setUserToUpdate] = useState({});
 
 	useEffect(() => {
 		fetchAPI(BASE_URL + "/")
@@ -99,6 +99,8 @@ const App = () => {
 			.catch(console.error);
 	}, []);
 
+	console.log("the active product is:", activeProduct);
+
 	return (
 		<>
 			<Header
@@ -125,6 +127,7 @@ const App = () => {
 							setCartData={setCartData}
 							orderId={orderId}
 							activeUser={activeUser}
+							setProductList={setProductList}
 						/>
 					</Route>
 					<Route exact path="/products">
@@ -164,8 +167,7 @@ const App = () => {
 						/>
 					</Route>
 					<Route exact path="/register">
-						<Register 
-						setIsLoggedIn={setIsLoggedIn} />
+						<Register setIsLoggedIn={setIsLoggedIn} />
 					</Route>
 					<Route exact path="/users">
 						<Users
@@ -199,6 +201,15 @@ const App = () => {
 							history={history}
 							setProductList={setProductList}
 						/>
+						<Route exact path="/updateProduct">
+							<h1>Hello World</h1>
+							<UpdateProduct
+								activeUser={activeUser}
+								activeProduct={activeProduct}
+								history={history}
+								setProductList={setProductList}
+							/>
+						</Route>
 					</Route>
 					<Route exact path="/users/add">
 						<AddSingleUser

@@ -1,10 +1,9 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import "./AddProduct.css";
+import React, { useState, useEffect } from "react";
+import "./UpdateProduct.css";
 import { fetchAPI, BASE_URL } from "../api";
 
-const AddProduct = (props) => {
-	const { activeUser, history, setProductList, modal, setModal } = props;
+const UpdateProduct = (props) => {
+	const { activeUser, history, setProductList, activeProduct } = props;
 
 	const [plantCategory, setPlantCategory] = useState("");
 	const [name, setName] = useState("");
@@ -14,14 +13,24 @@ const AddProduct = (props) => {
 	const [inStock, setInStock] = useState("");
 	const [message, setMessage] = useState("");
 
-	function backToAdminPortal() {
-		history.push("/adminportal");
+	useEffect(() => {
+		setPlantCategory(activeProduct.category || "");
+		setName(activeProduct.name || "");
+		setPrice(activeProduct.price || "");
+		setDescription(activeProduct.description || "");
+		setImageURL(activeProduct.imageURL || "");
+		setInStock(activeProduct.inStock || true);
+	}, []);
+
+	function backToProductPage() {
+		history.goBack();
 	}
 
-	async function submitNewProduct(event) {
+	async function updateProduct(event) {
 		event.preventDefault();
 
 		const sendData = {
+			productId: activeProduct.id,
 			category: plantCategory,
 			price: price,
 			inStock: inStock,
@@ -30,15 +39,23 @@ const AddProduct = (props) => {
 			name: name,
 		};
 
-		if (plantCategory && name && price && description && imageURL && inStock) {
+		if (
+			plantCategory &&
+			name &&
+			price &&
+			description &&
+			imageURL &&
+			inStock &&
+			activeProduct.id
+		) {
 			try {
-				const newProduct = await fetchAPI(
+				const productToUpdate = await fetchAPI(
 					BASE_URL + "/createproduct",
 					"POST",
 					sendData
 				);
-				if (newProduct.id) {
-					setMessage("Successfully added");
+				if (productToUpdate.id) {
+					setMessage("Successfully Updated");
 					setPlantCategory("");
 					setName("");
 					setDescription("");
@@ -47,29 +64,29 @@ const AddProduct = (props) => {
 					setInStock(true);
 				}
 
-				const data = await fetchAPI(BASE_URL + "/products");
-				data.map((product) => {
+				const updatedProductList = await fetchAPI(BASE_URL + "/products");
+				updatedProductList.map((product) => {
 					let newPrice = product.price / 100;
 					product.price = newPrice;
 				});
-				setProductList(data);
+				setProductList(updatedProductList);
 			} catch (error) {
 				setMessage(error);
 			}
 		} else {
-			setMessage("Please fill in all fields to submit a new product");
+			setMessage("Please fill in all fields to update a product");
 		}
 	}
 
 	if (activeUser.isAdmin) {
 		return (
 			<>
-				<button className="backToAdmin" onClick={backToAdminPortal}>
+				<button className="backToProduct" onClick={backToProductPage}>
 					Back to Admin Portal
 				</button>
 				<h1 className="productsHeader">Add New Product Form</h1>
 				<h5 className="addProductMessage">{message}</h5>
-				<form className="addProductForm" id="productForm">
+				<form className="updateProductForm" id="updateProductForm">
 					<select
 						id="plantCategory"
 						name="plantCategory"
@@ -117,8 +134,8 @@ const AddProduct = (props) => {
 						<option value="true">Currently In Stock</option>
 						<option value="false">On Backorder</option>
 					</select>
-					<button className="backToAdmin" onClick={submitNewProduct}>
-						Submit New Product
+					<button className="backToAdmin" onClick={updateProduct}>
+						Update Product Details
 					</button>
 				</form>
 			</>
@@ -128,4 +145,4 @@ const AddProduct = (props) => {
 	}
 };
 
-export default AddProduct;
+export default UpdateProduct;

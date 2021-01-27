@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { BASE_URL, fetchAPI } from "../api";
+import { BASE_URL, fetchAPI, deleteProduct } from "../api";
+import { Link } from "react-router-dom";
 
 const SingleProduct = (props) => {
 	const {
@@ -12,6 +13,7 @@ const SingleProduct = (props) => {
 		setCartData,
 		orderId,
 		activeUser,
+		setProductList,
 	} = props;
 
 	const [message, setMessage] = useState("");
@@ -33,8 +35,29 @@ const SingleProduct = (props) => {
 		setCount(newCount);
 	}
 
-	async function deleteProduct() {
-		history.goBack();
+	async function executeDeleteProduct() {
+		const sendData = {
+			id: activeUser.id,
+		};
+
+		try {
+			const deletedProduct = await deleteProduct(
+				BASE_URL + "/products/" + activeProduct.id,
+				sendData
+			);
+			console.log("the deleted product message is", deletedProduct);
+			if (deletedProduct.message) {
+				const data = await fetchAPI(BASE_URL + "/products");
+				data.map((product) => {
+					let newPrice = product.price / 100;
+					product.price = newPrice;
+				});
+				setProductList(data);
+				history.goBack();
+			}
+		} catch (error) {
+			throw error;
+		}
 	}
 
 	let match = -1;
@@ -84,7 +107,6 @@ const SingleProduct = (props) => {
 					"PATCH",
 					updatedCartItem
 				);
-				console.log("the updated cart is", updatedCart);
 				setCartData(updatedCart);
 				setCount(1);
 				setMessage("Updated Cart");
@@ -190,11 +212,19 @@ const SingleProduct = (props) => {
 				<>
 					<div className="deleteWarning">
 						<h4>Administrator Actions</h4>
+						<button className="updateProduct">
+							<Link to="/updateProduct" className="updateProduct">
+								Update Product Details
+							</Link>
+						</button>
+						<br></br>
 						<p className="deleteMessage">
 							Warning: Clicking the button below will remove this item from the
 							website and any associated open orders and cannot be undone!
 						</p>
-						<button className="deleteProduct">Delete this Product</button>
+						<button className="deleteProduct" onClick={executeDeleteProduct}>
+							Delete this Product
+						</button>
 					</div>
 				</>
 			) : (
