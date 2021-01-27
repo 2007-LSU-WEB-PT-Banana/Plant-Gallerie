@@ -368,11 +368,19 @@ apiRouter.get('/orders', async (req, res) => {
   }
 })
 
-
 apiRouter.patch('/orders/:orderId', async (req, res, next) => {
   try {
-    const updatedOrder = await updatedOrder(req.params.orderId)
+    const updatedOrder = await updateOrder(req.params.orderId)
     res.send(updatedOrder)
+  } catch (error) {
+    throw error
+  }
+})
+
+apiRouter.get('/orders/checkout/:orderId', async (req, res, next) => {
+  try {
+    const complete = await completeOrder(req.params.orderId)
+    res.send(complete)
   } catch (error) {
     throw error
   }

@@ -253,7 +253,7 @@ const getAllOrders = async () => {
     `)
     const orders = await Promise.all(
       allOrders.map((order) => {
-        return getOrdersByProduct(order.id)
+        return getOrderProductByOrderId(order.id)
       }),
     )
 
@@ -289,23 +289,13 @@ const getOrderById = async (orderId) => {
       FROM orders
       JOIN order_products ON order_products."orderId"=orders.id
       JOIN products ON products.id=order_products."productId"
-      WHERE "orderId"=$1;    
+      WHERE "orderId"=$1;  
       `,
       [orderId],
     )
     console.log('logging inside getorderbyid')
     console.log('the order is', order)
-    // if (order === []) {
-    // 	const { rows: emptyOrder } = await client.query(
-    // 		`
-    //     SELECT *
-    //     FROM orders
-    //     WHERE "orderId"=$1;
-    //     `,
-    // 		[orderId]
-    // 	);
-    // 	return emptyOrder;
-    // }
+
     if (!order) {
       throw {
         name: 'OrderNotFoundError',
@@ -403,23 +393,21 @@ const addProductsToOrder = async (orderId, productList) => {
   }
 }
 
-const getOrdersByProduct = async (id) => {
+const getOrdersByProduct = async (orderId) => {
   try {
     const { rows: order } = await client.query(
       `
 
       SELECT *
-      FROM order_products
-      JOIN orders ON order_products."orderId" = orders.id
+      FROM orders
+      JOIN order_products ON order_products."orderId" = $1
       JOIN products ON order_products."productId"=$1;
     `,
-      [id],
+      [orderId],
     )
-    console.log('this is product id', ordersIds.productId)
-    const allProducts = ordersIds.map((order) => {
-      return getOrdersByUser(order.id)
-    })
-    return allProducts
+
+    console.log(order)
+    return order
   } catch (error) {
     throw error
   }
@@ -622,29 +610,27 @@ async function getOrderProductsByOrderId(orderId) {
   }
 }
 
-const updateOrder = async (orderId, { status, userId = null }) => {
-  console.log('inisde update order')
-  console.log('this is orderId', orderId)
-  console.log('this is status', status)
-  console.log('this is userId', userId)
+const updateOrder = async (orderId, { status, userId }) => {
+  // console.log('this is orderid', order)
+  const orderToBeUpdtaed = await getOrderById(orderId)
+  console.log('this is to be updated', orderToBeUpdtaed)
+  // status = orderToBeUpdtaed.status
+  // userId = orderToBeUpdtaed.userId
 
-  const orderToBeUpdtaed = getOrderById(orderId)
-  orderToBeUpdtaed.status = status
-  orderToBeUpdtaed.userId = userId
-  console.log('this is status to be updatted', orderToBeUpdtaed.status)
-  console.log('this is userId to be updated', orderToBeUpdtaed.userId)
+  // console.log('this is status to be updatted', orderToBeUpdtaed.status)
+  // console.log('this is userId to be updated', orderToBeUpdtaed.userId)
   try {
     const {
       rows: [updatedOrder],
     } = await client.query(
       `
     UPDATE orders
-    SET status=$2,
+    SET "status"=$2,
     "userId"=$3
     WHERE id=$1
     RETURNING *;
   `,
-      [orderId, orderToBeUpdtaed.status, orderToBeUpdtaed.userId],
+      [orderId, status, userId],
     )
     console.log('this is updateOrder', updatedOrder)
     return updatedOrder
@@ -656,9 +642,13 @@ const updateOrder = async (orderId, { status, userId = null }) => {
 const completeOrder = async (orderId) => {
   try {
     const orderToBeCompleted = await getOrderById(orderId)
-    console.log('this is order to be complete id', orderToBeCompleted.id)
-    const complete = updateOrder(orderId, {
+    console.log(
+      'this is order to be complete users id',
+      orderToBeCompleted.userId,
+    )
+    const complete = await updateOrder(orderId, {
       status: 'completed',
+      userId: orderToBeCompleted.userId,
     })
     console.log('complete', complete)
     return complete
@@ -713,4 +703,7 @@ module.exports = {
   destroyOrderProduct,
   findOrderProductsToDelete,
   updateUser,
+  updateOrder,
+  cancelOrder,
+  completeOrder,
 }

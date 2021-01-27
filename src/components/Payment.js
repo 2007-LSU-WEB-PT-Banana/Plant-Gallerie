@@ -28,25 +28,31 @@ function Payment(props) {
     console.log('cancelling', cartData)
   }
 
-  async function handleToken(token, adresses, grandTotal) {
+  async function handleToken(token) {
     console.log(grandTotal)
     console.log({
       token,
-      adresses,
-      cartData,
-    })
-    const result = await axios.post('/api/payment', {
-      token,
+
       grandTotal,
     })
-    console.log(';this is result', result)
-    const { status } = result.data
-    console.log('this is status', status)
-    if (status == 'success') {
-      console.log('problem us toast')
-      toast('success! check email for detail', { type: 'success' })
-    } else {
-      toast('something went wrong', { type: 'error' })
+    try {
+      console.log('hitting api')
+      const url = 'api/payment'
+      const result = await axios.post(url, {
+        token,
+        grandTotal,
+      })
+      console.log(';this is result', result)
+      const { status } = result.data
+      console.log('this is status', status)
+      if (status == 'success') {
+        console.log('problem us toast')
+        toast('success! check email for detail', { type: 'success' })
+      } else {
+        toast('something went wrong', { type: 'error' })
+      }
+    } catch (error) {
+      throw error
     }
   }
 
