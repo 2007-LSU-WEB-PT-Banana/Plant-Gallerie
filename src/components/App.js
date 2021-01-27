@@ -71,7 +71,7 @@ const App = () => {
 				setActiveUser(data);
 			})
 			.catch(console.error);
-	}, [isLoggedIn]);
+	}, []);
 
 	useEffect(() => {
 		let total = 0;
