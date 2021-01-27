@@ -66,12 +66,14 @@ const App = () => {
 	}, []);
 
 	useEffect(() => {
-		getActiveUser()
+		if (isLoggedIn) {
+		  getActiveUser()
 			.then((data) => {
-				setActiveUser(data);
+			  setActiveUser(data)
 			})
-			.catch(console.error);
-	}, []);
+			.catch(console.error)
+		}
+	  }, [])
 
 	useEffect(() => {
 		let total = 0;
