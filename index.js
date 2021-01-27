@@ -41,3 +41,7 @@ server.listen(PORT, async () => {
     console.error('Database is closed for repairs!\n', error)
   }
 })
+server.use((err, req, res, next) => {
+	console.log(err.status);
+	res.status(err.status || 500).send({ message: err.message });
+});
