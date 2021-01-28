@@ -3,12 +3,12 @@ const { Client } = require("pg");
 const bcrypt = require("bcrypt");
 const { isUuid, uuid } = require("uuidv4");
 
-const DB_NAME = "plantgallery";
-
-const DB_URL =
-	process.env.DATABASE_URL || `postgres://localhost:5432/${DB_NAME}`;
-const client = new Client(DB_URL, { username: "postgres" });
-
+const DB_NAME = 'plantgallery';
+const DB_URL = process.env.DATABASE_URL || `postgres://localhost:5432/${DB_NAME}`;
+const client = new Client({
+  connectionString: DB_URL,
+  ssl: process.env.DATABASE_URL ? { rejectUnauthorized: false } : undefined,
+});
 //this function is working - do not edit this code!
 const createUser = async ({
 	firstName,
