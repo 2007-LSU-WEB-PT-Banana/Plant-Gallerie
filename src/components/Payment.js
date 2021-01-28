@@ -20,8 +20,22 @@ function Payment(props) {
     activeUser,
   } = props
 
-  const completeOrder = () => {
-    console.log('hello')
+  const completeOrder = async () => {
+    console.log('this is orderzid', orderId)
+    try {
+      if (activeUser) {
+        const complete = await axios.get(`/api/orders/checkout/${orderId}`)
+      } else {
+        const body = cartData
+        console.log('cart data', cartData)
+        const newOrdr = await axios.post(`/api/orders`, cartData[0])
+        await axios.get(`/api/orders/checkout/${newOrdr.orderId}`)
+      }
+
+      history.push('/success')
+    } catch (error) {
+      throw error
+    }
   }
 
   const cancelOrder = () => {
@@ -46,8 +60,7 @@ function Payment(props) {
       const { status } = result.data
       console.log('this is status', status)
       if (status == 'success') {
-        console.log('problem us toast')
-        toast('success! check email for detail', { type: 'success' })
+        completeOrder()
       } else {
         toast('something went wrong', { type: 'error' })
       }
@@ -58,6 +71,19 @@ function Payment(props) {
 
   return (
     <div className="stripe-header">
+      <StripeCheckout
+        stripeKey={process.env.REACT_APP_MYPKEY}
+        token={handleToken}
+        billingAddress
+        shippingAddress
+        amount={parseInt(grandTotal * 100)}
+      >
+        <button className="button-pay">BUY product for {grandTotal}</button>
+      </StripeCheckout>
+      <button onClick={cancelOrder} className="button-pay">
+        Cancel Order
+      </button>
+
       <SingleOrder
         cartData={cartData}
         history={history}
@@ -68,20 +94,6 @@ function Payment(props) {
         orderId={orderId}
         activeUser={activeUser}
       />
-      <StripeCheckout
-        stripeKey={process.env.REACT_APP_MYPKEY}
-        token={handleToken}
-        billingAddress
-        shippingAddress
-        amount={grandTotal * 100}
-      >
-        <button onClick={completeOrder} className="button-pay">
-          BUY product for {grandTotal}
-        </button>
-      </StripeCheckout>
-      <button onClick={cancelOrder} className="button-pay">
-        Cancel Order
-      </button>
     </div>
   )
 }

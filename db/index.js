@@ -302,6 +302,7 @@ const getOrderById = async (orderId) => {
         message: 'Could not find an order with that order ID',
       }
     } else {
+      console.log('order is ', order)
       return order
     }
   } catch (error) {
@@ -594,7 +595,7 @@ const destroyOrderProduct = async (productId, orderId) => {
   }
 }
 
-//this function works - do not edit this code!
+
 async function getOrderProductsByOrderId(orderId) {
   try {
     const { rows: orderProducts } = await client.query(
@@ -610,15 +611,7 @@ async function getOrderProductsByOrderId(orderId) {
   }
 }
 
-const updateOrder = async (orderId, { status, userId }) => {
-  // console.log('this is orderid', order)
-  const orderToBeUpdtaed = await getOrderById(orderId)
-  console.log('this is to be updated', orderToBeUpdtaed)
-  // status = orderToBeUpdtaed.status
-  // userId = orderToBeUpdtaed.userId
-
-  // console.log('this is status to be updatted', orderToBeUpdtaed.status)
-  // console.log('this is userId to be updated', orderToBeUpdtaed.userId)
+const updateOrder = async (orderId, status, userId) => {
   try {
     const {
       rows: [updatedOrder],
@@ -642,14 +635,16 @@ const updateOrder = async (orderId, { status, userId }) => {
 const completeOrder = async (orderId) => {
   try {
     const orderToBeCompleted = await getOrderById(orderId)
+    console.log('this is whole order', orderToBeCompleted)
     console.log(
       'this is order to be complete users id',
-      orderToBeCompleted.userId,
+      orderToBeCompleted[0].userId,
     )
-    const complete = await updateOrder(orderId, {
-      status: 'completed',
-      userId: orderToBeCompleted.userId,
-    })
+    const complete = await updateOrder(
+      orderId,
+      (status = 'completed'),
+      orderToBeCompleted[0].userId,
+    )
     console.log('complete', complete)
     return complete
   } catch (error) {
@@ -661,7 +656,11 @@ const cancelOrder = async (orderId) => {
   console.log()
   const orderToBeCancelled = await getOrderById(orderId)
   console.log('this is order required', orderToBeCancelled)
-  const orderTocan = await updateOrder(orderId, { status: 'cancelled' })
+  const orderTocan = await updateOrder(
+    orderId,
+    (status = 'cancelled'),
+    orderToBeCancelled[0].userId,
+  )
   console.log('updated order', orderTocan)
 
   try {

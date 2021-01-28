@@ -1,6 +1,10 @@
+// import { v4 as uuid_v4 } from 'uuid'
+
 const apiRouter = require('express').Router()
+
 const bcrypt = require('bcrypt')
-const { uuid } = require('uuidv4')
+// const { uuid } = require('uuidv4')
+const { v4: uuid_v4 } = require('uuid')
 
 const {
   createProduct,
@@ -57,7 +61,7 @@ const requireActiveUser = (req, res, next) => {
 apiRouter.get('/', async (req, res, next) => {
   console.log('hitting api')
   try {
-    console.log('inside main page try')
+    await createOrder({ status: 'created', userId: user.id, products: [] })
     res.send('Plant Gallerie Main Page')
   } catch (error) {
     next(error)
@@ -180,8 +184,7 @@ apiRouter.patch('/users/:userId', async (req, res, next) => {
   const { adminId, firstName, lastName, email, username, isAdmin } = req.body
   console.log('the req.body is', req.body)
 
-  //userID is who needs to get patched
-  //the adminID needs to be in the body so we can ensure the updater is an admin
+  
   try {
     console.log('hit the update user route, getting userbyID')
 
@@ -279,7 +282,8 @@ apiRouter.get('/orders/cart/:userId', async (req, res, next) => {
 
 //this route works - do not edit this code!
 apiRouter.post('/orders/:orderId/products', async (req, res, next) => {
-  const productList = [req.body]
+  const { productList } = req.body
+  console.log(req.body)
 
   try {
     const changedOrder = await addProductsToOrder(
@@ -370,7 +374,7 @@ apiRouter.get('/orders', async (req, res) => {
 
 apiRouter.patch('/orders/:orderId', async (req, res, next) => {
   try {
-    const updatedOrder = await updateOrder(req.params.orderId)
+    const updatedOrder = await updateOrder(req.params.orderId, req.body)
     res.send(updatedOrder)
   } catch (error) {
     throw error
@@ -378,8 +382,10 @@ apiRouter.patch('/orders/:orderId', async (req, res, next) => {
 })
 
 apiRouter.get('/orders/checkout/:orderId', async (req, res, next) => {
+  console.log('thsi id id', req.params.orderId)
   try {
     const complete = await completeOrder(req.params.orderId)
+    await createOrder({ status: 'created', userId: user.id, products: [] })
     res.send(complete)
   } catch (error) {
     throw error
@@ -410,23 +416,26 @@ apiRouter.post('/payment', async (req, res) => {
   console.log(req.body)
 
   try {
-    const { grandtotal, token } = req.body
-    console.log('this is req.body', req.body)
-    console.log('this is total', grandtotal)
+    // const { grandtotal, token } = req.body
+    const { grandTotal, token } = req.body
+    // console.log('this is req.body', req.body)
+    // console.log('this is token', token)
+    // console.log('this is total', grandTotal)
 
     const customer = await stripe.customers.create({
       email: token.email,
       source: token.id,
     })
+    // console.log('customer is', customer)
 
-    const idempotencyKey = uuid()
+    const idempotencyKey = uuid_v4()
     const charge = await stripe.charges.create(
       {
-        amount: grandtotal * 100,
+        amount: parseInt(grandTotal * 100),
         currency: 'usd',
         customer: customer.id,
         receipt_email: token.email,
-        description: `Purchased the  products for ${grandtotal}`,
+        description: `Purchased the  products for ${grandTotal}`,
         shipping: {
           name: token.card.name,
           address: {

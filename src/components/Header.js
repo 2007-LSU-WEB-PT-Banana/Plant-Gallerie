@@ -97,7 +97,7 @@ const Header = (props) => {
           <Link to="/search" className="header-link" style={headerLink}>
             <SearchIcon className="header-searchIcon" />
           </Link>
-          {activeUser.isAdmin ? (
+          {activeUser?.isAdmin ? (
             <Link to="/adminportal" className="header-link" style={headerLink}>
               Admin Portal
             </Link>
@@ -116,7 +116,7 @@ const Header = (props) => {
             <>
               <div className="logOut">
                 <h6 className="logOut" style={headerLink}>
-                  Not {activeUser.firstName}?
+                  Not {activeUser?.firstName}?
                 </h6>
                 <button className="logOut" onClick={handleSignOut}>
                   Log Out

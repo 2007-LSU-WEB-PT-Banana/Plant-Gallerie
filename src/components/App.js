@@ -20,6 +20,7 @@ import {
   AddProduct,
   SingleUserAdmin,
   AddSingleUser,
+  SuccessMessage,
 } from './index'
 
 import SingleOrder from './SingleOrder'
@@ -41,6 +42,8 @@ const App = () => {
   const [grandTotal, setGrandTotal] = useState(0)
   const [userToUpdate, setUserToUpdate] = useState({})
   const [isAdmin, setIsAdmin] = useState('')
+
+  console.log('this is order id', orderId)
 
   useEffect(() => {
     fetchAPI(BASE_URL + '/')
@@ -73,17 +76,19 @@ const App = () => {
   }, [])
 
   useEffect(() => {
-    getActiveUser()
-      .then((data) => {
-        setActiveUser(data)
-      })
-      .catch(console.error)
+    if (isLoggedIn) {
+      getActiveUser()
+        .then((data) => {
+          setActiveUser(data)
+        })
+        .catch(console.error)
+    }
   }, [isLoggedIn])
 
   useEffect(() => {
     let total = 0
     if (activeUser) {
-      fetchAPI(BASE_URL + `/orders/cart/${activeUser.id}`)
+      fetchAPI(BASE_URL + `/orders/cart/${activeUser?.id}`)
         .then((data) => {
           console.log('this is data for products', data)
           data.openOrdersWithProduct[0].map((product) => {
@@ -166,6 +171,9 @@ const App = () => {
               setActiveProduct={setActiveProduct}
               history={history}
             />
+          </Route>
+          <Route exact path="/success">
+            <SuccessMessage activeUser={activeUser} history={history} />
           </Route>
           <Route exact path="/login">
             <Login

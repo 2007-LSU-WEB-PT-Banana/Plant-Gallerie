@@ -54,6 +54,8 @@ const SingleProduct = (props) => {
           image: activeProduct.imageURL,
         }
 
+        console.log('this is order id im  adding products', orderId)
+
         const newCart = await fetchAPI(
           BASE_URL + '/orders/' + orderId + '/products',
           'POST',
