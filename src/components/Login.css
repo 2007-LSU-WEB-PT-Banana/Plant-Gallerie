@@ -4,6 +4,10 @@
 	display: flex;
 	flex-direction: column;
 	align-items: center;
+	background: url(../images/loginbackground.jpg) center;
+	background-position: center center;
+	background-repeat: no-repeat;
+	background-attachment: fixed;
 }
 
 .login-container {
@@ -12,6 +16,8 @@
 	flex-direction: column;
 	padding: 20px;
 	border: 1px solid lightgray;
+	background-color: #c0c0c0;
+	margin-top: 10px;
 }
 .login-container > h1 {
 	font-weight: 500;
