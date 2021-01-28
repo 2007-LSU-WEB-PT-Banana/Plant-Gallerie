@@ -42,6 +42,9 @@ main {
 .productsHeader {
 	text-align: center;
 	font-family: "Julius Sans One", sans-serif;
+	background-color: #607848;
+	padding: 0.5em;
+	color: white;
 }
 
 .productCard {
@@ -262,7 +265,7 @@ main {
 	transition: all 0.3s;
 	justify-content: center;
 	text-transform: uppercase;
-	margin: 10px 10px 0px 10px;
+	margin: 10px 10px 10px 10px;
 }
 
 @media (max-width: 1171px) {
