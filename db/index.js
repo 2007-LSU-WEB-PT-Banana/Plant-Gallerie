@@ -7,7 +7,7 @@ const DB_NAME = "plantgallery";
 
 const DB_URL =
 	process.env.DATABASE_URL || `postgres://localhost:5432/${DB_NAME}`;
-const client = new Client(DB_URL, { username: "postgres" });
+const client = new Client(DB_URL);
 
 //this function is working - do not edit this code!
 const createUser = async ({
