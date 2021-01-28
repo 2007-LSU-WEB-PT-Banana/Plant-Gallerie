@@ -29,17 +29,14 @@ const AddSingleUser = (props) => {
 			password: password,
 			imageURL: "text",
 		};
-		console.log("the sendData is", sendData);
 
 		if (firstName && lastName && email && username && password) {
 			try {
-				console.log("inside the register user try");
 				const updatedUser = await fetchAPI(
 					BASE_URL + "/register",
 					"POST",
 					sendData
 				);
-				console.log("the updatedUser is", updatedUser);
 				if (updatedUser.user.id) {
 					setMessage("Successfully added");
 					setFirstName("");

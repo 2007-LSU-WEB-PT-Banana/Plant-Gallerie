@@ -8,7 +8,6 @@ const SingleOrder = (props) => {
 		setCartData,
 		activeUser,
 		history,
-		isLoggedIn,
 		grandTotal,
 		setGrandTotal,
 		orderId,
@@ -20,35 +19,16 @@ const SingleOrder = (props) => {
 	function continueShopping() {
 		history.goBack();
 	}
-	console.log("on the cart page, the active user is", activeUser);
-
-	//	this function will need to be reworked depending on how the backend ends up
-	// async function setOrderData() {
-	// 	try {
-	// 		let sendData = {
-	// 			userId: activeUser,
-	// 		};
-
-	// 		let orderInfo = await fetchAPI(
-	// 			BASE_URL + "/orders/cart",
-	// 			"GET",
-	// 			sendData
-	// 		);
-	// 		setCartData(); //something goes here
-	// 	} catch (error) {
-	// 		console.error(error);
-	// 	}
-	// }
 
 	async function removeItem(idx) {
 		if (activeUser) {
 			let sendData = { productId: cartData[idx].id };
-			console.log("the sendData is", sendData);
 			let changedOrder = await fetchAPI(
 				BASE_URL + "/order_products/" + orderId,
 				"DELETE",
 				sendData
 			);
+
 			let total = 0;
 			changedOrder.map((product) => {
 				let newPrice = product.price / 100;
