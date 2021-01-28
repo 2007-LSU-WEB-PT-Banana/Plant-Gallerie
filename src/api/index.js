@@ -45,9 +45,7 @@ export const getActiveUser = async () => {
 }
 
 export const loginUser = async (username, password) => {
-  console.log('inside auth')
   const url = `${BASE_URL}/login`
-  console.log('after url')
 
   const response = await fetch(url, {
     method: 'POST',
@@ -57,7 +55,7 @@ export const loginUser = async (username, password) => {
       password: password,
     }),
   })
-  console.log('this is response', response)
+
   const { error, user, token } = await response.json()
 
   if (error) {
@@ -110,6 +108,7 @@ export const fetchAPI = async (url, method = 'GET', sendData = null) => {
     method: method,
     headers: {
       'Content-Type': 'application/json',
+      Accept: 'application/json',
     },
   }
 
@@ -117,9 +116,23 @@ export const fetchAPI = async (url, method = 'GET', sendData = null) => {
     if (sendData.price) {
       let newPrice = sendData.price * 100
       sendData.price = newPrice.toFixed(0)
-      console.log('the price conversion in the fetch', sendData.price)
     }
     fetchOptions.body = JSON.stringify(sendData)
+  }
+
+  const response = await fetch(url, fetchOptions)
+  const data = await response.json()
+
+  return data
+}
+
+export const deleteProduct = async (url, sendData) => {
+  const fetchOptions = {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(sendData),
   }
 
   const response = await fetch(url, fetchOptions)

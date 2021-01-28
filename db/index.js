@@ -224,6 +224,10 @@ const getProductById = async (id) => {
 const createOrder = async ({ status, userId, products }) => {
   const datePlaced = new Date()
 
+  if (!userId) {
+    userId = 'e7d2b614-f191-4f46-8842-285b46ebb6f0'
+  }
+
   try {
     console.log('creating order')
     const {
@@ -249,15 +253,16 @@ const getAllOrders = async () => {
   try {
     const { rows: allOrders } = await client.query(`
     SELECT *
-    FROM orders;
+    FROM orders
     `)
-    const orders = await Promise.all(
-      allOrders.map((order) => {
-        return getOrderProductByOrderId(order.id)
+
+    const products = await Promise.all(
+      allOrders.map(async (order) => {
+        order.products = await getOrderProductsByOrderId(order.id)
       }),
     )
 
-    return orders
+    return allOrders
   } catch (error) {
     throw error
   }
@@ -282,7 +287,6 @@ const getOrdersByUser = async (userId) => {
 //this function is working - do not edit this code!
 const getOrderById = async (orderId) => {
   try {
-    console.log('inside get order by id.  the id is:', orderId)
     const { rows: order } = await client.query(
       `
       SELECT *
@@ -293,8 +297,6 @@ const getOrderById = async (orderId) => {
       `,
       [orderId],
     )
-    console.log('logging inside getorderbyid')
-    console.log('the order is', order)
 
     if (!order) {
       throw {
@@ -302,7 +304,6 @@ const getOrderById = async (orderId) => {
         message: 'Could not find an order with that order ID',
       }
     } else {
-      console.log('order is ', order)
       return order
     }
   } catch (error) {
@@ -329,7 +330,6 @@ const getOrderProductsById = async (orderId) => {
 
 //this function works - do not edit code!
 const getCartByUser = async (userId) => {
-  console.log('beginning get cart by user')
   try {
     const { rows: orders } = await client.query(
       `
@@ -339,13 +339,16 @@ const getCartByUser = async (userId) => {
     `,
       [userId],
     )
-    console.log('the orders are', orders)
 
     const openOrders = await Promise.all(
       orders.map((order) => getOrderById(order.id)),
     )
-    console.log('the Open Orders from getCartByUser are', openOrders)
-    return { openOrders: orders, openOrdersWithProduct: openOrders }
+
+    if (openOrders[0][0]) {
+      return { openOrders: orders, openOrdersWithProduct: openOrders }
+    } else {
+      return { message: 'there were no open orders with products.' }
+    }
   } catch (error) {
     throw error
   }
@@ -353,10 +356,6 @@ const getCartByUser = async (userId) => {
 
 //this function is working - do not edit this code!
 const createOrderProducts = async ({ productId, orderId, price, quantity }) => {
-  console.log('productId', productId)
-  console.log('orderId', orderId)
-  console.log('price', price)
-  console.log('quantity', quantity)
   try {
     const {
       rows: [orderProduct],
@@ -368,7 +367,6 @@ const createOrderProducts = async ({ productId, orderId, price, quantity }) => {
     `,
       [productId, orderId, price, quantity],
     )
-    console.log('order-products are:', orderProduct)
     return orderProduct
   } catch (error) {
     throw error
@@ -377,8 +375,10 @@ const createOrderProducts = async ({ productId, orderId, price, quantity }) => {
 
 //this function is working - do not edit this code!
 const addProductsToOrder = async (orderId, productList) => {
+  console.log('this is orderr id', orderId)
+  console.log('this is product list', productList)
   try {
-    const createOrderProductsPromises = productList.map((product) =>
+    const createOrderProductsPromises = await productList.map((product) =>
       createOrderProducts({
         productId: product.id,
         orderId,
@@ -549,9 +549,28 @@ const findOrderProductsToDelete = async (productId) => {
       [productId],
     )
 
-    console.log('the order_products are', orderProducts)
+    const { rows: remainingOrderProducts } = await client.query(
+      `
+      UPDATE order_products
+      SET "productId"=null
+      WHERE "productId"=$1;
+      `,
+      [productId],
+    )
 
-    return orderProducts
+    const { rows: product } = await client.query(
+      `
+      DELETE
+      FROM products
+      WHERE products.id=$1
+      `,
+      [productId],
+    )
+
+    return {
+      message:
+        'The product has been deleted from the system and all associated open or cancelled orders.',
+    }
   } catch (error) {
     throw error
   }
@@ -576,7 +595,6 @@ const destroyAllOrderProductsById = async (orderProductId) => {
 }
 
 const destroyOrderProduct = async (productId, orderId) => {
-  console.log('the id is ', productId)
   try {
     const {
       rows: [orderProduct],
@@ -594,7 +612,6 @@ const destroyOrderProduct = async (productId, orderId) => {
     throw error
   }
 }
-
 
 async function getOrderProductsByOrderId(orderId) {
   try {
@@ -652,6 +669,46 @@ const completeOrder = async (orderId) => {
   }
 }
 
+const deleteOrderProductsAndProduct = async (productId) => {
+  try {
+    const { rows: orderProducts } = await client.query(
+      `
+      DELETE
+      FROM order_products
+      WHERE order_products."productId"=$1
+      AND order_products."orderId"
+      IN (SELECT orders.id FROM orders WHERE orders.status!='completed');
+    `,
+      [productId],
+    )
+
+    const { rows: remainingOrderProducts } = await client.query(
+      `
+      UPDATE order_products
+      SET "productId"=null
+      WHERE "productId"=$1;
+      `,
+      [productId],
+    )
+
+    const { rows: product } = await client.query(
+      `
+      DELETE
+      FROM products
+      WHERE products.id=$1
+      `,
+      [productId],
+    )
+
+    return {
+      message:
+        'The product has been deleted from the system and all associated open or cancelled orders.',
+    }
+  } catch (error) {
+    throw error
+  }
+}
+
 const cancelOrder = async (orderId) => {
   console.log()
   const orderToBeCancelled = await getOrderById(orderId)
@@ -680,6 +737,32 @@ const cancelOrder = async (orderId) => {
   }
 }
 
+async function updateProduct(productId, fields = {}) {
+  const setString = Object.keys(fields)
+    .map((key, index) => `"${key}"=$${index + 1}`)
+    .join(', ')
+
+  try {
+    const { rows: productToUpdate } = await client.query(
+      `
+      UPDATE products
+      SET ${setString}
+      WHERE id='${productId}';
+    `,
+      Object.values(fields),
+    )
+
+    const { rows: updatedProduct } = await client.query(`
+      SELECT *
+      FROM products
+      WHERE id='${productId}';
+    `)
+    return updatedProduct[0]
+  } catch (error) {
+    throw error
+  }
+}
+
 module.exports = {
   client,
   createUser,
@@ -700,9 +783,10 @@ module.exports = {
   addProductsToOrder,
   updateOrderProduct,
   destroyOrderProduct,
-  findOrderProductsToDelete,
+  deleteOrderProductsAndProduct,
   updateUser,
-  updateOrder,
+  updateProduct,
   cancelOrder,
   completeOrder,
+  updateOrder,
 }

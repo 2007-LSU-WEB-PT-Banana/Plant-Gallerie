@@ -184,7 +184,6 @@ apiRouter.patch('/users/:userId', async (req, res, next) => {
   const { adminId, firstName, lastName, email, username, isAdmin } = req.body
   console.log('the req.body is', req.body)
 
-  
   try {
     console.log('hit the update user route, getting userbyID')
 
@@ -372,6 +371,47 @@ apiRouter.get('/orders', async (req, res) => {
   }
 })
 
+apiRouter.patch('/products/:productId', async (req, res, next) => {
+  const product = req.params.productId
+
+  const {
+    adminId,
+    name,
+    description,
+    price,
+    inStock,
+    category,
+    imageURL,
+  } = req.body
+
+  const fields = {
+    name: name,
+    description: description,
+    price: price,
+    inStock: inStock,
+    category: category,
+    imageURL: imageURL,
+  }
+
+  if (adminId && name && description && price && category && imageURL) {
+    try {
+      const user = await getUserById(adminId)
+
+      if (user.isAdmin) {
+        const updatedProduct = await updateProduct(product, fields)
+
+        res.send(updatedProduct)
+      } else {
+        res.send({ message: 'You must be an admin to perform this function.' })
+      }
+    } catch (error) {
+      throw error
+    }
+  } else {
+    res.send({ message: 'You must supply all the required fields.' })
+  }
+})
+
 apiRouter.patch('/orders/:orderId', async (req, res, next) => {
   try {
     const updatedOrder = await updateOrder(req.params.orderId, req.body)
@@ -385,7 +425,14 @@ apiRouter.get('/orders/checkout/:orderId', async (req, res, next) => {
   console.log('thsi id id', req.params.orderId)
   try {
     const complete = await completeOrder(req.params.orderId)
-    await createOrder({ status: 'created', userId: user.id, products: [] })
+    if (complete.userId) {
+      await createOrder({
+        status: 'created',
+        userId: complete.userId,
+        products: [],
+      })
+    }
+
     res.send(complete)
   } catch (error) {
     throw error
@@ -407,6 +454,19 @@ apiRouter.get('/users/:userId/orders', async (req, res) => {
   try {
     const orders = await getOrdersByUser(req.params.userId)
     res.send(orders)
+  } catch (error) {
+    throw error
+  }
+})
+
+apiRouter.delete('/order_products/:orderId', async (req, res, next) => {
+  //this will be written to remove one product from an existing order with status 'created'
+  try {
+    const changedOrder = await destroyOrderProduct(
+      req.body.productId,
+      req.params.orderId,
+    )
+    res.send(changedOrder)
   } catch (error) {
     throw error
   }

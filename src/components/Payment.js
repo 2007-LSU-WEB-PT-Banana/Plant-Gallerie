@@ -26,11 +26,18 @@ function Payment(props) {
       if (activeUser) {
         const complete = await axios.get(`/api/orders/checkout/${orderId}`)
       } else {
-        const body = cartData
+        const body = {
+          status: 'created',
+          products: cartData,
+        }
+        // Const {orderId, id} = cartData
         console.log('cart data', cartData)
-        const newOrdr = await axios.post(`/api/orders`, cartData[0])
-        await axios.get(`/api/orders/checkout/${newOrdr.orderId}`)
+        const newOrdr = await axios.post(`/api/orders`, body)
+        console.log('this is new order', newOrdr)
+        await axios.get(`/api/orders/checkout/${newOrdr.data[0].orderId}`)
       }
+
+      setCartData([])
 
       history.push('/success')
     } catch (error) {
