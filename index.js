@@ -17,9 +17,15 @@ server.use(bodyParser.json())
 const path = require('path')
 server.use(express.static(path.join(__dirname, 'build')))
 
+
 // here's our API
 server.use('/api', require('./routes'))
 
+//troubleshooting for server
+server.use((err, req, res, next) => {
+	console.log(err.status);
+	res.status(err.status || 500).send({ message: err.message });
+});
 
 // by default serve up the react app if we don't recognize the route
 server.use((req, res, next) => {
@@ -41,7 +47,4 @@ server.listen(PORT, async () => {
     console.error('Database is closed for repairs!\n', error)
   }
 })
-server.use((err, req, res, next) => {
-	console.log(err.status);
-	res.status(err.status || 500).send({ message: err.message });
-});
+
