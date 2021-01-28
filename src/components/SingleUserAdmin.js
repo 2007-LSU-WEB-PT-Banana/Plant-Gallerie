@@ -21,7 +21,7 @@ const SingleUserAdmin = (props) => {
 	}, []);
 
 	function backToAdminPortal() {
-		history.push("/adminportal");
+		history.push("/users");
 	}
 
 	async function updateUserProfile(event) {
@@ -36,7 +36,6 @@ const SingleUserAdmin = (props) => {
 			isAdmin: isAdmin,
 		};
 
-		console.log("the udpated user info being sent is", sendData);
 		if (firstName && lastName && email && username) {
 			try {
 				const updatedUser = await fetchAPI(
@@ -53,7 +52,7 @@ const SingleUserAdmin = (props) => {
 					setIsAdmin(false);
 				}
 
-				const updatedUsersList = fetchAPI(BASE_URL + "/users");
+				const updatedUsersList = await fetchAPI(BASE_URL + "/users");
 				setUsersList(updatedUsersList);
 			} catch (error) {
 				setMessage(error);
@@ -68,7 +67,7 @@ const SingleUserAdmin = (props) => {
 			{activeUser.isAdmin ? (
 				<>
 					<button className="backToAdmin" onClick={backToAdminPortal}>
-						Back to Admin Portal
+						Back to Users
 					</button>
 					<h1 className="updateUserProfile">Update User Profile</h1>
 					<h5 className="updateUserMessage">{message}</h5>

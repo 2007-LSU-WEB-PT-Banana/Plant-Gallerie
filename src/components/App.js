@@ -1,5 +1,6 @@
+import { DomainDisabledTwoTone } from "@material-ui/icons";
 import React, { useState, useEffect } from "react";
-import { Switch, Route, useHistory, Link } from "react-router-dom";
+import { Switch, Route, useHistory } from "react-router-dom";
 import {
 	fetchAPI,
 	BASE_URL,
@@ -26,6 +27,8 @@ import {
 	AddProduct,
 	SingleUserAdmin,
 	AddSingleUser,
+	UpdateProduct,
+	MultipleOrders,
 } from "./index";
 
 const App = () => {
@@ -40,8 +43,7 @@ const App = () => {
 	const [orderId, setOrderId] = useState("");
 	const [usersList, setUsersList] = useState([]);
 	const [grandTotal, setGrandTotal] = useState(0);
-  const [userToUpdate, setUserToUpdate] = useState({});
-  const [isAdmin, setIsAdmin] = useState("");
+	const [userToUpdate, setUserToUpdate] = useState({});
 
 	useEffect(() => {
 		fetchAPI(BASE_URL + "/")
@@ -67,19 +69,22 @@ const App = () => {
 
 	useEffect(() => {
 		if (isLoggedIn) {
-		  getActiveUser()
-			.then((data) => {
-			  setActiveUser(data)
-			})
-			.catch(console.error)
+			getActiveUser()
+				.then((data) => {
+					setActiveUser(data);
+				})
+				.catch(console.error);
 		}
-	  }, [])
+	}, [isLoggedIn]);
 
 	useEffect(() => {
 		let total = 0;
 		if (activeUser) {
 			fetchAPI(BASE_URL + `/orders/cart/${activeUser.id}`)
 				.then((data) => {
+					if (data.message) {
+						return;
+					}
 					data.openOrdersWithProduct[0].map((product) => {
 						let newPrice = product.price / 100;
 						product.price = newPrice;
@@ -127,6 +132,7 @@ const App = () => {
 							setCartData={setCartData}
 							orderId={orderId}
 							activeUser={activeUser}
+							setProductList={setProductList}
 						/>
 					</Route>
 					<Route exact path="/products">
@@ -135,6 +141,18 @@ const App = () => {
 							history={history}
 							setActiveProduct={setActiveProduct}
 						/>
+					</Route>
+					<Route exact path="/updateProduct">
+						<UpdateProduct
+							activeUser={activeUser}
+							activeProduct={activeProduct}
+							history={history}
+							setProductList={setProductList}
+							setActiveProduct={setActiveProduct}
+						/>
+					</Route>
+					<Route exact path="/findorders">
+						<MultipleOrders activeUser={activeUser} history={history} />
 					</Route>
 					<Route exact path="/houseplants">
 						<HousePlants
@@ -166,8 +184,7 @@ const App = () => {
 						/>
 					</Route>
 					<Route exact path="/register">
-						<Register 
-						setIsLoggedIn={setIsLoggedIn} />
+						<Register setIsLoggedIn={setIsLoggedIn} />
 					</Route>
 					<Route exact path="/users">
 						<Users
@@ -217,7 +234,6 @@ const App = () => {
 							setUsersList={setUsersList}
 						/>
 					</Route>
-
 					<Route path="/payment">
 						<Payment
 							productList={productList}

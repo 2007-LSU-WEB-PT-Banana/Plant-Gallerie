@@ -44,29 +44,8 @@ export const getActiveUser = async () => {
 	return user;
 };
 
-// export const getCartData = async () => {
-// 	const url = `${BASE_URL}/orders/cart`;
-// 	const user = activeUser || null;
-// 	const response = await fetch(url, {
-// 		method: "GET",
-// 		headers: { "Content-Type": "application/json" },
-// 		body: JSON.stringify({ user }),
-// 	});
-// 	console.log("response from getCartData on frontend", response);
-
-// 	const { error, cart } = await response.json();
-
-// 	if (error) {
-// 		throw Error(error.message);
-// 	}
-// 	console.log("this is the cart from the front end request", cart);
-// 	return cart;
-// };
-
 export const loginUser = async (username, password) => {
-	console.log("inside auth");
 	const url = `${BASE_URL}/login`;
-	console.log("after url");
 
 	const response = await fetch(url, {
 		method: "POST",
@@ -76,7 +55,7 @@ export const loginUser = async (username, password) => {
 			password: password,
 		}),
 	});
-	console.log("this is response", response);
+
 	const { error, user, token } = await response.json();
 
 	if (error) {
@@ -136,10 +115,24 @@ export const fetchAPI = async (url, method = "GET", sendData = null) => {
 		if (sendData.price) {
 			let newPrice = sendData.price * 100;
 			sendData.price = newPrice.toFixed(0);
-			console.log("the price conversion in the fetch", sendData.price);
 		}
 		fetchOptions.body = JSON.stringify(sendData);
 	}
+
+	const response = await fetch(url, fetchOptions);
+	const data = await response.json();
+
+	return data;
+};
+
+export const deleteProduct = async (url, sendData) => {
+	const fetchOptions = {
+		method: "DELETE",
+		headers: {
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify(sendData),
+	};
 
 	const response = await fetch(url, fetchOptions);
 	const data = await response.json();

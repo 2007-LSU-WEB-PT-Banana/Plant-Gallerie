@@ -19,8 +19,6 @@ const createUser = async ({
 	password,
 }) => {
 	try {
-		console.log("creating users");
-
 		const {
 			rows: [user],
 		} = await client.query(
@@ -38,20 +36,17 @@ const createUser = async ({
 
 		return user;
 	} catch (error) {
-		console.log("cant create user");
 		throw error;
 	}
 };
 
 //this function is working - do not edit this code!
 const getAllUsers = async () => {
-	console.log("users live here");
 	try {
 		const { rows: allUsers } = await client.query(`
     SELECT * 
     FROM users;
  `);
-		console.log("these are users", allUsers);
 		allUsers.map((user) => {
 			return delete user.password;
 		});
@@ -64,7 +59,6 @@ const getAllUsers = async () => {
 //this function is working - do not edit this code!
 const getUser = async ({ username, password }) => {
 	try {
-		console.log("inside get user");
 		const {
 			rows: [user],
 		} = await client.query(
@@ -76,10 +70,6 @@ const getUser = async ({ username, password }) => {
 			[username, password]
 		);
 
-		console.log("this is username", username);
-		console.log("this is password", password);
-		console.log("this is user ", user.id);
-
 		return user;
 	} catch (error) {
 		throw error;
@@ -89,7 +79,6 @@ const getUser = async ({ username, password }) => {
 //this function is working - do not edit!
 const getUserById = async (id) => {
 	try {
-		console.log("inside try for getUserById");
 		const {
 			rows: [user],
 		} = await client.query(
@@ -100,8 +89,6 @@ const getUserById = async (id) => {
     `,
 			[id]
 		);
-		console.log("made it through the try");
-		console.log("the user is", user);
 		delete user.password;
 		return user;
 	} catch (error) {
@@ -218,8 +205,6 @@ const getProductById = async (id) => {
 			};
 		}
 
-		console.log("product is here", product);
-
 		return product;
 	} catch (error) {
 		throw error;
@@ -231,7 +216,6 @@ const createOrder = async ({ status, userId, products }) => {
 	const datePlaced = new Date();
 
 	try {
-		console.log("creating order");
 		const {
 			rows: [order],
 		} = await client.query(
@@ -255,15 +239,16 @@ const getAllOrders = async () => {
 	try {
 		const { rows: allOrders } = await client.query(`
     SELECT *
-    FROM orders;
+    FROM orders
     `);
-		const orders = await Promise.all(
-			allOrders.map((order) => {
-				return getOrdersByProduct(order.id);
+
+		const products = await Promise.all(
+			allOrders.map(async (order) => {
+				order.products = await getOrderProductsByOrderId(order.id);
 			})
 		);
 
-		return orders;
+		return allOrders;
 	} catch (error) {
 		throw error;
 	}
@@ -288,7 +273,6 @@ const getOrdersByUser = async (userId) => {
 //this function is working - do not edit this code!
 const getOrderById = async (orderId) => {
 	try {
-		console.log("inside get order by id.  the id is:", orderId);
 		const { rows: order } = await client.query(
 			`
       SELECT *
@@ -299,19 +283,7 @@ const getOrderById = async (orderId) => {
       `,
 			[orderId]
 		);
-		console.log("logging inside getorderbyid");
-		console.log("the order is", order);
-		// if (order === []) {
-		// 	const { rows: emptyOrder } = await client.query(
-		// 		`
-		//     SELECT *
-		//     FROM orders
-		//     WHERE "orderId"=$1;
-		//     `,
-		// 		[orderId]
-		// 	);
-		// 	return emptyOrder;
-		// }
+
 		if (!order) {
 			throw {
 				name: "OrderNotFoundError",
@@ -344,7 +316,6 @@ const getOrderProductsById = async (orderId) => {
 
 //this function works - do not edit code!
 const getCartByUser = async (userId) => {
-	console.log("beginning get cart by user");
 	try {
 		const { rows: orders } = await client.query(
 			`
@@ -354,13 +325,16 @@ const getCartByUser = async (userId) => {
     `,
 			[userId]
 		);
-		console.log("the orders are", orders);
 
 		const openOrders = await Promise.all(
 			orders.map((order) => getOrderById(order.id))
 		);
-		console.log("the Open Orders from getCartByUser are", openOrders);
-		return { openOrders: orders, openOrdersWithProduct: openOrders };
+
+		if (openOrders[0][0]) {
+			return { openOrders: orders, openOrdersWithProduct: openOrders };
+		} else {
+			return { message: "there were no open orders with products." };
+		}
 	} catch (error) {
 		throw error;
 	}
@@ -368,10 +342,6 @@ const getCartByUser = async (userId) => {
 
 //this function is working - do not edit this code!
 const createOrderProducts = async ({ productId, orderId, price, quantity }) => {
-	console.log("productId", productId);
-	console.log("orderId", orderId);
-	console.log("price", price);
-	console.log("quantity", quantity);
 	try {
 		const {
 			rows: [orderProduct],
@@ -383,7 +353,6 @@ const createOrderProducts = async ({ productId, orderId, price, quantity }) => {
     `,
 			[productId, orderId, price, quantity]
 		);
-		console.log("order-products are:", orderProduct);
 		return orderProduct;
 	} catch (error) {
 		throw error;
@@ -421,7 +390,6 @@ const getOrdersByProduct = async (id) => {
     `,
 			[id]
 		);
-		console.log("this is product id", ordersIds.productId);
 		const allProducts = ordersIds.map((order) => {
 			return getOrdersByUser(order.id);
 		});
@@ -431,96 +399,23 @@ const getOrdersByProduct = async (id) => {
 	}
 };
 
-//i don't think this is going to work because this is selecting from
-//order_products not orders.
-const getOrderByProductId = async (id) => {
-	try {
-		const {
-			rows: [orderProduct],
-		} = await client.query(
-			`
-SELECT * 
-FROM order_products
-WHERE id=$1;
-`,
-			[id]
-		);
-		return orderProduct;
-	} catch (error) {
-		throw error;
-	}
-};
-
-const getOrderProductByOrderId = async (orderId) => {
-	try {
-		const {
-			rows: [orderProduct],
-		} = await client.query(
-			`
-SELECT * 
-FROM order_products
-WHERE "orderId"=$1;
-`,
-			[orderId]
-		);
-		return orderProduct;
-	} catch (error) {
-		throw error;
-	}
-};
-
-const addProductToOrder = async ({ orderId, productId, price, quantity }) => {
-	try {
-		const orderProduct = await getOrderProductByOrderId(id);
-
-		if (orderProduct.length < 1) {
-			const {
-				rows: [productOrdered],
-			} = await client.query(
-				`
-      INSERT INTO order_products ("productId", "orderId", price, quantity)
-      VALUES ($1, $2, $3, $4)
-      RETURNING *
-      `,
-				[[productId, orderId, price, quantity]]
-			);
-			return productOrdered;
-		} else {
-			for (let i = 0; i < orderProduct.length; i++) {
-				if (orderProduct[i].productId === productId) {
-					const {
-						rows: [productOrder],
-					} = await client.query(
-						`
-                    UPDATE order_products SET (price, quantity) = 
-                    ($1, $2) WHERE "productId" = $3 AND "orderId" = $4
-                    RETURNING *
-                `,
-						[price, quantity, productId, orderId]
-					);
-
-					return productOrder;
-				} else if (
-					orderProduct[orderProducts.length - 1].productId !== productId &&
-					i === orderProduct.length - 1
-				) {
-					const {
-						rows: [productOrder],
-					} = await client.query(
-						`
-          INSERT INTO order_products ("productId", "orderId", price, quantity)
-          VALUES ($1, $2, $3, $4)
-          RETURNING *`,
-						[productId, orderId, price, quantity]
-					);
-					return productOrder;
-				}
-			}
-		}
-	} catch (error) {
-		throw error;
-	}
-};
+// const getOrderProductByOrderId = async (orderId) => {
+// 	try {
+// 		const {
+// 			rows: [orderProduct],
+// 		} = await client.query(
+// 			`
+// SELECT *
+// FROM order_products
+// WHERE "orderId"=$1;
+// `,
+// 			[orderId]
+// 		);
+// 		return orderProduct;
+// 	} catch (error) {
+// 		throw error;
+// 	}
+// };
 
 //this function works - do not edit this code!
 const updateOrderProduct = async (orderId, { productId, price, quantity }) => {
@@ -554,12 +449,14 @@ const updateOrderProduct = async (orderId, { productId, price, quantity }) => {
 	}
 };
 
-const findOrderProductsToDelete = async (productId) => {
-	console.log("beginning findOrderProductToDelete");
+//this function first deletes the order_products where the order.status is not "completed"
+//then it removes the reference to the productId for the order_products that remain
+//then it deletes the product
+const deleteOrderProductsAndProduct = async (productId) => {
 	try {
 		const { rows: orderProducts } = await client.query(
 			`
-      SELECT *
+      DELETE
       FROM order_products
       WHERE order_products."productId"=$1
       AND order_products."orderId"
@@ -568,20 +465,28 @@ const findOrderProductsToDelete = async (productId) => {
 			[productId]
 		);
 
-		// SELECT DISTINCT order_products.id, orders.status
-		// FROM order_products, orders
-		// WHERE order_products."productId"=$1
-		// AND orders.status!='completed';
-		console.log("the order_products are", orderProducts);
+		const { rows: remainingOrderProducts } = await client.query(
+			`
+      UPDATE order_products
+      SET "productId"=null
+      WHERE "productId"=$1;
+      `,
+			[productId]
+		);
 
-		// const orders = await Promise.all(
-		// 	result.map((orderProduct) => {
-		// 		if (orderProduct.status !== completed) {
-		// 			destroyAllOrderProductsById(orderProduct.id);
-		// 		}
-		// 	})
-		// );
-		return orderProducts;
+		const { rows: product } = await client.query(
+			`
+      DELETE
+      FROM products
+      WHERE products.id=$1
+      `,
+			[productId]
+		);
+
+		return {
+			message:
+				"The product has been deleted from the system and all associated open or cancelled orders.",
+		};
 	} catch (error) {
 		throw error;
 	}
@@ -606,7 +511,6 @@ const destroyAllOrderProductsById = async (orderProductId) => {
 };
 
 const destroyOrderProduct = async (productId, orderId) => {
-	console.log("the id is ", productId);
 	try {
 		const {
 			rows: [orderProduct],
@@ -641,6 +545,32 @@ async function getOrderProductsByOrderId(orderId) {
 	}
 }
 
+async function updateProduct(productId, fields = {}) {
+	const setString = Object.keys(fields)
+		.map((key, index) => `"${key}"=$${index + 1}`)
+		.join(", ");
+
+	try {
+		const { rows: productToUpdate } = await client.query(
+			`
+      UPDATE products
+      SET ${setString}
+      WHERE id='${productId}';
+    `,
+			Object.values(fields)
+		);
+
+		const { rows: updatedProduct } = await client.query(`
+      SELECT *
+      FROM products
+      WHERE id='${productId}';
+    `);
+		return updatedProduct[0];
+	} catch (error) {
+		throw error;
+	}
+}
+
 module.exports = {
 	client,
 	createUser,
@@ -661,6 +591,7 @@ module.exports = {
 	addProductsToOrder,
 	updateOrderProduct,
 	destroyOrderProduct,
-	findOrderProductsToDelete,
+	deleteOrderProductsAndProduct,
 	updateUser,
+	updateProduct,
 };

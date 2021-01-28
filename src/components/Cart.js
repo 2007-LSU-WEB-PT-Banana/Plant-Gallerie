@@ -12,7 +12,7 @@ const Cart = (props) => {
 		orderId,
 		activeUser,
 	} = props;
-
+console.log(props)
 	return (
 		<SingleOrder
 			cartData={cartData}

@@ -23,7 +23,6 @@ async function buildTables() {
     DROP TABLE IF EXISTS products CASCADE;
   `);
 		// build tables in correct order
-		console.log("creating tables");
 		await client.query(`
     CREATE TABLE products(
       id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -58,9 +57,9 @@ async function buildTables() {
         quantity INTEGER NOT NULL DEFAULT 0
         );
     `);
-  } catch (error) {
-    throw error
-  }
+	} catch (error) {
+		throw error;
+	}
 }
 async function populateInitialData() {
 	try {
@@ -200,23 +199,6 @@ async function populateInitialData() {
 	}
 }
 buildTables()
-  .then(populateInitialData)
-  .catch(console.error)
-  .finally(() => client.end())
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+	.then(populateInitialData)
+	.catch(console.error)
+	.finally(() => client.end());
