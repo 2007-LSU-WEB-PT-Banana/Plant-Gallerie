@@ -37,13 +37,12 @@ const createUser = async ({
 
 //this function is working - do not edit this code!
 const getAllUsers = async () => {
-
   try {
     const { rows: allUsers } = await client.query(`
     SELECT * 
     FROM users;
  `)
-    
+
     allUsers.map((user) => {
       return delete user.password
     })
@@ -56,7 +55,6 @@ const getAllUsers = async () => {
 //this function is working - do not edit this code!
 const getUser = async ({ username, password }) => {
   try {
-    
     const {
       rows: [user],
     } = await client.query(
@@ -68,9 +66,6 @@ const getUser = async ({ username, password }) => {
       [username, password],
     )
 
-    
-    
-
     return user
   } catch (error) {
     throw error
@@ -79,7 +74,6 @@ const getUser = async ({ username, password }) => {
 
 const getUserById = async (id) => {
   try {
-    
     const {
       rows: [user],
     } = await client.query(
@@ -90,7 +84,7 @@ const getUserById = async (id) => {
     `,
       [id],
     )
-    
+
     delete user.password
     return user
   } catch (error) {
@@ -207,8 +201,6 @@ const getProductById = async (id) => {
       }
     }
 
-  
-
     return product
   } catch (error) {
     throw error
@@ -217,14 +209,13 @@ const getProductById = async (id) => {
 
 //this function is working - do not edit this code!
 const createOrder = async ({ status, userId, products }) => {
-	const datePlaced = new Date();
+  const datePlaced = new Date()
 
   if (!userId) {
     userId = 'e7d2b614-f191-4f46-8842-285b46ebb6f0'
   }
 
   try {
-   
     const {
       rows: [order],
     } = await client.query(
@@ -236,9 +227,12 @@ const createOrder = async ({ status, userId, products }) => {
       [status, userId, datePlaced],
     )
 
-    const newOrder = await addProductsToOrder(order.id, products)
+    if (products.length > 0) {
+      const newOrder = await addProductsToOrder(order.id, products)
+      return newOrder
+    }
 
-    return newOrder
+    return order
   } catch (error) {
     throw error
   }
@@ -264,7 +258,6 @@ const getAllOrders = async () => {
 }
 
 const getOrdersByUser = async (userId) => {
-
   try {
     const { rows: OrderIds } = await client.query(`
     SELECT id
@@ -326,8 +319,6 @@ const getOrderProductsById = async (orderId) => {
 
 //this function works - do not edit code!
 const getCartByUser = async (userId) => {
-  
-  
   try {
     const { rows: orders } = await client.query(
       `
@@ -338,12 +329,9 @@ const getCartByUser = async (userId) => {
       [userId],
     )
 
-    
-
     const openOrders = await Promise.all(
       orders.map((order) => getOrderById(order.id)),
     )
-    
 
     if (openOrders[0][0]) {
       return { openOrders: orders, openOrdersWithProduct: openOrders }
@@ -379,7 +367,7 @@ const createOrderProducts = async ({ productId, orderId, price, quantity }) => {
 
 //this function is working - do not edit this code!
 const addProductsToOrder = async (orderId, productList) => {
-  
+  console.log('this is product list', productlist)
   try {
     const createOrderProductsPromises = await productList.map((product) =>
       createOrderProducts({
@@ -410,13 +398,11 @@ const getOrdersByProduct = async (orderId) => {
       [orderId],
     )
 
-   
     return order
   } catch (error) {
     throw error
   }
 }
-
 
 const getOrderByProductId = async (id) => {
   try {
@@ -538,7 +524,6 @@ const updateOrderProduct = async (orderId, { productId, price, quantity }) => {
 }
 
 const findOrderProductsToDelete = async (productId) => {
-  
   try {
     const { rows: orderProducts } = await client.query(
       `
@@ -654,13 +639,13 @@ const updateOrder = async (orderId, status, userId) => {
 const completeOrder = async (orderId) => {
   try {
     const orderToBeCompleted = await getOrderById(orderId)
-    
+
     const complete = await updateOrder(
       orderId,
       (status = 'completed'),
       orderToBeCompleted[0].userId,
     )
-    
+
     return complete
   } catch (error) {
     throw error
@@ -708,9 +693,8 @@ const deleteOrderProductsAndProduct = async (productId) => {
 }
 
 const cancelOrder = async (orderId) => {
-  
   const orderToBeCancelled = await getOrderById(orderId)
-  
+
   const orderTocan = await updateOrder(
     orderId,
     (status = 'cancelled'),
@@ -787,28 +771,3 @@ module.exports = {
   completeOrder,
   updateOrder,
 }
-
-module.exports = {
-	client,
-	createUser,
-	getAllUsers,
-	getUserById,
-	getUserByUsername,
-	createProduct,
-	getProductById,
-	getAllProducts,
-	getCartByUser,
-	createOrder,
-	getOrdersByProduct,
-	getAllOrders,
-	getOrderById,
-	getUser,
-	getOrderProductsById,
-	getOrdersByUser,
-	addProductsToOrder,
-	updateOrderProduct,
-	destroyOrderProduct,
-	deleteOrderProductsAndProduct,
-	updateUser,
-	updateProduct,
-};

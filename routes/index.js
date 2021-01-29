@@ -135,6 +135,7 @@ apiRouter.post('/register', async (req, res, next) => {
       username,
       password: hashPassword,
     })
+    console.log('user is', user)
 
     await createOrder({ status: 'created', userId: user.id, products: [] })
 
@@ -249,11 +250,13 @@ apiRouter.get('/products/:productId', async (req, res, next) => {
 apiRouter.get('/orders/cart/:userId', async (req, res, next) => {
   try {
     const user = await getUserById(req.params.userId)
+    console.log('this is user', user)
 
     if (!user) {
       await createOrder({ status: 'created', userId: user.id, products: [] })
     }
     if (user) {
+      console.log('im here')
       const userOrders = await getCartByUser(user.id)
 
       res.send(userOrders)
@@ -267,10 +270,9 @@ apiRouter.get('/orders/cart/:userId', async (req, res, next) => {
 
 //this route works - do not edit this code!
 apiRouter.post('/orders/:orderId/products', async (req, res, next) => {
+  console.log('this s body', req.body)
   try {
-    const changedOrder = await addProductsToOrder(req.params.orderId, [
-      req.body,
-    ])
+    const changedOrder = await addProductsToOrder(req.params.orderId, req.body)
 
     res.send(changedOrder)
   } catch (error) {
@@ -420,8 +422,14 @@ apiRouter.get('/orders/checkout/:orderId', async (req, res, next) => {
 
 apiRouter.delete('/orders/:orderId', async (req, res, next) => {
   try {
-    const cancel = await cancelOrder(req.params.orderId)
-    res.send(cancel)
+    const order = getOrderById(req.params.orderId)
+
+    await cancelOrder(req.params.orderId)
+    if (order.userId) {
+      await createOrder({ status: 'created', userId: user.id, products: [] })
+    }
+
+    res.send({ message: 'your order has been cancelled' })
   } catch (error) {
     throw error
   }
