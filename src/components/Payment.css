@@ -1,0 +1,33 @@
+.stripe-header {
+	align-content: center;
+	align-self: center;
+}
+
+.button-pay {
+	background-color: #607848;
+	display: flex;
+	padding: 10px;
+	text-decoration: none;
+	color: white;
+	border-radius: 0.25rem;
+	text-align: center;
+	transition: all 0.3s;
+	justify-content: center;
+	text-transform: uppercase;
+	margin: 5px 5px 5px 20px;
+	width: 250px;
+}
+
+.useradress {
+	width: 50%;
+	margin: 20px;
+}
+
+.useradress > h2,
+h3,
+span,
+p {
+	font-family: 'Alegreya Sans SC', sans-serif;
+	font-weight: 800;
+	padding: 5px;
+}

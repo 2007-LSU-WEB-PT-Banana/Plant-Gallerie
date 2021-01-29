@@ -1,20 +1,21 @@
-import React, { useState } from "react";
-import { BASE_URL, fetchAPI, deleteProduct } from "../api";
-import { Link } from "react-router-dom";
+import React, { useState } from 'react'
+import { BASE_URL, fetchAPI, deleteProduct } from '../api'
+import { Link } from 'react-router-dom'
+import axios from 'axios'
 
 const SingleProduct = (props) => {
-	const {
-		activeProduct,
-		setActiveProduct,
-		history,
-		count,
-		setCount,
-		cartData,
-		setCartData,
-		orderId,
-		activeUser,
-		setProductList,
-	} = props;
+  const {
+    activeProduct,
+    setActiveProduct,
+    history,
+    count,
+    setCount,
+    cartData,
+    setCartData,
+    orderId,
+    activeUser,
+    setProductList,
+  } = props
 
 	const [message, setMessage] = useState("");
 
