@@ -32,8 +32,9 @@ const Home = () => {
 							>
 								<h1 className="header-heading">Plant Gallerie</h1>
 								<article style={{ color: "white" }} className="article-heder">
-									<p style={{ fontSize: "30px" }}>Buy 3 plants for $200</p>
-									<p style={{ fontSize: "30px" }}>Plus free shipping</p>
+									<p style={{ fontSize: "30px" }}>
+										Free Shipping With Orders Over $100
+									</p>
 									<button className="main-image-button" id="shopButton">
 										<Link to="/products" className="allProdLink">
 											Shop Now
@@ -58,10 +59,7 @@ const Home = () => {
 								</h1>
 								<article className="article-heder">
 									<p style={{ fontSize: "30px", color: "white" }}>
-										Buy 3 plants for $200
-									</p>
-									<p style={{ fontSize: "30px", color: "white" }}>
-										Plus free shipping
+										Free Shipping With Orders Over $100
 									</p>
 									<button className="main-image-button" id="shopButton">
 										<Link to="/products" className="allProdLink">
@@ -83,8 +81,9 @@ const Home = () => {
 							>
 								<h1 className="header-heading">Plant Gallerie</h1>
 								<article className="article-heder">
-									<p style={{ fontSize: "30px" }}>Buy 3 plants for $200</p>
-									<p style={{ fontSize: "30px" }}>Plus free shipping</p>
+									<p style={{ fontSize: "30px" }}>
+										Free Shipping With Orders Over $100
+									</p>
 									<button className="main-image-button" id="shopButton">
 										<Link to="/products" className="allProdLink">
 											Shop Now
@@ -106,10 +105,7 @@ const Home = () => {
 								<h1 className="header-heading">Plant Gallerie</h1>
 								<article className="article-heder">
 									<p style={{ fontSize: "30px", color: "white" }}>
-										Buy 3 plants for $200
-									</p>
-									<p style={{ fontSize: "30px", color: "white" }}>
-										Plus free shipping
+										Free Shipping With Orders Over $100
 									</p>
 									<button className="main-image-button" id="shopButton">
 										<Link to="/products" className="allProdLink">
