@@ -71,66 +71,63 @@ const Header = (props) => {
     history.push('/')
   }
 
-	return (
-		<header className="Header">
-			<Link to="/" className="logo" style={headerLink}>
-				Plant Gallerie
-			</Link>
-			{(!isSmallScreen || isNavVisible) && (
-				<nav className="Nav">
-					<Link to="/products" className="header-link" style={headerLink}>
-						All Plants
-					</Link>
-					<Link to="/houseplants" className="header-link" style={headerLink}>
-						House Plants
-					</Link>
-					<Link
-						to="/floweringplants"
-						className="header-link"
-						style={headerLink}
-					>
-						Flowering Plants
-					</Link>
-					<Link to="/bonsaiplants" className="header-link" style={headerLink}>
-						Bonsai and Bamboo
-					</Link>
-					<Link to="/search" className="header-link" style={headerLink}>
-						<SearchIcon className="header-searchIcon" />
-					</Link>
-					{activeUser && activeUser.isAdmin ? (
-						<Link to="/adminportal" className="header-link" style={headerLink}>
-							Admin Portal
-						</Link>
-					) : (
-						""
-					)}
-					{!isLoggedIn ? (
-						<>
-							<div className="log-in">
-								<Link to="/login" className="header-link" style={headerLink}>
-									Login/Register
-								</Link>
-							</div>
-						</>
-					) : (
-						<>
-							<div className="logOut">
-								<h6 className="logOut" style={headerLink}>
-									Not {activeUser.firstName}?
-								</h6>
-								<button className="logOut" onClick={handleSignOut}>
-									Log Out
-								</button>
-							</div>
-						</>
-					)}
-					{isLoggedIn ? (
-						<Link to="/users/me" className="header-link" style={headerLink}>
-							My Account
-						</Link>
-					) : (
-						""
-					)}
+  return (
+    <header className="Header">
+      <Link to="/" className="logo" style={headerLink}>
+        Plant Gallerie
+      </Link>
+      {(!isSmallScreen || isNavVisible) && (
+        <nav className="Nav">
+          <Link to="/products" className="header-link" style={headerLink}>
+            All Plants
+          </Link>
+          <Link to="/houseplants" className="header-link" style={headerLink}>
+            House Plants
+          </Link>
+          <Link
+            to="/floweringplants"
+            className="header-link"
+            style={headerLink}
+          >
+            Flowering Plants
+          </Link>
+          <Link to="/bonsaiplants" className="header-link" style={headerLink}>
+            Bonsai and Bamboo
+          </Link>
+          {activeUser && activeUser.isAdmin ? (
+            <Link to="/adminportal" className="header-link" style={headerLink}>
+              Admin Portal
+            </Link>
+          ) : (
+            ''
+          )}
+          {!isLoggedIn ? (
+            <>
+              <div className="log-in">
+                <Link to="/login" className="header-link" style={headerLink}>
+                  Login/Register
+                </Link>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="logOut">
+                <h6 className="logOut" style={headerLink}>
+                  Not {activeUser.firstName}?
+                </h6>
+                <button className="logOut" onClick={handleSignOut}>
+                  Log Out
+                </button>
+              </div>
+            </>
+          )}
+          {isLoggedIn ? (
+            <Link to="/users/me" className="header-link" style={headerLink}>
+              My Account
+            </Link>
+          ) : (
+            ''
+          )}
 
           <Link to="/cart" className="header-link" style={headerLink}>
             <ShoppingCartIcon /> ({cartData?.length})

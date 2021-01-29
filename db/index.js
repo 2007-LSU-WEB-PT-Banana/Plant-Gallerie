@@ -217,7 +217,7 @@ const getProductById = async (id) => {
 
 //this function is working - do not edit this code!
 const createOrder = async ({ status, userId, products }) => {
-  const datePlaced = new Date()
+	const datePlaced = new Date();
 
   if (!userId) {
     userId = 'e7d2b614-f191-4f46-8842-285b46ebb6f0'
@@ -787,3 +787,28 @@ module.exports = {
   completeOrder,
   updateOrder,
 }
+
+module.exports = {
+	client,
+	createUser,
+	getAllUsers,
+	getUserById,
+	getUserByUsername,
+	createProduct,
+	getProductById,
+	getAllProducts,
+	getCartByUser,
+	createOrder,
+	getOrdersByProduct,
+	getAllOrders,
+	getOrderById,
+	getUser,
+	getOrderProductsById,
+	getOrdersByUser,
+	addProductsToOrder,
+	updateOrderProduct,
+	destroyOrderProduct,
+	deleteOrderProductsAndProduct,
+	updateUser,
+	updateProduct,
+};

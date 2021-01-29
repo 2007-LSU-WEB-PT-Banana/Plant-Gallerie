@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 
 import StripeCheckout from 'react-stripe-checkout'
+
 import axios from 'axios'
 import { toast } from 'react-toastify'
 import SingleOrder from './SingleOrder'
@@ -24,7 +25,6 @@ function Payment(props) {
   const { firstName, lastName, email } = activeUser
 
   const completeOrder = async () => {
-  
     try {
       if (activeUser) {
         const complete = await axios.get(`/api/orders/checkout/${orderId}`)
@@ -33,10 +33,9 @@ function Payment(props) {
           status: 'created',
           products: cartData,
         }
-       
-    
+
         const newOrdr = await axios.post(`/api/orders`, body)
-        
+
         await axios.get(`/api/orders/checkout/${newOrdr.data[0].orderId}`)
       }
 
@@ -60,17 +59,15 @@ function Payment(props) {
   }
 
   async function handleToken(token) {
-    
     try {
-      
       const url = 'api/payment'
       const result = await axios.post(url, {
         token,
         grandTotal,
       })
-      
+
       const { status } = result.data
-     
+
       if (status == 'success') {
         completeOrder()
       } else {

@@ -16,7 +16,9 @@ const SingleOrder = (props) => {
   const [count, setCount] = useState('')
   const [message, setMessage] = useState('')
 
-  
+  function continueShopping() {
+    history.goBack()
+  }
 
   async function removeItem(idx) {
     if (activeUser) {
@@ -91,7 +93,7 @@ const SingleOrder = (props) => {
       <div className="cartCardWrapper">
         {cartData.map((product, index) => {
           return (
-            <div className="cartCard" key={index}>
+            <div className="cartCard" value={index}>
               <img
                 src={product.imageURL}
                 alt="plant"

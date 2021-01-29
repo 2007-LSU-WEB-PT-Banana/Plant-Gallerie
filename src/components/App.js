@@ -82,6 +82,16 @@ const App = () => {
   }, [isLoggedIn])
 
   useEffect(() => {
+    if (isLoggedIn) {
+      getActiveUser()
+        .then((data) => {
+          setActiveUser(data)
+        })
+        .catch(console.error)
+    }
+  }, [isLoggedIn])
+
+  useEffect(() => {
     let total = 0
     if (activeUser) {
       fetchAPI(BASE_URL + `/orders/cart/${activeUser.id}`)
@@ -111,13 +121,34 @@ const App = () => {
     }
   }, [activeUser])
 
-  useEffect(() => {
-    fetchAPI(BASE_URL + '/users')
-      .then((data) => {
-        setUsersList(data)
-      })
-      .catch(console.error)
-  }, [])
+  // return (
+  //   <>
+  //     <Header
+  //       activeUser={activeUser}
+  //       setActiveUser={setActiveUser}
+  //       setIsLoggedIn={setIsLoggedIn}
+  //       isLoggedIn={isLoggedIn}
+  //       history={history}
+  //       clearToken={clearToken}
+  //       setCartData={setCartData}
+  //       cartData={cartData}
+  //     />
+  //     <main className="wrapper">
+  //       <Switch>
+  //         <Route exact path="/" component={Home} />
+  //         <Route path={`/products/:productId`}>
+  //           <SingleProduct
+  //             activeProduct={activeProduct}
+  //             setActiveProduct={setActiveProduct}
+  //             history={history}
+  //             count={count}
+  //             setCount={setCount}
+  //             cartData={cartData}
+  //             setCartData={setCartData}
+  //             orderId={orderId}
+  //             activeUser={activeUser}
+  //           />
+  //         </Route>
 
   return (
     <>
