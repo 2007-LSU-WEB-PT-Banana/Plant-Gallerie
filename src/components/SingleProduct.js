@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { BASE_URL, fetchAPI, deleteProduct } from '../api'
 import { Link } from 'react-router-dom'
+import axios from 'axios'
 
 const SingleProduct = (props) => {
   const {
@@ -63,8 +64,6 @@ const SingleProduct = (props) => {
   match = cartData.findIndex((x) => x.id === activeProduct.id)
 
   async function authenticatedCartUpdate() {
-    //if the current item matches anything in the cart, "match" will update to be the index of that item
-    //in the cartData array
     if (match === -1) {
       try {
         let newCartItem = {
@@ -81,6 +80,7 @@ const SingleProduct = (props) => {
           'POST',
           newCartItem,
         )
+
         let total = 0
         newCart.map((product) => {
           let newPrice = product.price / 100
@@ -91,7 +91,7 @@ const SingleProduct = (props) => {
         setCount(1)
         setMessage('Added to Cart')
       } catch (error) {
-        throw error
+        throw error.message
       }
     } else {
       try {

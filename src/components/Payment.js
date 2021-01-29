@@ -5,6 +5,7 @@ import axios from 'axios'
 import { toast } from 'react-toastify'
 import SingleOrder from './SingleOrder'
 import './Payment.css'
+import SingleUser from './SingleUser'
 
 toast.configure()
 
@@ -20,8 +21,10 @@ function Payment(props) {
     activeUser,
   } = props
 
+  const { firstName, lastName, email } = activeUser
+
   const completeOrder = async () => {
-    console.log('this is orderzid', orderId)
+  
     try {
       if (activeUser) {
         const complete = await axios.get(`/api/orders/checkout/${orderId}`)
@@ -30,14 +33,17 @@ function Payment(props) {
           status: 'created',
           products: cartData,
         }
-        // Const {orderId, id} = cartData
-        console.log('cart data', cartData)
+       
+    
         const newOrdr = await axios.post(`/api/orders`, body)
-        console.log('this is new order', newOrdr)
+        
         await axios.get(`/api/orders/checkout/${newOrdr.data[0].orderId}`)
       }
 
       setCartData([])
+      if (localStorage.getItem('cartData')) {
+        localStorage.removeItem('cartData')
+      }
 
       history.push('/success')
     } catch (error) {
@@ -45,27 +51,26 @@ function Payment(props) {
     }
   }
 
-  const cancelOrder = () => {
-    console.log('cancelling', cartData)
+  const cancelOrder = async () => {
+    const cancel = await axios.delete(`/api/orders/${orderId}`)
+    setCartData([])
+    alert('your order has been cancelled')
+    localStorage.removeItem('cartData')
+    history.push('/')
   }
 
   async function handleToken(token) {
-    console.log(grandTotal)
-    console.log({
-      token,
-
-      grandTotal,
-    })
+    
     try {
-      console.log('hitting api')
+      
       const url = 'api/payment'
       const result = await axios.post(url, {
         token,
         grandTotal,
       })
-      console.log(';this is result', result)
+      
       const { status } = result.data
-      console.log('this is status', status)
+     
       if (status == 'success') {
         completeOrder()
       } else {
@@ -78,18 +83,15 @@ function Payment(props) {
 
   return (
     <div className="stripe-header">
-      <StripeCheckout
-        stripeKey={process.env.REACT_APP_MYPKEY}
-        token={handleToken}
-        billingAddress
-        shippingAddress
-        amount={parseInt(grandTotal * 100)}
-      >
-        <button className="button-pay">BUY product for {grandTotal}</button>
-      </StripeCheckout>
-      <button onClick={cancelOrder} className="button-pay">
-        Cancel Order
-      </button>
+      <div className="useradress">
+        <h2> Please review your order</h2>
+        <h3>Shipping adress:</h3>
+        <h3>
+          {activeUser.firstName} {activeUser.lastName}
+        </h3>
+        <span>{activeUser.email}</span>
+        <p>112 leo road Hollywood CA 12345</p>
+      </div>
 
       <SingleOrder
         cartData={cartData}
@@ -101,6 +103,19 @@ function Payment(props) {
         orderId={orderId}
         activeUser={activeUser}
       />
+
+      <StripeCheckout
+        stripeKey={process.env.REACT_APP_MYPKEY}
+        token={handleToken}
+        billingAddress
+        shippingAddress
+        amount={parseInt(grandTotal * 100)}
+      >
+        <button className="button-pay">Complete your transaction</button>
+      </StripeCheckout>
+      <button onClick={cancelOrder} className="button-pay">
+        Cancel Order
+      </button>
     </div>
   )
 }

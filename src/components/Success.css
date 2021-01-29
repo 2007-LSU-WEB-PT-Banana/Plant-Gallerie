@@ -32,3 +32,7 @@
 .success-container > h2 {
 	color: green;
 }
+
+.success-container > p {
+	font-size: 20px;
+}

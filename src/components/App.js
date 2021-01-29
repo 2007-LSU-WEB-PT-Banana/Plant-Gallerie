@@ -24,17 +24,11 @@ import {
   UpdateProduct,
   MultipleOrders,
   SuccessMessage,
+  Failure,
 } from './index'
 
 const App = () => {
   const history = useHistory()
-  //   async function cartFromLocalStorage() {
-  //     if (!localStorage.getItem('cartData')) {
-  //       return []
-  //     } else {
-  //       return JSON.parse(localStorage.getItem('cartData'))
-  //     }
-  //   }
 
   const [isLoggedIn, setIsLoggedIn] = useState(!!getToken())
   const [message, setMessage] = useState('')
@@ -62,20 +56,20 @@ const App = () => {
       })
   }, [])
 
-  //   useEffect(() => {
-  //     // localStorage.setItem('cartData', JSON.stringify(cartData))
-  //     localStorage.setItem('cartData', JSON.stringify([]))
-  //   }, [cartData])
+  useEffect(() => {
+    if (!isLoggedIn) {
+      const data = localStorage.getItem('cartData')
+      if (data) {
+        setCartData(JSON.parse(data))
+      }
+    }
+  }, [])
 
   useEffect(() => {
-    if (isLoggedIn) {
-      getActiveUser()
-        .then((data) => {
-          setActiveUser(data)
-        })
-        .catch(console.error)
+    if (!isLoggedIn) {
+      localStorage.setItem('cartData', JSON.stringify(cartData))
     }
-  }, [isLoggedIn])
+  }, [cartData])
 
   useEffect(() => {
     if (isLoggedIn) {
@@ -89,11 +83,16 @@ const App = () => {
 
   useEffect(() => {
     let total = 0
-    if (isLoggedIn) {
+    if (activeUser) {
       fetchAPI(BASE_URL + `/orders/cart/${activeUser.id}`)
         .then((data) => {
-          console.log('this is adat', data)
           if (data.message) {
+            if (localStorage.getItem('cartData')) {
+              localStorage.removeItem('cartData')
+              setCartData(data.openOrders[0])
+            }
+
+            setOrderId(data.openOrders[0].id)
             return
           }
           data.openOrdersWithProduct[0].map((product) => {
@@ -101,14 +100,25 @@ const App = () => {
             product.price = newPrice
             total = newPrice * product.quantity + total
           })
-
+          if (localStorage.getItem('cartData')) {
+            localStorage.removeItem('cartData')
+          }
           setCartData(data.openOrdersWithProduct[0])
-          setOrderId(data.openOrders[0].id)
+          setOrderId(data.openOrders[0]?.id)
           setGrandTotal(total)
         })
         .catch(console.error)
     }
-  }, [isLoggedIn])
+  }, [activeUser])
+
+  useEffect(() => {
+    fetchAPI(BASE_URL + '/users')
+      .then((data) => {
+        setUsersList(data)
+      })
+      .catch(console.error)
+  }, [])
+
   return (
     <>
       <Header
@@ -140,6 +150,9 @@ const App = () => {
           </Route>
           <Route exact path="/success">
             <SuccessMessage activeUser={activeUser} history={history} />
+          </Route>
+          <Route exact path="/failure">
+            <Failure activeUser={activeUser} history={history} />
           </Route>
 
           <Route path="/payment">
@@ -259,6 +272,8 @@ const App = () => {
             <Payment
               productList={productList}
               setProductList={setProductList}
+              setUsersList={setUsersList}
+              activeUser={activeUser}
             />
           </Route>
         </Switch>

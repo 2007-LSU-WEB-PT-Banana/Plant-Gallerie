@@ -13,7 +13,9 @@ function SuccessMessage(props) {
         />
         <h2>PLANT GALLERIE ORDER CONFIRMATION</h2>
         <p>
-          {activeUser ? <span> {activeUser.firstName}</span> : null}
+          {activeUser ? (
+            <span style={{ color: 'green' }}> {activeUser.firstName} </span>
+          ) : null}
           Thank You For Placing order with Us!!!
         </p>
         <p>Please Check your email for Necessary details.</p>

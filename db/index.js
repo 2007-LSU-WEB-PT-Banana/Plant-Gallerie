@@ -19,7 +19,6 @@ const createUser = async ({
   password,
 }) => {
   try {
-    console.log('creating users')
     const {
       rows: [user],
     } = await client.query(
@@ -32,20 +31,19 @@ const createUser = async ({
     )
     return user
   } catch (error) {
-    console.log('cant create user')
     throw error
   }
 }
 
 //this function is working - do not edit this code!
 const getAllUsers = async () => {
-  console.log('users live here')
+
   try {
     const { rows: allUsers } = await client.query(`
     SELECT * 
     FROM users;
  `)
-    console.log('these are users', allUsers)
+    
     allUsers.map((user) => {
       return delete user.password
     })
@@ -58,7 +56,7 @@ const getAllUsers = async () => {
 //this function is working - do not edit this code!
 const getUser = async ({ username, password }) => {
   try {
-    console.log('inside get user')
+    
     const {
       rows: [user],
     } = await client.query(
@@ -70,9 +68,8 @@ const getUser = async ({ username, password }) => {
       [username, password],
     )
 
-    console.log('this is username', username)
-    console.log('this is password', password)
-    // console.log('this is user ', user.id)
+    
+    
 
     return user
   } catch (error) {
@@ -80,10 +77,9 @@ const getUser = async ({ username, password }) => {
   }
 }
 
-//this function is working - do not edit!
 const getUserById = async (id) => {
   try {
-    console.log('inside try for getUserById')
+    
     const {
       rows: [user],
     } = await client.query(
@@ -94,8 +90,7 @@ const getUserById = async (id) => {
     `,
       [id],
     )
-    console.log('made it through the try')
-    console.log('the user is', user)
+    
     delete user.password
     return user
   } catch (error) {
@@ -212,7 +207,7 @@ const getProductById = async (id) => {
       }
     }
 
-    console.log('product is here', product)
+  
 
     return product
   } catch (error) {
@@ -229,7 +224,7 @@ const createOrder = async ({ status, userId, products }) => {
   }
 
   try {
-    console.log('creating order')
+   
     const {
       rows: [order],
     } = await client.query(
@@ -269,6 +264,7 @@ const getAllOrders = async () => {
 }
 
 const getOrdersByUser = async (userId) => {
+
   try {
     const { rows: OrderIds } = await client.query(`
     SELECT id
@@ -330,6 +326,8 @@ const getOrderProductsById = async (orderId) => {
 
 //this function works - do not edit code!
 const getCartByUser = async (userId) => {
+  
+  
   try {
     const { rows: orders } = await client.query(
       `
@@ -340,14 +338,20 @@ const getCartByUser = async (userId) => {
       [userId],
     )
 
+    
+
     const openOrders = await Promise.all(
       orders.map((order) => getOrderById(order.id)),
     )
+    
 
     if (openOrders[0][0]) {
       return { openOrders: orders, openOrdersWithProduct: openOrders }
     } else {
-      return { message: 'there were no open orders with products.' }
+      return {
+        message: 'there were no open orders with products.',
+        openOrders: orders,
+      }
     }
   } catch (error) {
     throw error
@@ -375,8 +379,7 @@ const createOrderProducts = async ({ productId, orderId, price, quantity }) => {
 
 //this function is working - do not edit this code!
 const addProductsToOrder = async (orderId, productList) => {
-  console.log('this is orderr id', orderId)
-  console.log('this is product list', productList)
+  
   try {
     const createOrderProductsPromises = await productList.map((product) =>
       createOrderProducts({
@@ -407,15 +410,14 @@ const getOrdersByProduct = async (orderId) => {
       [orderId],
     )
 
-    console.log(order)
+   
     return order
   } catch (error) {
     throw error
   }
 }
 
-//i don't think this is going to work because this is selecting from
-//order_products not orders.
+
 const getOrderByProductId = async (id) => {
   try {
     const {
@@ -536,7 +538,7 @@ const updateOrderProduct = async (orderId, { productId, price, quantity }) => {
 }
 
 const findOrderProductsToDelete = async (productId) => {
-  console.log('beginning findOrderProductToDelete')
+  
   try {
     const { rows: orderProducts } = await client.query(
       `
@@ -642,7 +644,7 @@ const updateOrder = async (orderId, status, userId) => {
   `,
       [orderId, status, userId],
     )
-    console.log('this is updateOrder', updatedOrder)
+
     return updatedOrder
   } catch (error) {
     throw error
@@ -652,17 +654,13 @@ const updateOrder = async (orderId, status, userId) => {
 const completeOrder = async (orderId) => {
   try {
     const orderToBeCompleted = await getOrderById(orderId)
-    console.log('this is whole order', orderToBeCompleted)
-    console.log(
-      'this is order to be complete users id',
-      orderToBeCompleted[0].userId,
-    )
+    
     const complete = await updateOrder(
       orderId,
       (status = 'completed'),
       orderToBeCompleted[0].userId,
     )
-    console.log('complete', complete)
+    
     return complete
   } catch (error) {
     throw error
@@ -710,15 +708,14 @@ const deleteOrderProductsAndProduct = async (productId) => {
 }
 
 const cancelOrder = async (orderId) => {
-  console.log()
+  
   const orderToBeCancelled = await getOrderById(orderId)
-  console.log('this is order required', orderToBeCancelled)
+  
   const orderTocan = await updateOrder(
     orderId,
     (status = 'cancelled'),
     orderToBeCancelled[0].userId,
   )
-  console.log('updated order', orderTocan)
 
   try {
     const {

@@ -30,6 +30,7 @@ function buildHeaders() {
 }
 
 export const getActiveUser = async () => {
+  
   const url = `${BASE_URL}/users/me`
   const response = await fetch(url, {
     method: 'GET',
@@ -41,6 +42,7 @@ export const getActiveUser = async () => {
   if (error) {
     throw Error(error.message)
   }
+ 
   return user
 }
 
@@ -108,7 +110,6 @@ export const fetchAPI = async (url, method = 'GET', sendData = null) => {
     method: method,
     headers: {
       'Content-Type': 'application/json',
-      Accept: 'application/json',
     },
   }
 
