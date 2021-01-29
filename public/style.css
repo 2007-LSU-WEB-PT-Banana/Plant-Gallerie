@@ -52,7 +52,7 @@ main {
 	display: grid;
 	justify-content: center;
 	text-align: center;
-	grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+	grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
 }
 
 .productCard img {
@@ -266,6 +266,10 @@ main {
 	justify-content: center;
 	text-transform: uppercase;
 	margin: 10px 10px 10px 10px;
+}
+
+.formContainer {
+	width: 75%;
 }
 
 @media (max-width: 1171px) {

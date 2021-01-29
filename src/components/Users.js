@@ -62,7 +62,7 @@ const Users = (props) => {
 								} = users;
 								return (
 									<div className="usersCard">
-										{imageURL !== "text" ? (
+										{imageURL !== "no picture" ? (
 											<img
 												alt="profile-image"
 												className="users"

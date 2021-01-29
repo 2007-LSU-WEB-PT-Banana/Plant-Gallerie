@@ -22,8 +22,8 @@ const AllProducts = (props) => {
 							<img
 								src={product.imageURL}
 								alt="plant"
-								height="200"
-								width="200"
+								height="150"
+								width="150"
 							></img>
 							<p className="productName">{product.name}</p>
 							<p className="productPrice">${product.price}</p>

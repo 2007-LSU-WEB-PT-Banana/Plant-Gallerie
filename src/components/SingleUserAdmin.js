@@ -29,6 +29,7 @@ const SingleUserAdmin = (props) => {
 
 		const sendData = {
 			adminId: activeUser.id,
+			id: userToUpdate.id,
 			firstName: firstName,
 			lastName: lastName,
 			username: username,
@@ -58,7 +59,7 @@ const SingleUserAdmin = (props) => {
 				setMessage(error);
 			}
 		} else {
-			setMessage("Please fill in all fields to submit a new product");
+			setMessage("Please fill in all fields to update a user");
 		}
 	}
 

@@ -3,7 +3,7 @@
 } */
 
 h1 {
-	font-family: 'Alegreya Sans SC', sans-serif;
+	font-family: "Alegreya Sans SC", sans-serif;
 }
 
 p {
@@ -50,13 +50,31 @@ html {
 	margin-top: -10px;
 }
 
+.each-slide {
+	height: 100%;
+	width: 100%;
+}
+
+.slideImage {
+	height: 100vh;
+}
+
+.slide-container {
+	width: 80%;
+	margin: auto;
+}
+
 .wrapper {
 	grid-template-columns: repeat(auto-fit, minmax(240, 1fr));
 	grid-template-rows: repeat(auto-fit, minmax(240, 1fr));
 }
-.each-slide {
-	width: 100%;
-}
+
+/* .slide-container {
+	height: 100vh;
+	width: 90vw;
+	margin: auto;
+} */
+
 .homepage > * {
 	color: black;
 }
