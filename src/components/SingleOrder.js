@@ -8,7 +8,6 @@ const SingleOrder = (props) => {
     setCartData,
     activeUser,
     history,
-    isLoggedIn,
     grandTotal,
     setGrandTotal,
     orderId,
@@ -20,17 +19,16 @@ const SingleOrder = (props) => {
   function continueShopping() {
     history.goBack()
   }
-  console.log('on the cart page, the active user is', activeUser)
 
   async function removeItem(idx) {
     if (activeUser) {
       let sendData = { productId: cartData[idx].id }
-      console.log('the sendData is', sendData)
       let changedOrder = await fetchAPI(
         BASE_URL + '/order_products/' + orderId,
         'DELETE',
         sendData,
       )
+
       let total = 0
       changedOrder.map((product) => {
         let newPrice = product.price / 100
@@ -96,7 +94,7 @@ const SingleOrder = (props) => {
 
       <div className="orderOptions">
         <button onClick={continueShopping}>Continue Shopping</button>
-        <button onClick={() => history.push('/payment')}>Checkout</button>
+        <button>Checkout</button>
         <div
           style={{
             display: 'inline-block',
@@ -110,9 +108,9 @@ const SingleOrder = (props) => {
       </div>
 
       <div className="cartCardWrapper">
-        { cartData.map((product, index) => {
+        {cartData.map((product, index) => {
           return (
-            <div className="cartCard" key={index}>
+            <div className="cartCard" value={index}>
               <img
                 src={product.imageURL}
                 alt="plant"
@@ -132,6 +130,7 @@ const SingleOrder = (props) => {
                 ></input>
               </span>
               <p className="productPrice">Price: ${product.price}</p>
+              {/* these buttons will need to depend on whether there is an activeUser */}
               <button
                 className="updateQty"
                 onClick={(event) => {
@@ -153,7 +152,7 @@ const SingleOrder = (props) => {
             </div>
           )
         })}
-      </div> 
+      </div>
     </div>
   )
 }

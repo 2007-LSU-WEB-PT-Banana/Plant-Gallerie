@@ -1,0 +1,57 @@
+.allOrders {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(700px, 1fr));
+	grid-gap: 15px;
+	margin: 15px;
+}
+
+.allOrders > p {
+	text-align: center;
+	padding: 5px;
+}
+
+/* .productsHeader {
+	text-align: center;
+	font-family: "Julius Sans One", sans-serif;
+} */
+
+.orderCard {
+	box-shadow: 3px 3px 5px #484848;
+	display: grid;
+	justify-content: center;
+	text-align: center;
+	grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+	font-size: 12px;
+	background-color: #d8d8d8;
+}
+
+.orderedBy {
+	grid-column: 3 / -1;
+}
+.orderId {
+	grid-column: 1 / -1;
+	margin-bottom: 10px;
+	font-size: 15px;
+	justify-self: start;
+}
+
+.orderCard h5 {
+	grid-column: 1 / -1;
+	font-size: 12px;
+	margin-top: 10px;
+}
+
+.orderProducts {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+	grid-gap: 5px;
+	margin: 5px;
+	background-color: #d8d8d8;
+}
+
+.search {
+	padding: 10px;
+	width: 40%;
+	margin-bottom: 15px;
+	margin-left: 15px;
+}

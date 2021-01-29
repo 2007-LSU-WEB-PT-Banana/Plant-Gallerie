@@ -1,5 +1,6 @@
+import { DomainDisabledTwoTone } from '@material-ui/icons'
 import React, { useState, useEffect } from 'react'
-import { Switch, Route, useHistory, Link } from 'react-router-dom'
+import { Switch, Route, useHistory } from 'react-router-dom'
 import { fetchAPI, BASE_URL, getToken, clearToken, getActiveUser } from '../api'
 import './Home.css'
 import {
@@ -20,48 +21,23 @@ import {
   AddProduct,
   SingleUserAdmin,
   AddSingleUser,
-  SuccessMessage,
+  UpdateProduct,
+  MultipleOrders,
 } from './index'
 
-import SingleOrder from './SingleOrder'
-
 const App = () => {
-  const cartFromLocalStorage = JSON.parse(
-    localStorage.getItem('cartData') || '[]',
-  )
   const history = useHistory()
   const [isLoggedIn, setIsLoggedIn] = useState(!!getToken())
   const [message, setMessage] = useState('')
   const [productList, setProductList] = useState([])
   const [activeProduct, setActiveProduct] = useState('')
-  const [cartData, setCartData] = useState(cartFromLocalStorage)
+  const [cartData, setCartData] = useState([])
   const [count, setCount] = useState(1)
   const [activeUser, setActiveUser] = useState('')
   const [orderId, setOrderId] = useState('')
   const [usersList, setUsersList] = useState([])
   const [grandTotal, setGrandTotal] = useState(0)
   const [userToUpdate, setUserToUpdate] = useState({})
-  const [isAdmin, setIsAdmin] = useState('')
-
-  console.log('this is order id', orderId)
-
-  useEffect(() => {
-    fetchAPI(BASE_URL + '/')
-      .then((response) => {
-        setMessage(response.message)
-      })
-      .catch((error) => {
-        setMessage(error.message)
-      })
-  }, [])
-
-  useEffect(() => {
-    let unmounted = false
-    localStorage.setItem('cartData', JSON.stringify(cartData))
-    return () => {
-      unmounted = true
-    }
-  }, [cartData])
 
   useEffect(() => {
     fetchAPI(BASE_URL + '/products')
@@ -86,11 +62,23 @@ const App = () => {
   }, [isLoggedIn])
 
   useEffect(() => {
+    if (isLoggedIn) {
+      getActiveUser()
+        .then((data) => {
+          setActiveUser(data)
+        })
+        .catch(console.error)
+    }
+  }, [isLoggedIn])
+
+  useEffect(() => {
     let total = 0
     if (activeUser) {
-      fetchAPI(BASE_URL + `/orders/cart/${activeUser?.id}`)
+      fetchAPI(BASE_URL + `/orders/cart/${activeUser.id}`)
         .then((data) => {
-          console.log('this is data for products', data)
+          if (data.message) {
+            return
+          }
           data.openOrdersWithProduct[0].map((product) => {
             let newPrice = product.price / 100
             product.price = newPrice
@@ -104,13 +92,34 @@ const App = () => {
     }
   }, [activeUser])
 
-  useEffect(() => {
-    fetchAPI(BASE_URL + '/users')
-      .then((data) => {
-        setUsersList(data)
-      })
-      .catch(console.error)
-  }, [])
+  // return (
+  //   <>
+  //     <Header
+  //       activeUser={activeUser}
+  //       setActiveUser={setActiveUser}
+  //       setIsLoggedIn={setIsLoggedIn}
+  //       isLoggedIn={isLoggedIn}
+  //       history={history}
+  //       clearToken={clearToken}
+  //       setCartData={setCartData}
+  //       cartData={cartData}
+  //     />
+  //     <main className="wrapper">
+  //       <Switch>
+  //         <Route exact path="/" component={Home} />
+  //         <Route path={`/products/:productId`}>
+  //           <SingleProduct
+  //             activeProduct={activeProduct}
+  //             setActiveProduct={setActiveProduct}
+  //             history={history}
+  //             count={count}
+  //             setCount={setCount}
+  //             cartData={cartData}
+  //             setCartData={setCartData}
+  //             orderId={orderId}
+  //             activeUser={activeUser}
+  //           />
+  //         </Route>
 
   return (
     <>
@@ -138,11 +147,8 @@ const App = () => {
               setCartData={setCartData}
               orderId={orderId}
               activeUser={activeUser}
+              setProductList={setProductList}
             />
-          </Route>
-
-          <Route exact path="/order/:orderId">
-            <SingleOrder />
           </Route>
           <Route exact path="/products">
             <AllProducts
@@ -150,6 +156,18 @@ const App = () => {
               history={history}
               setActiveProduct={setActiveProduct}
             />
+          </Route>
+          <Route exact path="/updateProduct">
+            <UpdateProduct
+              activeUser={activeUser}
+              activeProduct={activeProduct}
+              history={history}
+              setProductList={setProductList}
+              setActiveProduct={setActiveProduct}
+            />
+          </Route>
+          <Route exact path="/findorders">
+            <MultipleOrders activeUser={activeUser} history={history} />
           </Route>
           <Route exact path="/houseplants">
             <HousePlants
@@ -171,9 +189,6 @@ const App = () => {
               setActiveProduct={setActiveProduct}
               history={history}
             />
-          </Route>
-          <Route exact path="/success">
-            <SuccessMessage activeUser={activeUser} history={history} />
           </Route>
           <Route exact path="/login">
             <Login
@@ -234,19 +249,10 @@ const App = () => {
               setUsersList={setUsersList}
             />
           </Route>
-
           <Route path="/payment">
             <Payment
               productList={productList}
               setProductList={setProductList}
-              cartData={cartData}
-              setCartData={setCartData}
-              isLoggedIn={isLoggedIn}
-              grandTotal={grandTotal}
-              setGrandTotal={setGrandTotal}
-              orderId={orderId}
-              activeUser={activeUser}
-              history={history}
             />
           </Route>
         </Switch>

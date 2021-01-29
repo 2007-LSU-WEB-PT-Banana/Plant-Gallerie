@@ -30,46 +30,44 @@ function buildHeaders() {
 }
 
 export const getActiveUser = async () => {
-  const url = `${BASE_URL}/users/me`
-  const response = await fetch(url, {
-    method: 'GET',
-    headers: buildHeaders(),
-  })
+	const url = `${BASE_URL}/users/me`;
+	const response = await fetch(url, {
+		method: "GET",
+		headers: buildHeaders(),
+	});
 
-  const { error, user } = await response.json()
+	const { error, user } = await response.json();
 
-  if (error) {
-    throw Error(error.message)
-  }
-  return user
-}
+	if (error) {
+		throw Error(error.message);
+	}
+	return user;
+};
 
 export const loginUser = async (username, password) => {
-  console.log('inside auth')
-  const url = `${BASE_URL}/login`
-  console.log('after url')
+	const url = `${BASE_URL}/login`;
 
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: buildHeaders(),
-    body: JSON.stringify({
-      username: username,
-      password: password,
-    }),
-  })
-  console.log('this is response', response)
-  const { error, user, token } = await response.json()
+	const response = await fetch(url, {
+		method: "POST",
+		headers: buildHeaders(),
+		body: JSON.stringify({
+			username: username,
+			password: password,
+		}),
+	});
 
-  if (error) {
-    throw Error(error.message)
-  }
+	const { error, user, token } = await response.json();
 
-  if (token) {
-    setToken(token)
-  }
+	if (error) {
+		throw Error(error.message);
+	}
 
-  return user
-}
+	if (token) {
+		setToken(token);
+	}
+
+	return user;
+};
 
 export const NewUser = async (
   firstName,
@@ -79,51 +77,65 @@ export const NewUser = async (
   username,
   password,
 ) => {
-  const url = `${BASE_URL}/register`
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: buildHeaders(),
-    body: JSON.stringify({
-      username: username,
-      password: password,
-      firstName: firstName,
-      lastName: lastName,
-      email: email,
-      imageURL: imageURL,
-    }),
-  })
-  const { error, user, token } = await response.json()
+	const url = `${BASE_URL}/register`;
+	const response = await fetch(url, {
+		method: "POST",
+		headers: buildHeaders(),
+		body: JSON.stringify({
+			username: username,
+			password: password,
+			firstName: firstName,
+			lastName: lastName,
+			email: email,
+			imageURL: imageURL,
+		}),
+	});
+	const { error, user, token } = await response.json();
 
-  if (error) {
-    throw Error(error.message)
-  }
+	if (error) {
+		throw Error(error.message);
+	}
 
-  if (token) {
-    setToken(token)
-  }
+	if (token) {
+		setToken(token);
+	}
 
-  return user
-}
+	return user;
+};
 
-export const fetchAPI = async (url, method = 'GET', sendData = null) => {
-  const fetchOptions = {
-    method: method,
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  }
+export const fetchAPI = async (url, method = "GET", sendData = null) => {
+	const fetchOptions = {
+		method: method,
+		headers: {
+			"Content-Type": "application/json",
+		},
+	};
 
-  if (sendData) {
-    if (sendData.price) {
-      let newPrice = sendData.price * 100
-      sendData.price = newPrice.toFixed(0)
-      console.log('the price conversion in the fetch', sendData.price)
-    }
-    fetchOptions.body = JSON.stringify(sendData)
-  }
+	if (sendData) {
+		if (sendData.price) {
+			let newPrice = sendData.price * 100;
+			sendData.price = newPrice.toFixed(0);
+		}
+		fetchOptions.body = JSON.stringify(sendData);
+	}
 
-  const response = await fetch(url, fetchOptions)
-  const data = await response.json()
+	const response = await fetch(url, fetchOptions);
+	const data = await response.json();
 
-  return data
-}
+	return data;
+};
+
+export const deleteProduct = async (url, sendData) => {
+	const fetchOptions = {
+		method: "DELETE",
+		headers: {
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify(sendData),
+	};
+
+	const response = await fetch(url, fetchOptions);
+	const data = await response.json();
+
+	return data;
+};
