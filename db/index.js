@@ -36,6 +36,34 @@ const createUser = async ({
 	}
 };
 
+const createInitialAdmin = async ({
+	firstName,
+	lastName,
+	email,
+	imageURL,
+	username,
+	password,
+	isAdmin,
+}) => {
+	try {
+		const {
+			rows: [user],
+		} = await client.query(
+			`
+  INSERT INTO users("firstName","lastName" ,email,"imageURL", username , password, "isAdmin" )
+  VALUES($1,$2,$3,$4,$5,$6,$7)
+  RETURNING *; 
+  `,
+			[firstName, lastName, email, imageURL, username, password, isAdmin]
+		);
+		const hashPassword = await bcrypt.hash(user.password, 5);
+		user.password = hashPassword;
+		return user;
+	} catch (error) {
+		throw error;
+	}
+};
+
 //this function is working - do not edit this code!
 const getAllUsers = async () => {
 	try {
