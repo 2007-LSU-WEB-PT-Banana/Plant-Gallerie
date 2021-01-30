@@ -1,6 +1,9 @@
 .stripe-header {
 	align-content: center;
 	align-self: center;
+	border: 3px solid #d8d8d8;
+	margin: 0 20px 0 20px;
+	padding: 10px;
 }
 
 .button-pay {
@@ -14,20 +17,26 @@
 	transition: all 0.3s;
 	justify-content: center;
 	text-transform: uppercase;
-	margin: 5px 5px 5px 20px;
-	width: 250px;
+	width: 350px;
+	margin: 10px auto 10px auto;
 }
 
-.useradress {
-	width: 50%;
-	margin: 20px;
+.userAddress {
+	text-align: center;
 }
 
-.useradress > h2,
-h3,
-span,
-p {
-	font-family: 'Alegreya Sans SC', sans-serif;
+.userAddress > * {
+	font-family: "Alegreya Sans SC", sans-serif;
 	font-weight: 800;
 	padding: 5px;
+	margin: auto;
+}
+
+.shippingAddressHeader {
+	font-weight: bolder;
+}
+
+.cancelOrder {
+	background-color: #d8d8d8;
+	color: #686868;
 }

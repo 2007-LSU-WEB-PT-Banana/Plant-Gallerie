@@ -1,4 +1,4 @@
-import { DomainDisabledTwoTone } from "@material-ui/icons";
+// import { DomainDisabledTwoTone } from "@material-ui/icons";
 import React, { useState, useEffect } from "react";
 import { Switch, Route, useHistory } from "react-router-dom";
 import {
@@ -38,7 +38,6 @@ const App = () => {
 	const history = useHistory();
 
 	const [isLoggedIn, setIsLoggedIn] = useState(!!getToken());
-	const [message, setMessage] = useState("");
 	const [productList, setProductList] = useState([]);
 	const [activeProduct, setActiveProduct] = useState("");
 	const [cartData, setCartData] = useState([]);
@@ -89,27 +88,15 @@ const App = () => {
 	}, [isLoggedIn]);
 
 	useEffect(() => {
-		if (isLoggedIn) {
-			getActiveUser()
-				.then((data) => {
-					setActiveUser(data);
-				})
-				.catch(console.error);
-		}
-	}, [isLoggedIn]);
-
-	useEffect(() => {
 		let total = 0;
 		if (activeUser) {
 			fetchAPI(BASE_URL + `/orders/cart/${activeUser.id}`)
 				.then((data) => {
-					console.log("the data is", data);
 					if (data.message) {
 						if (localStorage.getItem("cartData")) {
 							localStorage.removeItem("cartData");
 							setCartData(data.openOrders[0]);
 						}
-
 						setOrderId(data.openOrders[0].id);
 						return;
 					}
@@ -136,8 +123,6 @@ const App = () => {
 			})
 			.catch(console.error);
 	}, []);
-
-	console.log("the active user is", activeUser);
 
 	return (
 		<>

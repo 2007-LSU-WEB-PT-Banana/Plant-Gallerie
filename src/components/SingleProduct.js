@@ -50,6 +50,7 @@ const SingleProduct = (props) => {
 				data.map((product) => {
 					let newPrice = product.price / 100;
 					product.price = newPrice;
+					return;
 				});
 				setProductList(data);
 				history.goBack();

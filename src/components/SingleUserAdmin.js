@@ -18,7 +18,7 @@ const SingleUserAdmin = (props) => {
 		setUsername(userToUpdate.username || "");
 		setIsAdmin(userToUpdate.isAdmin || false);
 		setEmail(userToUpdate.email || "");
-	}, []);
+	}, [userToUpdate]);
 
 	function backToAdminPortal() {
 		history.push("/users");

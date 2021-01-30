@@ -1,8 +1,6 @@
-import Axios from "axios";
 import React, { useState } from "react";
-import { Link, useHistory } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import { NewUser } from "../api/index";
-import { Avatar } from "@material-ui/core";
 
 function Register(props) {
 	const { setIsLoggedIn } = props;
@@ -14,6 +12,7 @@ function Register(props) {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [loading, setLoading] = useState(false);
+	const [message, setMessage] = useState("");
 
 	const uploadImage = async (e) => {
 		const files = e.target.files;
@@ -37,7 +36,12 @@ function Register(props) {
 	};
 
 	const register = async (event) => {
-		event.preventDefault();
+		if (password.length < 8) {
+			setMessage("Your password must be at least 8 characters");
+			return;
+		}
+
+		await event.preventDefault();
 		try {
 			const result = await NewUser(
 				firstName,
@@ -57,6 +61,7 @@ function Register(props) {
 		<div className="login">
 			<div className="login-container">
 				<h1>Register</h1>
+				<p>{message}</p>
 				<form>
 					<h5>First Name</h5>
 					<input
@@ -79,7 +84,12 @@ function Register(props) {
 							name="file"
 							placeholder="Upload an image"
 						/>
-						{loading ? <h3>Loading...</h3> : <img src={imageURL} />}
+						{loading ? <h3>Loading...</h3> : ""}
+						{imageURL ? (
+							<img height="100px" width="100px" src={imageURL} />
+						) : (
+							""
+						)}
 					</div>
 
 					<h5>Email</h5>

@@ -13,7 +13,7 @@ const SingleUser = (props) => {
 				<div id="modal" className="usersCard">
 					{activeUser.imageURL !== "no picture" ? (
 						<img
-							alt="profile-image"
+							alt="profile"
 							className="userscard"
 							src={activeUser.imageURL}
 						/>

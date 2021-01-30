@@ -32,7 +32,12 @@ const Home = () => {
 							>
 								<h1 className="header-heading">Plant Gallerie</h1>
 								<article style={{ color: "white" }} className="article-heder">
-									<p style={{ fontSize: "30px" }}>
+									<p
+										style={{
+											fontSize: "30px",
+											fontFamily: "Alegreya Sans SC, sans-serif",
+										}}
+									>
 										Free Shipping With Orders Over $100
 									</p>
 									<button className="main-image-button" id="shopButton">

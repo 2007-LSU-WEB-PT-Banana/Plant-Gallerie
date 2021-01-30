@@ -30,8 +30,9 @@ const HousePlants = (props) => {
 								<p className="productPrice">${product.price}</p>
 							</div>
 						);
+					} else {
+						return "";
 					}
-					return;
 				})}
 			</div>
 		</>

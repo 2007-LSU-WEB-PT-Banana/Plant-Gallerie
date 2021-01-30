@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 
 import StripeCheckout from "react-stripe-checkout";
 
@@ -6,7 +6,6 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import SingleOrder from "./SingleOrder";
 import "./Payment.css";
-import SingleUser from "./SingleUser";
 
 toast.configure();
 
@@ -22,12 +21,10 @@ function Payment(props) {
 		activeUser,
 	} = props;
 
-	const { firstName, lastName, email } = activeUser;
-
 	const completeOrder = async () => {
 		try {
 			if (activeUser) {
-				const complete = await axios.get(`/api/orders/checkout/${orderId}`);
+				await axios.get(`/api/orders/checkout/${orderId}`);
 			} else {
 				const body = {
 					status: "created",
@@ -51,7 +48,7 @@ function Payment(props) {
 	};
 
 	const cancelOrder = async () => {
-		const cancel = await axios.delete(`/api/orders/${orderId}`);
+		await axios.delete(`/api/orders/${orderId}`);
 		setCartData([]);
 		alert("your order has been cancelled");
 		localStorage.removeItem("cartData");
@@ -68,7 +65,7 @@ function Payment(props) {
 
 			const { status } = result.data;
 
-			if (status == "success") {
+			if (status === "success") {
 				completeOrder();
 			} else {
 				toast("something went wrong", { type: "error" });
@@ -79,10 +76,14 @@ function Payment(props) {
 	}
 
 	return (
-		<div className="stripe-header">
-			<div className="useradress">
-				<h2> Please review your order</h2>
-				<h3>Shipping address:</h3>
+		<>
+			<div className="userAddress">
+				<h2 className="productsHeader"> Please review your order</h2>
+				<h3 className="shippingAddressHeader">Default Shipping address:</h3>
+				<h4>
+					(You will have the option to select a different shipping address at
+					the Payment Screen)
+				</h4>
 				<h3>
 					{activeUser.firstName} {activeUser.lastName}
 				</h3>
@@ -90,30 +91,34 @@ function Payment(props) {
 				<p>112 Leo Road Hollywood CA 12345</p>
 			</div>
 
-			<SingleOrder
-				cartData={cartData}
-				history={history}
-				setCartData={setCartData}
-				isLoggedIn={isLoggedIn}
-				grandTotal={grandTotal}
-				setGrandTotal={setGrandTotal}
-				orderId={orderId}
-				activeUser={activeUser}
-			/>
+			<div className="stripe-header">
+				<SingleOrder
+					cartData={cartData}
+					history={history}
+					setCartData={setCartData}
+					isLoggedIn={isLoggedIn}
+					grandTotal={grandTotal}
+					setGrandTotal={setGrandTotal}
+					orderId={orderId}
+					activeUser={activeUser}
+				/>
 
-			<StripeCheckout
-				stripeKey={process.env.REACT_APP_MYPKEY}
-				token={handleToken}
-				billingAddress
-				shippingAddress
-				amount={parseInt(grandTotal * 100)}
-			>
-				<button className="button-pay">Complete your transaction</button>
-			</StripeCheckout>
-			<button onClick={cancelOrder} className="button-pay">
-				Cancel Order
-			</button>
-		</div>
+				<StripeCheckout
+					stripeKey={process.env.REACT_APP_MYPKEY}
+					token={handleToken}
+					billingAddress
+					shippingAddress
+					amount={parseInt(grandTotal * 100)}
+				>
+					<button className="button-pay">
+						Complete your transaction for ${grandTotal}
+					</button>
+				</StripeCheckout>
+				<button onClick={cancelOrder} className="button-pay cancelOrder">
+					Cancel Order
+				</button>
+			</div>
+		</>
 	);
 }
 

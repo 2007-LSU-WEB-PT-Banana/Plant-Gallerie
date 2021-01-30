@@ -20,7 +20,7 @@ const SingleUserUpdate = (props) => {
 		setEmail(activeUser.email || "");
 		setImageURL(activeUser.imageURL || "no picture");
 		setIsAdmin(activeUser.isAdmin || false);
-	}, []);
+	}, [activeUser]);
 
 	function cancelChanges() {
 		history.goBack();

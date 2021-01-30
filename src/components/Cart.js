@@ -19,19 +19,22 @@ const Cart = (props) => {
 
 	return (
 		<div>
-			<h1>Order Detail</h1>
+			<h1 className="productsHeader">Order Detail</h1>
 
 			<div className="orderOptions">
 				<button onClick={continueShopping}>Continue Shopping</button>
 				<button onClick={() => history.push("/payment")}>Checkout</button>
 				<div
+					className="orderTotal"
 					style={{
 						display: "inline-block",
 						float: "right",
 						marginRight: "25px",
+						fontFamily: "Spinnaker, sans-serif",
+						fontSize: "18px",
 					}}
 				>
-					<h3>Order Total</h3>
+					<h3>Cart Total</h3>
 					<p>${grandTotal.toFixed(2)}</p>
 				</div>
 			</div>

@@ -30,8 +30,9 @@ const BonsaiPlants = (props) => {
 								<p className="productPrice">${product.price}</p>
 							</div>
 						);
+					} else {
+						return "";
 					}
-					return;
 				})}
 			</div>
 		</>
