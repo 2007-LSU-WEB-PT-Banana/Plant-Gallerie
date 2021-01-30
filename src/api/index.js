@@ -48,20 +48,6 @@ export const getActiveUser = async () => {
 export const loginUser = async (username, password) => {
 	const url = `${BASE_URL}/login`;
 
-	// const response = await fetch(url, {
-	//   method: 'POST',
-	//   headers: buildHeaders(),
-	//   body: JSON.stringify({
-	//     username: username,
-	//     password: password,
-	//   }),
-	// })
-
-	// const { error, user, token } = await response.json()
-
-	// if (error) {
-	//   throw Error(error.message)
-	// }
 	console.log("grabbing data");
 	const response = await fetch(url, {
 		method: "POST",
