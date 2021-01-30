@@ -32,9 +32,9 @@ function Login(props) {
 
     try {
       const result = await loginUser(username, password)
-      console.log('this is resut', result)
+      
 
-      if (result === undefined) {
+      if (!result) {
         throw 'wrong login'
       }
 
