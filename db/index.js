@@ -210,11 +210,9 @@ const getProductById = async (id) => {
 //this function is working - do not edit this code!
 const createOrder = async ({ status, userId, products }) => {
   const datePlaced = new Date()
-
   if (!userId) {
     userId = 'e7d2b614-f191-4f46-8842-285b46ebb6f0'
   }
-
   try {
     const {
       rows: [order],
@@ -226,13 +224,8 @@ const createOrder = async ({ status, userId, products }) => {
     `,
       [status, userId, datePlaced],
     )
-
-    if (products.length > 0) {
-      const newOrder = await addProductsToOrder(order.id, products)
-      return newOrder
-    }
-
-    return order
+    const newOrder = await addProductsToOrder(order.id, products)
+    return newOrder
   } catch (error) {
     throw error
   }
@@ -367,9 +360,10 @@ const createOrderProducts = async ({ productId, orderId, price, quantity }) => {
 
 //this function is working - do not edit this code!
 const addProductsToOrder = async (orderId, productList) => {
-  console.log('this is product list', productlist)
+  console.log('inside productlist')
+  console.log('this is product list', productList)
   try {
-    const createOrderProductsPromises = await productList.map((product) =>
+    const createOrderProductsPromises = await productList?.map((product) =>
       createOrderProducts({
         productId: product.id,
         orderId,

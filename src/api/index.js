@@ -30,19 +30,18 @@ function buildHeaders() {
 }
 
 export const getActiveUser = async () => {
-  
   const url = `${BASE_URL}/users/me`
   const response = await fetch(url, {
     method: 'GET',
     headers: buildHeaders(),
   })
 
-	const { error, user } = await response.json();
+  const { error, user } = await response.json()
 
   if (error) {
     throw Error(error.message)
   }
- 
+
   return user
 }
 
@@ -63,28 +62,28 @@ export const loginUser = async (username, password) => {
   // if (error) {
   //   throw Error(error.message)
   // }
+  console.log('grabbing data')
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: buildHeaders(),
+    body: JSON.stringify({
+      username: username,
+      password: password,
+    }),
+  })
 
-	const response = await fetch(url, {
-		method: "POST",
-		headers: buildHeaders(),
-		body: JSON.stringify({
-			username: username,
-			password: password,
-		}),
-	});
+  const { error, user, token } = await response.json()
+  console.log('this is response', response)
+  if (!response || response.status === 500) {
+    return { error: true }
+  }
 
-	const { error, user, token } = await response.json();
+  if (token) {
+    setToken(token)
+  }
 
-	if (error) {
-		throw Error(error.message);
-	}
-
-	if (token) {
-		setToken(token);
-	}
-
-	return user;
-};
+  return token
+}
 
 export const NewUser = async (
   firstName,
