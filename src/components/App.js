@@ -64,6 +64,7 @@ const App = () => {
       }
     }
   }, [])
+  console.log('this is order id', orderId)
 
   useEffect(() => {
     if (!isLoggedIn) {
@@ -75,16 +76,7 @@ const App = () => {
     if (isLoggedIn) {
       getActiveUser()
         .then((data) => {
-          setActiveUser(data)
-        })
-        .catch(console.error)
-    }
-  }, [isLoggedIn])
-
-  useEffect(() => {
-    if (isLoggedIn) {
-      getActiveUser()
-        .then((data) => {
+          console.log('this is active', data)
           setActiveUser(data)
         })
         .catch(console.error)
@@ -96,14 +88,15 @@ const App = () => {
     if (activeUser) {
       fetchAPI(BASE_URL + `/orders/cart/${activeUser.id}`)
         .then((data) => {
+          console.log('this is adat', data)
           if (data.message) {
+            console.log(data)
             if (localStorage.getItem('cartData')) {
               localStorage.removeItem('cartData')
               setCartData(data.openOrders[0])
             }
 
             setOrderId(data.openOrders[0].id)
-            return
           }
           data.openOrdersWithProduct[0].map((product) => {
             let newPrice = product.price / 100
@@ -113,6 +106,7 @@ const App = () => {
           if (localStorage.getItem('cartData')) {
             localStorage.removeItem('cartData')
           }
+          console.log(data)
           setCartData(data.openOrdersWithProduct[0])
           setOrderId(data.openOrders[0]?.id)
           setGrandTotal(total)

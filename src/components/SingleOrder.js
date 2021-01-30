@@ -93,7 +93,7 @@ const SingleOrder = (props) => {
       <div className="cartCardWrapper">
         {cartData.map((product, index) => {
           return (
-            <div className="cartCard" value={index}>
+            <div className="cartCard" key={index}>
               <img
                 src={product.imageURL}
                 alt="plant"
