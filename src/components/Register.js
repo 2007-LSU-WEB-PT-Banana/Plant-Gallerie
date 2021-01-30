@@ -134,7 +134,12 @@ function Register(props) {
               name="file"
               placeholder="Upload an image"
             />
-            {loading ? <h3>Loading...</h3> : <img src={imageURL} />}
+            {loading ? <h3>Loading...</h3> : ''}
+            {imageURL ? (
+              <img height="100px" width="100px" src={imageURL} />
+            ) : (
+              ''
+            )}
           </div>
 
           <h5>Email</h5>
