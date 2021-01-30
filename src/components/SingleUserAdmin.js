@@ -20,7 +20,7 @@ const SingleUserAdmin = (props) => {
 		setEmail(userToUpdate.email || "");
 	}, [userToUpdate]);
 
-	function backToAdminPortal() {
+	function backToUsers() {
 		history.push("/users");
 	}
 
@@ -67,7 +67,7 @@ const SingleUserAdmin = (props) => {
 		<>
 			{activeUser.isAdmin ? (
 				<>
-					<button className="backToAdmin" onClick={backToAdminPortal}>
+					<button className="backToAdmin" onClick={backToUsers}>
 						Back to Users
 					</button>
 					<h1 className="updateUserProfile">Update User Profile</h1>
