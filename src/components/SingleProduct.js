@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { BASE_URL, fetchAPI, deleteProduct } from '../api'
 import { Link } from 'react-router-dom'
-import axios from 'axios'
 
 const SingleProduct = (props) => {
   const {
@@ -64,8 +63,6 @@ const SingleProduct = (props) => {
   match = cartData.findIndex((x) => x.id === activeProduct.id)
 
   async function authenticatedCartUpdate() {
-    //if the current item matches anything in the cart, "match" will update to be the index of that item
-    //in the cartData array
     if (match === -1) {
       try {
         let newCartItem = [
@@ -78,8 +75,6 @@ const SingleProduct = (props) => {
             image: activeProduct.imageURL,
           },
         ]
-
-        console.log('this is order id ', orderId)
 
         const newCart = await fetchAPI(
           BASE_URL + '/orders/' + orderId + '/products',

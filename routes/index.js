@@ -81,11 +81,20 @@ apiRouter.post('/login', async (req, res, next) => {
   const { password, username } = req.body
   const user = await getUserByUsername(req.body.username)
   if (!user) {
-    throw 'no user was found'
+    next({
+      name: 'MissingCredentialsError',
+      message: 'Please supply both a username and password',
+    })
+  }
+
+  if (!username || !password) {
+    next({
+      name: 'MissingCredentialsError',
+      message: 'Please supply both a username and password',
+    })
   }
 
   await bcrypt.compare(user.password, req.body.password)
-
   try {
     if (user && user.password && req.body.password == password) {
       const token = jwt.sign(
@@ -101,10 +110,10 @@ apiRouter.post('/login', async (req, res, next) => {
 
       delete user.password
 
-      res.send({ token })
+      res.send({ message: 'Thank you for signing In', token })
     }
-  } catch (error) {
-    next(error)
+  } catch ({ name, message }) {
+    next({ name, message })
   }
 })
 
@@ -135,13 +144,13 @@ apiRouter.post('/register', async (req, res, next) => {
       username,
       password: hashPassword,
     })
-    console.log('user is', user)
+    
 
     await createOrder({ status: 'created', userId: user.id, products: [] })
 
-    res.send({ message: 'U are registered successfully!' })
-  } catch (error) {
-    next(error)
+    res.send({ message: 'U are registered successfully!', user })
+  } catch ({ name, message }) {
+    next({ name, message })
   }
 })
 
@@ -251,13 +260,13 @@ apiRouter.get('/orders/cart/:userId', async (req, res, next) => {
   try {
     const user = await getUserById(req.params.userId)
 
-    console.log('this is user', user)
+    
 
     if (!req.params.userId) {
       await createOrder({ status: 'created', userId: user.id, products: [] })
     }
     if (user) {
-      console.log('im here')
+      
       const userOrders = await getCartByUser(user.id)
 
       res.send(userOrders)
@@ -271,9 +280,9 @@ apiRouter.get('/orders/cart/:userId', async (req, res, next) => {
 
 //this route works - do not edit this code!
 apiRouter.post('/orders/:orderId/products', async (req, res, next) => {
-  console.log('this is req.body', req.body)
+  
   try {
-    console.log('inosdie try')
+   
     const changedOrder = await addProductsToOrder(req.params.orderId, req.body)
     res.send(changedOrder)
   } catch (error) {
@@ -424,12 +433,11 @@ apiRouter.get('/orders/checkout/:orderId', async (req, res, next) => {
 apiRouter.delete('/orders/:orderId', async (req, res, next) => {
   try {
     const order = await getOrderById(req.params.orderId)
-    console.log('this is order', order)
-    console.log('this is userId', order[0].userId)
+    
     const user = await getUserById(order[0].userId)
     const cancel = await cancelOrder(req.params.orderId)
     if (user) {
-      console.log('inside cancel')
+     
       await createOrder({ status: 'created', userId: user.id, products: [] })
     }
 

@@ -360,8 +360,7 @@ const createOrderProducts = async ({ productId, orderId, price, quantity }) => {
 
 //this function is working - do not edit this code!
 const addProductsToOrder = async (orderId, productList) => {
-  console.log('inside productlist')
-  console.log('this is product list', productList)
+  
   try {
     const createOrderProductsPromises = await productList?.map((product) =>
       createOrderProducts({
