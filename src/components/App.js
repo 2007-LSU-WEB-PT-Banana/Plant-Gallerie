@@ -160,139 +160,131 @@ const App = () => {
 						<Failure activeUser={activeUser} history={history} />
 					</Route>
 
-					<Route path="/payment">
-						<Payment
-							productList={productList}
-							setProductList={setProductList}
-							cartData={cartData}
-							setCartData={setCartData}
-							isLoggedIn={isLoggedIn}
-							grandTotal={grandTotal}
-							setGrandTotal={setGrandTotal}
-							orderId={orderId}
-							activeUser={activeUser}
-							history={history}
-						/>
-					</Route>
-					<Route exact path="/products">
-						<AllProducts
-							productList={productList}
-							history={history}
-							setActiveProduct={setActiveProduct}
-						/>
-					</Route>
-					<Route exact path="/updateProduct">
-						<UpdateProduct
-							activeUser={activeUser}
-							activeProduct={activeProduct}
-							history={history}
-							setProductList={setProductList}
-							setActiveProduct={setActiveProduct}
-						/>
-					</Route>
-					<Route exact path="/findorders">
-						<MultipleOrders activeUser={activeUser} history={history} />
-					</Route>
-					<Route exact path="/houseplants">
-						<HousePlants
-							productList={productList}
-							setActiveProduct={setActiveProduct}
-							history={history}
-						/>
-					</Route>
-					<Route exact path="/floweringplants">
-						<FloweringPlants
-							productList={productList}
-							setActiveProduct={setActiveProduct}
-							history={history}
-						/>
-					</Route>
-					<Route exact path="/bonsaiplants">
-						<BonsaiPlants
-							productList={productList}
-							setActiveProduct={setActiveProduct}
-							history={history}
-						/>
-					</Route>
-					<Route exact path="/login">
-						<Login
-							setIsLoggedIn={setIsLoggedIn}
-							history={history}
-							setCartData={setCartData}
-							setOrderId={setOrderId}
-						/>
-					</Route>
-					<Route exact path="/register">
-						<Register setIsLoggedIn={setIsLoggedIn} />
-					</Route>
-					<Route exact path="/users">
-						<Users
-							usersList={usersList}
-							history={history}
-							activeUser={activeUser}
-							setUserToUpdate={setUserToUpdate}
-						/>
-					</Route>
-					<Route exact path="/users/me">
-						<SingleUser activeUser={activeUser} />
-					</Route>
-					<Route path="/cart">
-						<Cart
-							cartData={cartData}
-							setCartData={setCartData}
-							isLoggedIn={isLoggedIn}
-							grandTotal={grandTotal}
-							setGrandTotal={setGrandTotal}
-							orderId={orderId}
-							activeUser={activeUser}
-							history={history}
-						/>
-					</Route>
-					<Route exact path="/adminportal">
-						<AdminPortal activeUser={activeUser} />
-					</Route>
-					<Route exact path="/addnewproduct">
-						<AddProduct
-							activeUser={activeUser}
-							history={history}
-							setProductList={setProductList}
-						/>
-					</Route>
-					<Route exact path="/users/add">
-						<AddSingleUser
-							history={history}
-							setUsersList={setUsersList}
-							activeUser={activeUser}
-						/>
-					</Route>
-					<Route exact path={`/users/:userId`}>
-						<SingleUserAdmin
-							userToUpdate={userToUpdate}
-							activeUser={activeUser}
-							history={history}
-							setUsersList={setUsersList}
-						/>
-					</Route>
-					<Route exact path="/editmyinfo">
-						<SingleUserUpdate
-							history={history}
-							activeUser={activeUser}
-							setUsersList={setUsersList}
-							setActiveUser={setActiveUser}
-						/>
-					</Route>
-					<Route path="/payment">
-						<Payment
-							productList={productList}
-							setProductList={setProductList}
-							setUsersList={setUsersList}
-							activeUser={activeUser}
-						/>
-					</Route>
-				</Switch>
-			</main>
-		</>
-	);
-};
+          <Route path="/payment">
+            <Payment
+              productList={productList}
+              setProductList={setProductList}
+              cartData={cartData}
+              setCartData={setCartData}
+              isLoggedIn={isLoggedIn}
+              grandTotal={grandTotal}
+              setGrandTotal={setGrandTotal}
+              orderId={orderId}
+              activeUser={activeUser}
+              history={history}
+            />
+          </Route>
+          <Route exact path="/products">
+            <AllProducts
+              productList={productList}
+              history={history}
+              setActiveProduct={setActiveProduct}
+            />
+          </Route>
+          <Route exact path="/updateProduct">
+            <UpdateProduct
+              activeUser={activeUser}
+              activeProduct={activeProduct}
+              history={history}
+              setProductList={setProductList}
+              setActiveProduct={setActiveProduct}
+            />
+          </Route>
+          <Route exact path="/findorders">
+            <MultipleOrders activeUser={activeUser} history={history} />
+          </Route>
+          <Route exact path="/houseplants">
+            <HousePlants
+              productList={productList}
+              setActiveProduct={setActiveProduct}
+              history={history}
+            />
+          </Route>
+          <Route exact path="/floweringplants">
+            <FloweringPlants
+              productList={productList}
+              setActiveProduct={setActiveProduct}
+              history={history}
+            />
+          </Route>
+          <Route exact path="/bonsaiplants">
+            <BonsaiPlants
+              productList={productList}
+              setActiveProduct={setActiveProduct}
+              history={history}
+            />
+          </Route>
+          <Route exact path="/login">
+            <Login
+              setIsLoggedIn={setIsLoggedIn}
+              history={history}
+              setCartData={setCartData}
+              setOrderId={setOrderId}
+            />
+          </Route>
+          <Route exact path="/register">
+            <Register setIsLoggedIn={setIsLoggedIn} usersList={usersList} />
+          </Route>
+          <Route exact path="/users">
+            <Users
+              usersList={usersList}
+              history={history}
+              activeUser={activeUser}
+              setUserToUpdate={setUserToUpdate}
+            />
+          </Route>
+          <Route exact path="/users/me">
+            <SingleUser activeUser={activeUser} />
+          </Route>
+          <Route path="/cart">
+            <Cart
+              cartData={cartData}
+              setCartData={setCartData}
+              isLoggedIn={isLoggedIn}
+              grandTotal={grandTotal}
+              setGrandTotal={setGrandTotal}
+              orderId={orderId}
+              activeUser={activeUser}
+              history={history}
+            />
+          </Route>
+          <Route exact path="/adminportal">
+            <AdminPortal activeUser={activeUser} />
+          </Route>
+          <Route exact path="/addnewproduct">
+            <AddProduct
+              activeUser={activeUser}
+              history={history}
+              setProductList={setProductList}
+            />
+          </Route>
+          <Route exact path="/users/add">
+            <AddSingleUser
+              history={history}
+              setUsersList={setUsersList}
+              activeUser={activeUser}
+            />
+          </Route>
+          <Route exact path={`/users/:userId`}>
+            <SingleUserAdmin
+              userToUpdate={userToUpdate}
+              activeUser={activeUser}
+              history={history}
+              setUsersList={setUsersList}
+            />
+          </Route>
+          <Route path="/payment">
+            <Payment
+              productList={productList}
+              setProductList={setProductList}
+              setUsersList={setUsersList}
+              activeUser={activeUser}
+            />
+          </Route>
+        </Switch>
+      </main>
+    </>
+  )
+}
 
 export default App;
