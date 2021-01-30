@@ -29,24 +29,18 @@ function Login(props) {
 
   const login = async (event) => {
     event.preventDefault()
-    
-   
+
     try {
       const result = await loginUser(username, password)
+      console.log('this is resut', result)
 
-      
-      if (!result) {
-        setErrorMessage(
-          'User name or password is incorrect/ user not registered',
-        )
+      if (result === undefined) {
+        throw 'wrong login'
       }
 
       setIsLoggedIn(true)
-      
-
       history.push('/')
     } catch (error) {
-      alert('user name or password is not correct')
       setErrorMessage('User name or password is incorrect/ user not registered')
     }
   }

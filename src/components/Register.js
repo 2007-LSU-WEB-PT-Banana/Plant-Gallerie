@@ -12,7 +12,6 @@ function Register(props) {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [loading, setLoading] = useState(false);
-	const [message, setMessage] = useState("");
 
 	const uploadImage = async (e) => {
 		const files = e.target.files;
@@ -36,18 +35,14 @@ function Register(props) {
 	};
 
 	const register = async (event) => {
-		if (password.length < 8) {
-			setMessage("Your password must be at least 8 characters");
-			return;
-		}
-
 		await event.preventDefault();
+
 		try {
 			const result = await NewUser(
 				firstName,
 				lastName,
-				imageURL,
 				email,
+				imageURL,
 				username,
 				password
 			);
@@ -61,7 +56,6 @@ function Register(props) {
 		<div className="login">
 			<div className="login-container">
 				<h1>Register</h1>
-				<p>{message}</p>
 				<form>
 					<h5>First Name</h5>
 					<input

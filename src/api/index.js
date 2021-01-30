@@ -62,7 +62,7 @@ export const loginUser = async (username, password) => {
 	// if (error) {
 	//   throw Error(error.message)
 	// }
-
+	console.log("grabbing data");
 	const response = await fetch(url, {
 		method: "POST",
 		headers: buildHeaders(),
@@ -73,16 +73,16 @@ export const loginUser = async (username, password) => {
 	});
 
 	const { error, user, token } = await response.json();
-
-	if (error) {
-		throw Error(error.message);
+	console.log("this is response", response);
+	if (!response || response.status === 500) {
+		return { error: true };
 	}
 
 	if (token) {
 		setToken(token);
 	}
 
-	return user;
+	return token;
 };
 
 export const NewUser = async (

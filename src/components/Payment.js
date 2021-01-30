@@ -51,6 +51,8 @@ function Payment(props) {
 		await axios.delete(`/api/orders/${orderId}`);
 		setCartData([]);
 		alert("your order has been cancelled");
+		if (localStorage.getItem("cartData")) {
+		}
 		localStorage.removeItem("cartData");
 		history.push("/");
 	};

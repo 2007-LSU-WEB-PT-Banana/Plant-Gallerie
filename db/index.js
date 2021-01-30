@@ -29,6 +29,7 @@ const createUser = async ({
     `,
 			[firstName, lastName, email, imageURL, username, password]
 		);
+		console.log("the newly created user is:", user);
 		return user;
 	} catch (error) {
 		throw error;
@@ -210,11 +211,9 @@ const getProductById = async (id) => {
 //this function is working - do not edit this code!
 const createOrder = async ({ status, userId, products }) => {
 	const datePlaced = new Date();
-
 	if (!userId) {
 		userId = "e7d2b614-f191-4f46-8842-285b46ebb6f0";
 	}
-
 	try {
 		const {
 			rows: [order],
@@ -226,9 +225,7 @@ const createOrder = async ({ status, userId, products }) => {
     `,
 			[status, userId, datePlaced]
 		);
-
 		const newOrder = await addProductsToOrder(order.id, products);
-
 		return newOrder;
 	} catch (error) {
 		throw error;

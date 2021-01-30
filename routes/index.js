@@ -139,7 +139,7 @@ apiRouter.post("/register", async (req, res, next) => {
 
 		await createOrder({ status: "created", userId: user.id, products: [] });
 
-		res.send({ message: "U are registered successfully!" });
+		res.send({ message: "You registered successfully!", user: user });
 	} catch (error) {
 		next(error);
 	}

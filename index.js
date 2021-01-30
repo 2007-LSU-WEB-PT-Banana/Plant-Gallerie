@@ -24,7 +24,10 @@ server.use("/api", require("./routes"));
 server.use((req, res, next) => {
 	res.sendFile(path.join(__dirname, "build", "index.html"));
 });
-
+server.use((err, req, res, next) => {
+	console.log(err.status);
+	res.status(err.status || 500).send({ message: err.message });
+});
 // bring in the DB connection
 const { client } = require("./db");
 
