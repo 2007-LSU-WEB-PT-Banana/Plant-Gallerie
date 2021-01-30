@@ -26,7 +26,7 @@ const UpdateProduct = (props) => {
 		setDescription(activeProduct.description || "");
 		setImageURL(activeProduct.imageURL || "");
 		setInStock(activeProduct.inStock || true);
-	}, []);
+	}, [activeProduct]);
 
 	function backToProductPage() {
 		history.goBack();

@@ -1,8 +1,6 @@
-import Axios from "axios";
 import React, { useState } from "react";
-import { Link, useHistory } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import { NewUser } from "../api/index";
-import { Avatar } from "@material-ui/core";
 
 function Register(props) {
 	const { setIsLoggedIn } = props;
@@ -37,13 +35,14 @@ function Register(props) {
 	};
 
 	const register = async (event) => {
-		event.preventDefault();
+		await event.preventDefault();
+
 		try {
 			const result = await NewUser(
 				firstName,
 				lastName,
-				imageURL,
 				email,
+				imageURL,
 				username,
 				password
 			);
@@ -79,7 +78,12 @@ function Register(props) {
 							name="file"
 							placeholder="Upload an image"
 						/>
-						{loading ? <h3>Loading...</h3> : <img src={imageURL} />}
+						{loading ? <h3>Loading...</h3> : ""}
+						{imageURL ? (
+							<img height="100px" width="100px" src={imageURL} />
+						) : (
+							""
+						)}
 					</div>
 
 					<h5>Email</h5>

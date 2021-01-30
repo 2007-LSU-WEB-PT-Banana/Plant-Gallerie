@@ -1,12 +1,17 @@
-@import url('https://fonts.googleapis.com/css2?family=Alegreya+Sans+SC:wght@100;300&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Julius+Sans+One&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Julius+Sans+One&family=Spinnaker&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Alegreya+Sans+SC:wght@100;300&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Julius+Sans+One&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Julius+Sans+One&family=Spinnaker&display=swap");
 
 * {
 	border: 0;
 	margin: 0;
 	padding: 0;
 	box-sizing: border-box;
+}
+
+button:hover {
+	background-color: #484848;
+	color: white;
 }
 
 #root {
@@ -41,7 +46,7 @@ main {
 
 .productsHeader {
 	text-align: center;
-	font-family: 'Julius Sans One', sans-serif;
+	font-family: "Julius Sans One", sans-serif;
 	background-color: #607848;
 	padding: 0.5em;
 	color: white;
@@ -52,7 +57,7 @@ main {
 	display: grid;
 	justify-content: center;
 	text-align: center;
-	grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+	grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
 }
 
 .productCard img {
@@ -65,7 +70,7 @@ main {
 	grid-column: 2;
 	justify-self: center;
 	text-align: center;
-	font-family: 'Julius Sans One', sans-serif;
+	font-family: "Julius Sans One", sans-serif;
 }
 
 .productName {
@@ -99,7 +104,7 @@ main {
 	grid-column: 2;
 	padding-bottom: 15px;
 	font-weight: normal;
-	font-family: 'Spinnaker', sans-serif;
+	font-family: "Spinnaker", sans-serif;
 	font-size: 14px;
 	margin-left: 10px;
 }
@@ -108,7 +113,7 @@ main {
 	text-transform: uppercase;
 	font-weight: bolder;
 	font-size: 1.5rem;
-	font-family: 'Julius Sans One', sans-serif;
+	font-family: "Julius Sans One", sans-serif;
 	align-self: center;
 }
 .cartOptions {
@@ -270,6 +275,10 @@ main {
 	justify-content: center;
 	text-transform: uppercase;
 	margin: 10px 10px 10px 10px;
+}
+
+.formContainer {
+	width: 75%;
 }
 
 @media (max-width: 1171px) {

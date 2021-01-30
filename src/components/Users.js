@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
 import "./Users.css";
 import { Avatar } from "@material-ui/core";
 const Users = (props) => {
@@ -62,7 +61,7 @@ const Users = (props) => {
 								} = users;
 								return (
 									<div className="usersCard">
-										{imageURL !== "text" ? (
+										{imageURL !== "no picture" ? (
 											<img
 												alt="profile-image"
 												className="users"
