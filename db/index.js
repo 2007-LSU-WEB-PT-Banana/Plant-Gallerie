@@ -354,7 +354,7 @@ const getCartByUser = async (userId) => {
 		const openOrders = await Promise.all(
 			orders.map((order) => getOrderById(order.id))
 		);
-
+		console.log("open orders", openOrders);
 		if (openOrders[0][0]) {
 			return { openOrders: orders, openOrdersWithProduct: openOrders };
 		} else {
