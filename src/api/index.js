@@ -46,31 +46,24 @@ export const getActiveUser = async () => {
 };
 
 export const loginUser = async (username, password) => {
-  const url = `${BASE_URL}/login`
-
-  
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: buildHeaders(),
-    body: JSON.stringify({
-      username: username,
-      password: password,
-    }),
-  })
-
-  const { error, user, token } = await response.json()
-  
-  if (error) {
-    return error
-  }
-
-  if (token) {
-    setToken(token)
-  }
-
-  return token
-}
-
+	const url = `${BASE_URL}/login`;
+	const response = await fetch(url, {
+		method: "POST",
+		headers: buildHeaders(),
+		body: JSON.stringify({
+			username: username,
+			password: password,
+		}),
+	});
+	const { error, user, token } = await response.json();
+	if (error) {
+		return error;
+	}
+	if (token) {
+		setToken(token);
+	}
+	return token;
+};
 export const NewUser = async (
 	firstName,
 	lastName,
@@ -79,54 +72,50 @@ export const NewUser = async (
 	username,
 	password
 ) => {
-  const url = `${BASE_URL}/register`
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: buildHeaders(),
-    body: JSON.stringify({
-      username: username,
-      password: password,
-      firstName: firstName,
-      lastName: lastName,
-      email: email,
-      imageURL: imageURL,
-    }),
-  })
-  const { error, user, token } = await response.json()
-  
+	const url = `${BASE_URL}/register`;
+	const response = await fetch(url, {
+		method: "POST",
+		headers: buildHeaders(),
+		body: JSON.stringify({
+			username: username,
+			password: password,
+			firstName: firstName,
+			lastName: lastName,
+			email: email,
+			imageURL: imageURL,
+		}),
+	});
+	const { error, user, token } = await response.json();
+	if (response.status === 500) {
+		throw error;
+	}
+	if (token) {
+		setToken(token);
+	}
+	return user;
+};
 
-  if (response.status === 500) {
-    throw error
-  }
+export const fetchAPI = async (url, method = "GET", sendData = null) => {
+	const fetchOptions = {
+		method: method,
+		headers: {
+			"Content-Type": "application/json",
+		},
+	};
 
-  if (token) {
-    setToken(token)
-  }
+	if (sendData) {
+		if (sendData.price) {
+			let newPrice = sendData.price * 100;
+			sendData.price = newPrice.toFixed(0);
+		}
+		fetchOptions.body = JSON.stringify(sendData);
+	}
 
-  return user
-}
+	const response = await fetch(url, fetchOptions);
+	const data = await response.json();
 
-export const fetchAPI = async (url, method = 'GET', sendData = null) => {
-  const fetchOptions = {
-    method: method,
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  }
-
-  if (sendData) {
-    if (sendData.price) {
-      let newPrice = sendData.price * 100
-      sendData.price = newPrice.toFixed(0)
-    }
-    fetchOptions.body = JSON.stringify(sendData)
-  }
-
-  const response = await fetch(url, fetchOptions)
-  const data = await response.json()
-
-  return data
-}
+	return data;
+};
 
 export const deleteProduct = async (url, sendData) => {
 	const fetchOptions = {

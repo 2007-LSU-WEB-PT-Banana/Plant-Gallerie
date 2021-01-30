@@ -7,6 +7,7 @@ const bcrypt = require('bcrypt')
 const { v4: uuid_v4 } = require('uuid')
 
 const {
+
   createProduct,
   getProductById,
   getAllProducts,
@@ -39,6 +40,7 @@ const { token } = require('morgan')
 const { request } = require('express')
 const stripe = require('stripe')(`${process.env.REACT_APP_MYSKEY}`)
 
+
 const requireUser = (req, res, next) => {
   if (!req.user) {
     next({
@@ -51,6 +53,7 @@ const requireUser = (req, res, next) => {
 }
 
 const requireActiveUser = (req, res, next) => {
+
   if (!req.user.active) {
     next({
       name: 'UserNotActive',
@@ -520,3 +523,5 @@ apiRouter.delete('/order_products/:orderProductId', async (req, res, next) => {
   }
 })
 module.exports = apiRouter
+
+	
