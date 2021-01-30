@@ -1,54 +1,54 @@
 // import { v4 as uuid_v4 } from 'uuid'
 
-const apiRouter = require("express").Router();
+const apiRouter = require('express').Router()
 
-const bcrypt = require("bcrypt");
+const bcrypt = require('bcrypt')
 // const { uuid } = require('uuidv4')
-const { v4: uuid_v4 } = require("uuid");
+const { v4: uuid_v4 } = require('uuid')
 
 const {
-	createProduct,
-	getProductById,
-	getAllProducts,
-	createUser,
-	getAllUsers,
-	getUserById,
-	getUserByUsername,
-	createOrder,
-	getOrdersByProduct,
-	getAllOrders,
-	getOrderById,
-	getCartByUser,
-	getOrderProductsById,
-	getOrdersByUser,
-	getUser,
-	addProductsToOrder,
-	updateOrderProduct,
-	findOrderProductsToDelete,
-	destroyOrderProduct,
-	updateUser,
-	updateOrder,
-	cancelOrder,
-	completeOrder,
-	updateProduct,
-} = require("../db/index");
+  createProduct,
+  getProductById,
+  getAllProducts,
+  createUser,
+  getAllUsers,
+  getUserById,
+  getUserByUsername,
+  createOrder,
+  getOrdersByProduct,
+  getAllOrders,
+  getOrderById,
+  getCartByUser,
+  getOrderProductsById,
+  getOrdersByUser,
+  getUser,
+  addProductsToOrder,
+  updateOrderProduct,
+  findOrderProductsToDelete,
+  destroyOrderProduct,
+  updateUser,
+  updateOrder,
+  cancelOrder,
+  completeOrder,
+  updateProduct,
+} = require('../db/index')
 
-require("dotenv").config();
-const jwt = require("jsonwebtoken");
-const { token } = require("morgan");
-const { request } = require("express");
-const stripe = require("stripe")(`${process.env.REACT_APP_MYSKEY}`);
+require('dotenv').config()
+const jwt = require('jsonwebtoken')
+const { token } = require('morgan')
+const { request } = require('express')
+const stripe = require('stripe')(`${process.env.REACT_APP_MYSKEY}`)
 
 const requireUser = (req, res, next) => {
-	if (!req.user) {
-		next({
-			name: "MissingUserError",
-			message: "You must be logged in to perform this action",
-		});
-	}
+  if (!req.user) {
+    next({
+      name: 'MissingUserError',
+      message: 'You must be logged in to perform this action',
+    })
+  }
 
-	next();
-};
+  next()
+}
 
 const requireActiveUser = (req, res, next) => {
   if (!req.user.active) {
@@ -89,10 +89,7 @@ apiRouter.post('/login', async (req, res, next) => {
   }
 
   if (!username || !password) {
-    next({
-      name: 'MissingCredentialsError',
-      message: 'Please supply both a username and password',
-    })
+    throw 'usrr not found'
   }
 
   await bcrypt.compare(user.password, req.body.password)
@@ -145,7 +142,6 @@ apiRouter.post('/register', async (req, res, next) => {
       username,
       password: hashPassword,
     })
-    
 
     await createOrder({ status: 'created', userId: user.id, products: [] })
 
@@ -261,13 +257,10 @@ apiRouter.get('/orders/cart/:userId', async (req, res, next) => {
   try {
     const user = await getUserById(req.params.userId)
 
-    
-
     if (!req.params.userId) {
       await createOrder({ status: 'created', userId: user.id, products: [] })
     }
     if (user) {
-      
       const userOrders = await getCartByUser(user.id)
 
       res.send(userOrders)
@@ -281,9 +274,7 @@ apiRouter.get('/orders/cart/:userId', async (req, res, next) => {
 
 //this route works - do not edit this code!
 apiRouter.post('/orders/:orderId/products', async (req, res, next) => {
-  
   try {
-   
     const changedOrder = await addProductsToOrder(req.params.orderId, req.body)
     res.send(changedOrder)
   } catch (error) {
@@ -434,11 +425,10 @@ apiRouter.get('/orders/checkout/:orderId', async (req, res, next) => {
 apiRouter.delete('/orders/:orderId', async (req, res, next) => {
   try {
     const order = await getOrderById(req.params.orderId)
-    
+
     const user = await getUserById(order[0].userId)
     const cancel = await cancelOrder(req.params.orderId)
     if (user) {
-     
       await createOrder({ status: 'created', userId: user.id, products: [] })
     }
 
