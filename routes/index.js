@@ -7,7 +7,6 @@ const bcrypt = require('bcrypt')
 const { v4: uuid_v4 } = require('uuid')
 
 const {
-
   createProduct,
   getProductById,
   getAllProducts,
@@ -40,7 +39,6 @@ const { token } = require('morgan')
 const { request } = require('express')
 const stripe = require('stripe')(`${process.env.REACT_APP_MYSKEY}`)
 
-
 const requireUser = (req, res, next) => {
   if (!req.user) {
     next({
@@ -53,7 +51,6 @@ const requireUser = (req, res, next) => {
 }
 
 const requireActiveUser = (req, res, next) => {
-
   if (!req.user.active) {
     next({
       name: 'UserNotActive',
@@ -278,7 +275,9 @@ apiRouter.get('/orders/cart/:userId', async (req, res, next) => {
 //this route works - do not edit this code!
 apiRouter.post('/orders/:orderId/products', async (req, res, next) => {
   try {
-    const changedOrder = await addProductsToOrder(req.params.orderId, req.body)
+    const changedOrder = await addProductsToOrder(req.params.orderId, [
+      req.body,
+    ])
     res.send(changedOrder)
   } catch (error) {
     throw error
@@ -523,5 +522,3 @@ apiRouter.delete('/order_products/:orderProductId', async (req, res, next) => {
   }
 })
 module.exports = apiRouter
-
-	

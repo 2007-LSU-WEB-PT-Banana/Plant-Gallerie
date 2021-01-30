@@ -105,7 +105,7 @@ const Header = (props) => {
 						<>
 							<div className="logOut">
 								<h6 className="logOut" style={headerLink}>
-									Not {activeUser.firstName}?
+									Not {activeUser?.firstName}
 								</h6>
 								<button className="logOut" onClick={handleSignOut}>
 									Log Out
