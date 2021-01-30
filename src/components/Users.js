@@ -60,7 +60,7 @@ const Users = (props) => {
 									isAdmin,
 								} = users;
 								return (
-									<div className="usersCard">
+									<div className="usersCard" key={index}>
 										{imageURL !== "no picture" ? (
 											<img
 												alt="profile-image"
