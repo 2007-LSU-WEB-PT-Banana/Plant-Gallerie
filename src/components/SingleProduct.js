@@ -50,6 +50,7 @@ const SingleProduct = (props) => {
         data.map((product) => {
           let newPrice = product.price / 100
           product.price = newPrice
+          return
         })
         setProductList(data)
         history.goBack()
@@ -63,18 +64,18 @@ const SingleProduct = (props) => {
   match = cartData.findIndex((x) => x.id === activeProduct.id)
 
   async function authenticatedCartUpdate() {
+    //if the current item matches anything in the cart, "match" will update to be the index of that item
+    //in the cartData array
     if (match === -1) {
       try {
-        let newCartItem = [
-          {
-            productId: activeProduct.id,
-            price: activeProduct.price,
-            productName: activeProduct.name,
-            quantity: count,
-            id: activeProduct.id,
-            image: activeProduct.imageURL,
-          },
-        ]
+        let newCartItem = {
+          productId: activeProduct.id,
+          price: activeProduct.price,
+          productName: activeProduct.name,
+          quantity: count,
+          id: activeProduct.id,
+          image: activeProduct.imageURL,
+        }
 
         const newCart = await fetchAPI(
           BASE_URL + '/orders/' + orderId + '/products',

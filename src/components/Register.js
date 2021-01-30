@@ -89,7 +89,7 @@ function Register(props) {
       if (!result) {
         throw 'email or password is req'
       }
-      
+
       history.push('/login')
     } catch (error) {
       setActive(true)

@@ -1,53 +1,54 @@
 // import { v4 as uuid_v4 } from 'uuid'
 
-const apiRouter = require('express').Router()
+const apiRouter = require("express").Router();
 
-const bcrypt = require('bcrypt')
+const bcrypt = require("bcrypt");
 // const { uuid } = require('uuidv4')
-const { v4: uuid_v4 } = require('uuid')
+const { v4: uuid_v4 } = require("uuid");
 
 const {
-  createProduct,
-  getProductById,
-  getAllProducts,
-  createUser,
-  getAllUsers,
-  getUserById,
-  getUserByUsername,
-  createOrder,
-  getOrdersByProduct,
-  getAllOrders,
-  getOrderById,
-  getCartByUser,
-  getOrderProductsById,
-  getOrdersByUser,
-  getUser,
-  addProductsToOrder,
-  updateOrderProduct,
-  findOrderProductsToDelete,
-  destroyOrderProduct,
-  updateUser,
-  updateOrder,
-  cancelOrder,
-  completeOrder,
-} = require('../db/index')
+	createProduct,
+	getProductById,
+	getAllProducts,
+	createUser,
+	getAllUsers,
+	getUserById,
+	getUserByUsername,
+	createOrder,
+	getOrdersByProduct,
+	getAllOrders,
+	getOrderById,
+	getCartByUser,
+	getOrderProductsById,
+	getOrdersByUser,
+	getUser,
+	addProductsToOrder,
+	updateOrderProduct,
+	findOrderProductsToDelete,
+	destroyOrderProduct,
+	updateUser,
+	updateOrder,
+	cancelOrder,
+	completeOrder,
+	updateProduct,
+} = require("../db/index");
 
-require('dotenv').config()
-const jwt = require('jsonwebtoken')
-const { token } = require('morgan')
-const { request } = require('express')
-const stripe = require('stripe')(`${process.env.REACT_APP_MYSKEY}`)
+require("dotenv").config();
+const jwt = require("jsonwebtoken");
+const { token } = require("morgan");
+const { request } = require("express");
+const stripe = require("stripe")(`${process.env.REACT_APP_MYSKEY}`);
 
 const requireUser = (req, res, next) => {
-  if (!req.user) {
-    next({
-      name: 'MissingUserError',
-      message: 'You must be logged in to perform this action',
-    })
-  }
+	if (!req.user) {
+		next({
+			name: "MissingUserError",
+			message: "You must be logged in to perform this action",
+		});
+	}
 
-  next()
-}
+	next();
+};
 
 const requireActiveUser = (req, res, next) => {
   if (!req.user.active) {

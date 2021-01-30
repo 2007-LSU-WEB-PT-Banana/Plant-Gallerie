@@ -1,49 +1,49 @@
 // import axios from 'axios'
 
-export const BASE_URL = '/api'
+export const BASE_URL = "/api";
 
 export const getToken = () => {
-  if (localStorage.getItem('auth-token')) {
-    return localStorage.getItem('auth-token')
-  } else {
-    localStorage.removeItem('auth-token')
-  }
-}
+	if (localStorage.getItem("auth-token")) {
+		return localStorage.getItem("auth-token");
+	} else {
+		localStorage.removeItem("auth-token");
+	}
+};
 
 export const clearToken = () => {
-  localStorage.removeItem('auth-token')
-}
+	localStorage.removeItem("auth-token");
+};
 
 const setToken = (token) => {
-  localStorage.setItem('auth-token', token)
-}
+	localStorage.setItem("auth-token", token);
+};
 
 function buildHeaders() {
-  let base = {
-    'Content-Type': 'application/json',
-  }
+	let base = {
+		"Content-Type": "application/json",
+	};
 
-  if (getToken()) {
-    base['Authorization'] = `Bearer ${getToken()}`
-  }
-  return base
+	if (getToken()) {
+		base["Authorization"] = `Bearer ${getToken()}`;
+	}
+	return base;
 }
 
 export const getActiveUser = async () => {
-  const url = `${BASE_URL}/users/me`
-  const response = await fetch(url, {
-    method: 'GET',
-    headers: buildHeaders(),
-  })
+	const url = `${BASE_URL}/users/me`;
+	const response = await fetch(url, {
+		method: "GET",
+		headers: buildHeaders(),
+	});
 
-  const { error, user } = await response.json()
+	const { error, user } = await response.json();
 
-  if (error) {
-    throw Error(error.message)
-  }
+	if (error) {
+		throw Error(error.message);
+	}
 
-  return user
-}
+	return user;
+};
 
 export const loginUser = async (username, password) => {
   const url = `${BASE_URL}/login`
@@ -72,12 +72,12 @@ export const loginUser = async (username, password) => {
 }
 
 export const NewUser = async (
-  firstName,
-  lastName,
-  email,
-  imageURL,
-  username,
-  password,
+	firstName,
+	lastName,
+	email,
+	imageURL,
+	username,
+	password
 ) => {
   const url = `${BASE_URL}/register`
   const response = await fetch(url, {
@@ -129,16 +129,16 @@ export const fetchAPI = async (url, method = 'GET', sendData = null) => {
 }
 
 export const deleteProduct = async (url, sendData) => {
-  const fetchOptions = {
-    method: 'DELETE',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(sendData),
-  }
+	const fetchOptions = {
+		method: "DELETE",
+		headers: {
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify(sendData),
+	};
 
-  const response = await fetch(url, fetchOptions)
-  const data = await response.json()
+	const response = await fetch(url, fetchOptions);
+	const data = await response.json();
 
-  return data
-}
+	return data;
+};

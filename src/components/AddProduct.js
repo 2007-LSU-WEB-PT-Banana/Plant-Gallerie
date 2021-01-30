@@ -1,7 +1,6 @@
-import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
-import './AddProduct.css'
-import { fetchAPI, BASE_URL } from '../api'
+import React, { useState } from "react";
+import "./AddProduct.css";
+import { fetchAPI, BASE_URL } from "../api";
 
 const AddProduct = (props) => {
   const { activeUser, history, setProductList, modal, setModal } = props
