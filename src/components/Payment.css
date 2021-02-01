@@ -1,0 +1,42 @@
+.stripe-header {
+	align-content: center;
+	align-self: center;
+	border: 3px solid #d8d8d8;
+	margin: 0 20px 0 20px;
+	padding: 10px;
+}
+
+.button-pay {
+	background-color: #607848;
+	display: flex;
+	padding: 10px;
+	text-decoration: none;
+	color: white;
+	border-radius: 0.25rem;
+	text-align: center;
+	transition: all 0.3s;
+	justify-content: center;
+	text-transform: uppercase;
+	width: 350px;
+	margin: 10px auto 10px auto;
+}
+
+.userAddress {
+	text-align: center;
+}
+
+.userAddress > * {
+	font-family: "Alegreya Sans SC", sans-serif;
+	font-weight: 800;
+	padding: 5px;
+	margin: auto;
+}
+
+.shippingAddressHeader {
+	font-weight: bolder;
+}
+
+.cancelOrder {
+	background-color: #d8d8d8;
+	color: #686868;
+}

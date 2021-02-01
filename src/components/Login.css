@@ -1,51 +1,66 @@
 .login {
-  background-color: white;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+	background-color: white;
+	height: 100vh;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	background: url("https://images.unsplash.com/photo-1470698416516-70c8af45a6b6?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=2553&q=80")
+		center;
+	background-position: center center;
+	background-repeat: no-repeat;
+	background-attachment: fixed;
+	margin-top: -70px;
 }
 
 .login-container {
-  width: 300px;
-  display: flex;
-  flex-direction: column;
-  padding: 20px;
-  border: 1px solid lightgray;
+	width: 300px;
+	display: flex;
+	flex-direction: column;
+	padding: 20px;
+	border: 1px solid lightgray;
+	background-color: #a09c9c;
+	margin-top: 10px;
+	z-index: 91;
+	margin-top: 150px;
 }
 .login-container > h1 {
-  font-weight: 500;
-  margin-bottom: 20px;
+	font-weight: 500;
+	margin-bottom: 20px;
 }
 .login-container > form > h5 {
-  margin-bottom: 5px;
+	margin-bottom: 5px;
 }
 .login-container > form > input {
-  height: 30px;
-  margin-bottom: 10px;
-  background-color: white;
-  border: 1px solid grey;
-  width: 98%;
+	height: 30px;
+	margin-bottom: 10px;
+	background-color: white;
+	border: 1px solid grey;
+	width: 98%;
 }
 .login-container > p {
-  margin-top: 15px;
-  font-size: 12px;
+	margin-top: 15px;
+	font-size: 12px;
 }
 .login-siginbutton {
-  background: rgb(91, 91, 185);
-  border-radius: 2px;
-  color: white;
-  width: 100%;
-  height: 30px;
-  border: 1px solid;
-  margin-top: 10px;
-  border-color: #a88734 #9c7e31 #846a29;
+	background: #607848;
+	border-radius: 2px;
+	color: white;
+	width: 100%;
+	height: 30px;
+	border: 1px solid;
+	margin-top: 10px;
+	border-color: #a88734 #9c7e31 #846a29;
 }
 .login-createbutton {
-  border-radius: 2px;
-  width: 100%;
-  height: 30px;
-  border: 1px solid;
-  margin-top: 10px;
-  border-color: #a88734 #9c7e31 #846a29;
+	border-radius: 2px;
+	width: 100%;
+	height: 30px;
+	border: 1px solid;
+	margin-top: 10px;
+	border-color: #a88734 #9c7e31 #846a29;
+}
+
+.login input {
+	padding: 5px;
+	outline: none;
 }

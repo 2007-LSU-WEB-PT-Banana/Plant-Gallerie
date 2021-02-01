@@ -2,5 +2,7 @@
   "cSpell.ignoreWords": [
     "api",
     "fetch"
-  ]
+  ],
+  "editor.formatOnSave": true,
+  "prettier.useTabs": true
 }
